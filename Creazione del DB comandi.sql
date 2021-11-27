@@ -4,6 +4,20 @@ CREATE TABLE corso (
     PRIMARY KEY (titolo)
      ) ENGINE = InnoDB;
 
+CREATE TABLE Professore ( 
+    nome VARCHAR(32) NOT NULL,
+    cognome VARCHAR(32) NOT NULL,
+    id int NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id)
+    ) ENGINE = InnoDB;
+
+CREATE TABLE Insegnamenti ( 
+    Professore int NOT NULL,
+    corso VARCHAR(32) NOT NULL,
+    FOREIGN KEY (Professore) REFERENCES Professore(utente),
+    FOREIGN KEY (corso) REFERENCES corso(titolo),
+    PRIMARY KEY (Professore,corso)
+     ) ENGINE = InnoDB;
 
 CREATE TABLE utente ( 
     account VARCHAR(32) NOT NULL,
@@ -13,22 +27,10 @@ CREATE TABLE utente (
      ) ENGINE = InnoDB;
 
 
-CREATE TABLE Professore ( 
-    nome VARCHAR(32) NOT NULL,
-    cognome VARCHAR(32) NOT NULL,
-    utente VARCHAR(32),
-    FOREIGN KEY (utente) REFERENCES utente(account),
-    PRIMARY KEY (utente)
-     ) ENGINE = InnoDB;
 
 
-CREATE TABLE Afferente ( 
-    Professore VARCHAR(32) NOT NULL,
-    corso VARCHAR(32) NOT NULL,
-    FOREIGN KEY (Professore) REFERENCES Professore(utente),
-    FOREIGN KEY (corso) REFERENCES corso(titolo),
-    PRIMARY KEY (Professore,corso)
-     ) ENGINE = InnoDB;
+
+
 
 CREATE TABLE ripetizioni ( 
     Professore VARCHAR(32) NOT NULL,
