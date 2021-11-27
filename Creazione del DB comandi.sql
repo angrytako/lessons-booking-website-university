@@ -11,36 +11,37 @@ CREATE TABLE Professore (
     PRIMARY KEY (id)
     ) ENGINE = InnoDB;
 
-CREATE TABLE Insegnamenti ( 
+CREATE TABLE Insegnamenti (
     Professore int NOT NULL,
     corso VARCHAR(32) NOT NULL,
-    FOREIGN KEY (Professore) REFERENCES Professore(utente),
+    FOREIGN KEY (Professore) REFERENCES Professore(id),
     FOREIGN KEY (corso) REFERENCES corso(titolo),
     PRIMARY KEY (Professore,corso)
      ) ENGINE = InnoDB;
 
+
 CREATE TABLE utente ( 
-    account VARCHAR(32) NOT NULL,
+    username VARCHAR(32) NOT NULL,
     password VARCHAR(32) NOT NULL,
-    Ruolo VARCHAR(32) NOT NULL,
-    PRIMARY KEY (account)
+    Ruolo ENUM('cliente','amministratore') not null ,
+    PRIMARY KEY (username)
      ) ENGINE = InnoDB;
 
 
 
-
-
-
-
 CREATE TABLE ripetizioni ( 
-    Professore VARCHAR(32) NOT NULL,
+    Professore int NOT NULL,
     corso VARCHAR(32) NOT NULL,
     utente VARCHAR(32) NOT NULL,
-    data DATE NOT NULL,
-    FOREIGN KEY (Professore) REFERENCES Professore(utente),
-    FOREIGN KEY (utente) REFERENCES utente(account),
+    stato ENUM('attiva','effettuata','cancellata'),
+    Giorno int  not null,
+    Orario int not null,
+    check(giorno>=0 and giorno <=4),
+    check(Orario>=0 and Orario <=2),
+    FOREIGN KEY (Professore) REFERENCES Professore(id),
+    FOREIGN KEY (utente) REFERENCES utente(username),
     FOREIGN KEY (corso) REFERENCES corso(titolo),
-    PRIMARY KEY (Professore,corso,utente)
+    PRIMARY KEY (utente,giorno,orario)
      ) ENGINE = InnoDB;
 
 
