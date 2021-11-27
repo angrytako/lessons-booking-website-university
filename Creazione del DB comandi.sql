@@ -1,3 +1,6 @@
+Create table ripetizioni;
+use ripetizioni;
+
 
 CREATE TABLE corso ( 
     titolo VARCHAR(32) NOT NULL,
@@ -50,11 +53,38 @@ CREATE TABLE ripetizioni (
 
 
 
-    INSERT INTO `corso`(`titolo`) VALUES ('aaa');
 
-    DELETE FROM corso WHERE titolo='aaa';
+    INSERT INTO `corso`(`titolo`) VALUES ('progI');
+    INSERT INTO `corso`(`titolo`) VALUES ('analisi');
+    INSERT INTO `corso`(`titolo`) VALUES ('Database');
+    INSERT INTO `corso`(`titolo`) VALUES ('Inglese');
+    INSERT INTO `corso`(`titolo`) VALUES ('sicurezza');
+    INSERT INTO `corso`(`titolo`) VALUES ('progIII');
 
-    INSERT INTO `utente`(account,password,ruolo) VALUES ('ToneTuga','1234','cliente');
-    INSERT INTO `Professore`(nome,cognome,utente) VALUES ('enrico','chiesa','ToneTuga');
+    INSERT INTO `Professore`(nome,cognome) VALUES ('roberta','sirovich');
+    INSERT INTO `Professore`(nome,cognome) VALUES ('Viviana','Bono');
+    INSERT INTO `Professore`(nome,cognome) VALUES ('Liliana','Ardissono');
+    INSERT INTO `Professore`(nome,cognome) VALUES ('Rossano','Schifanella');
+
+    INSERT INTO `Insegnamenti`(Professore,corso) VALUES (1,'analisi');
+    INSERT INTO `Insegnamenti`(Professore,corso) VALUES (2,'Database');
+    INSERT INTO `Insegnamenti`(Professore,corso) VALUES (3,'progI');
+    INSERT INTO `Insegnamenti`(Professore,corso) VALUES (3,'progIII');
 
 
+    INSERT INTO `utente`(username,password,ruolo) VALUES ('ToneTuga',MD5('password'),'cliente');
+    INSERT INTO `utente`(username,password,ruolo) VALUES ('Lorenzo',MD5('pupu'),'cliente');
+    INSERT INTO `utente`(username,password,ruolo) VALUES ('Anna',MD5('cacca'),'cliente');
+    INSERT INTO `utente`(username,password,ruolo) VALUES ('Admin',MD5('superpwd'),'amministratore');
+
+
+    INSERT INTO `ripetizioni`(Professore,corso,utente,stato ,Giorno,Orario) 
+    VALUES (1,'analisi','ToneTuga','attiva' ,1,1);    
+    INSERT INTO `ripetizioni`(Professore,corso,utente,stato ,Giorno,Orario) 
+    VALUES (1,'analisi','ToneTuga','attiva' ,3,1);    
+    INSERT INTO `ripetizioni`(Professore,corso,utente,stato ,Giorno,Orario) 
+    VALUES (1,'analisi','ToneTuga','attiva' ,1,0);
+    INSERT INTO `ripetizioni`(Professore,corso,utente,stato ,Giorno,Orario) 
+    VALUES (2,'database','lorenzo','effettuata' ,0,0);
+    INSERT INTO `ripetizioni`(Professore,corso,utente,stato ,Giorno,Orario) 
+    VALUES (3,'analisi','anna','cancellata' ,1,0);
