@@ -1,4 +1,4 @@
-package com.example.demo.DAO;
+package DAO;
 
 public class Prenotazione_con_data {
     private int id_corso;

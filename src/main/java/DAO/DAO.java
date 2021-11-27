@@ -1,4 +1,4 @@
-package com.example.demo.DAO;
+package DAO;
 
 
 import java.sql.*;

@@ -1,12 +1,14 @@
-package com.example.demo.DAO;
+package DAO;
 
-public class Insegnamento {
+public class Prenotazione {
     private int id_corso;
     private int id_docente;
+    private int id_utente;
 
-    public Insegnamento(int id_corso, int id_docente) {
+    public Prenotazione(int id_corso, int id_docente, int id_utente) {
         this.id_corso = id_corso;
         this.id_docente = id_docente;
+        this.id_utente = id_utente;
     }
 
     public int getIdCorso() {
@@ -17,11 +19,16 @@ public class Insegnamento {
         return id_docente;
     }
 
+    public int getIdUtente() {
+        return id_utente;
+    }
+
     @Override
     public String toString() {
-        return "Insegnamento{" +
+        return "Prenotazione{" +
                 "id_corso=" + id_corso +
                 ", id_docente=" + id_docente +
+                ", id_utente=" + id_utente +
                 '}';
     }
 }

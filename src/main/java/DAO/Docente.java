@@ -1,4 +1,4 @@
-package com.example.demo.DAO;
+package DAO;
 
 public class Docente {
     private int id;
