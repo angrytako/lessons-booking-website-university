@@ -1,0 +1,54 @@
+<template>
+<ul>
+  <router-link id="logo" :to="{ name:'Home' }"><img alt="logo"  src="../assets/logo.png"></router-link>
+  <li><router-link :to="{ name:'Home' }">Home page</router-link></li>
+  <li v-if="userType == 'guest'"><router-link :to="{ name:'Login' }">Login</router-link></li>
+  <li v-if="userType != 'guest'"><router-link :to="{ name:'Logout' }">Mie Prenotazioni</router-link></li>
+  <li v-if="userType != 'guest'"><router-link :to="{ name:'Logout' }">Logout</router-link></li>
+</ul>
+</template>
+
+<script>
+export default {
+  name: "NavBar",
+  props:{
+    userType:{
+      type:String,
+      default:"guest"
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+ul{
+  display: flex;
+  height: 50px;
+  background-color: #203a50;
+  align-content: center;
+  justify-content: flex-end;
+}
+li{
+
+  text-align: center;
+  font-size: 1.3em;
+  margin: 0 20px;
+}
+a{
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  height: 100%;
+  width: fit-content;
+}
+.router-link-active{
+  text-decoration: underline;
+
+}
+#logo{
+  width: 50px;
+  height: 50px;
+  margin-right: auto;
+}
+</style>
