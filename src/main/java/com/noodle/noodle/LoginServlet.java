@@ -4,15 +4,15 @@ import java.io.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
-@WebServlet(name = "loginServlet", value = "/")
+@WebServlet(name = "loginServlet", value = "/loginServlet")
 public class LoginServlet extends HttpServlet {
     private String message;
 
     public void init() {
-        message = "Hello World!";
+        DAO.DAO.registerDriver("http://localhost:3306/noodle","adnin","");
     }
-
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
 
         // Hello
