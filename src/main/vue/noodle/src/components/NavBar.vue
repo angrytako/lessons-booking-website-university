@@ -30,14 +30,13 @@ ul{
   justify-content: flex-end;
 }
 li{
-
   text-align: center;
   font-size: 1.3em;
   margin: 0 20px;
 }
 a{
   display: flex;
-  align-content: center;
+  align-items: center;
   justify-content: center;
   height: 100%;
   width: fit-content;
@@ -50,5 +49,10 @@ a{
   width: 50px;
   height: 50px;
   margin-right: auto;
+  margin-left: 20px;
+}
+#logo>img{
+  width: 100%;
+  height: 100%;
 }
 </style>

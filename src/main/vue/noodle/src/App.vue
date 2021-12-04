@@ -2,6 +2,7 @@
   <NavBar :user-type="userType" />
   <router-view/>
 </template>
+
 <script>
 import NavBar from "@/components/NavBar";
 export default {
@@ -14,7 +15,13 @@ export default {
   }
 
 </script>
+
 <style>
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -25,17 +32,5 @@ export default {
 a{
   text-decoration: none;
   color: white;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
 }
 </style>
