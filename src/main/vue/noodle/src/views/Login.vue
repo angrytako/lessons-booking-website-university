@@ -56,7 +56,7 @@ export default {
         return;
       }
       try {
-        const response = await fetch("/Noodle_war//loginServlet", {
+        const response = await fetch("/Noodle_war/loginServlet", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
