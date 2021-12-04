@@ -1,4 +1,4 @@
-Create table ripetizioni;
+Create database ripetizioni;
 use ripetizioni;
 
 
