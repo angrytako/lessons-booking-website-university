@@ -23,6 +23,7 @@ export default {
 <style scoped>
 
 ul{
+  margin: 0;
   display: flex;
   height: 50px;
   background-color: #203a50;
