@@ -40,6 +40,11 @@ a{
   justify-content: center;
   height: 100%;
   width: fit-content;
+  text-decoration: none;
+  color: white;
+}
+a:hover{
+  color: #ffdbdb;
 }
 .router-link-active{
   text-decoration: underline;
