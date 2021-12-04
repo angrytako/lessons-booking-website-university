@@ -1,16 +1,10 @@
 package DAO;
 
 public class Corso {
-    private int id;
     private String materia;
 
-    public Corso(int id, String materia) {
-        this.id = id;
+    public Corso(String materia) {
         this.materia = materia;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getMateria() {
@@ -20,8 +14,7 @@ public class Corso {
     @Override
     public String toString() {
         return "Corso{" +
-                "id=" + id +
-                ", materia='" + materia + '\'' +
+                "materia='" + materia + '\'' +
                 '}';
     }
 }

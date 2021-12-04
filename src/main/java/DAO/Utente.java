@@ -1,41 +1,34 @@
 package DAO;
 
 public class Utente {
-    private int id;
-    private String account;
+    private String username;
     private String password;
-    private int ruolo;
+    private String ruolo;
 
-    public Utente(int id, String account, String password, int ruolo) {
-        this.id = id;
-        this.account = account;
+    public Utente(String username, String password, String ruolo) {
+        this.username = username;
         this.password = password;
-        this.ruolo = ruolo;                     // 1: amministratore, 2: cliente
+        this.ruolo = ruolo;                             // solo 'amministratore' o 'cliente'
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getAccount() {
-        return account;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public int getRuolo() {
+    public String getRuolo() {
         return ruolo;
     }
 
     @Override
     public String toString() {
         return "Utente{" +
-                "id=" + id +
-                ", account='" + account + '\'' +
+                "username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", ruolo=" + ruolo +
+                ", ruolo='" + ruolo + '\'' +
                 '}';
     }
 }
