@@ -31,7 +31,7 @@ public class DAO {
             Statement corso = conn1.createStatement();
             ResultSet rs = corso.executeQuery("SELECT * FROM CORSO");
             while (rs.next()) {
-                Corso c = new Corso(rs.getInt("id"), rs.getString("materia"));
+                Corso c = new Corso(rs.getString("materia"));
                 out.add(c);
             }
         } catch (SQLException e) {
@@ -54,7 +54,7 @@ public class DAO {
         }
     }
 
-    public static void queryDeleteCorsoDB(String corso) {
+        public static void queryDeleteCorsoDB(String corso) {
         try {
             connectionToDB();
             Statement c = conn1.createStatement();
@@ -67,12 +67,12 @@ public class DAO {
     }
 
     // mmm da rivedere
-    public static ArrayList<Integer> showIdDocentiForIdCourse(int id_course) {
+    public static ArrayList<Integer> showIdDocentiForCourse(String course) {
         ArrayList<Integer> out = new ArrayList<>();
         try {
             connectionToDB();
             Statement insegnamento = conn1.createStatement();
-            ResultSet rs = insegnamento.executeQuery("SELECT docente FROM insegnamento WHERE corso = '" + id_course + "'");
+            ResultSet rs = insegnamento.executeQuery("SELECT docente FROM insegnamento WHERE corso = '" + course + "'");
             while (rs.next()) {
                 out.add(rs.getInt("docente"));
             }
@@ -133,7 +133,7 @@ public class DAO {
             Statement insegnamento = conn1.createStatement();
             ResultSet rs = insegnamento.executeQuery("SELECT * FROM INSEGNAMENTO");
             while (rs.next()) {
-                Insegnamento ins = new Insegnamento(rs.getInt("corso"), rs.getInt("docente"));
+                Insegnamento ins = new Insegnamento(rs.getString("corso"), rs.getInt("docente"));
                 out.add(ins);
             }
         } catch (SQLException e) {
@@ -144,12 +144,12 @@ public class DAO {
         return out;
     }
 
-    public static void queryAddInsegnamentoDB(int id_course, int id_doc) {
+    public static void queryAddInsegnamentoDB(String course, int id_doc) {
         try {
             connectionToDB();
             Statement ins = conn1.createStatement();
-            ins.executeUpdate("INSERT INTO insegnamento (corso, docente) VALUES (" + id_course + ", " + id_doc + ")");
-            //ins.executeUpdate("INSERT INTO insegnamento (corso, docente) VALUES (SELECT id FROM corso WHERE materia = 'Elementi_di_probabilità_e_statistica', SELECT id FROM docente WHERE nome = 'Ciro' and cognome = 'Cattuto')");
+            ins.executeUpdate("INSERT INTO insegnamento (corso, docente) VALUES ('" + course + "', " + id_doc + ")");
+            //ins.executeUpdate("INSERT INTO insegnamento (corso, docente) VALUES (SELECT materia FROM corso WHERE materia = 'Elementi_di_probabilità_e_statistica', SELECT id FROM docente WHERE nome = 'Ciro' and cognome = 'Cattuto')");
         } catch (SQLException e) {
             System.out.println("errore di connessione al db: " + e.getMessage());
         } finally {
@@ -157,11 +157,11 @@ public class DAO {
         }
     }
 
-    public static void queryDeleteInsegnamentoDB(int id_course, int id_doc) {
+    public static void queryDeleteInsegnamentoDB(String course, int id_doc) {
         try {
             connectionToDB();
             Statement ins= conn1.createStatement();
-            ins.executeUpdate("DELETE FROM insegnamento WHERE corso = " + id_course + " and docente = " + id_doc);
+            ins.executeUpdate("DELETE FROM insegnamento WHERE corso = '" + course + "' and docente = " + id_doc);
         } catch (SQLException e) {
             System.out.println("errore di connessione al db: " + e.getMessage());
         } finally {
@@ -169,14 +169,67 @@ public class DAO {
         }
     }
 
-    public static ArrayList<Prenotazione> queryPrenotazioneDB() {
+//    public static ArrayList<Prenotazione> queryPrenotazioneDB() {
+//        ArrayList<Prenotazione> out = new ArrayList<>();
+//        try {
+//            connectionToDB();
+//            Statement pren = conn1.createStatement();
+//            ResultSet rs = pren.executeQuery("SELECT * FROM PRENOTAZIONE");
+//            while (rs.next()) {
+//                Prenotazione ins = new Prenotazione(rs.getInt("corso"), rs.getInt("docente"), rs.getInt("utente"));
+//                out.add(ins);
+//            }
+//        } catch (SQLException e) {
+//            System.out.println("errore di connessione al db: " + e.getMessage());
+//        } finally {
+//            closeDBConnection();
+//        }
+//        return out;
+//    }
+//
+//    public static void queryAddPrenotazioneDB(String course, int id_doc, String user) {
+//        try {
+//            // non si deve poter aggiungere una prenotazione di corso e docente che NON sia presenti in insegnamento
+//            ArrayList<Insegnamento> insegnamenti = queryInsegnamentoDB();
+//            boolean ins = false;
+//            for (Insegnamento i : insegnamenti) {
+//                if(i.getCorso() == course && i.getIdDocente() == id_doc) {
+//                    connectionToDB();
+//                    Statement pren = conn1.createStatement();
+//                    pren.executeUpdate("INSERT INTO prenotazione (corso, docente, utente) VALUES ('" + course + "', " + id_doc + ", '" + user + "')");
+//                    ins = true;
+//                    break;
+//                }
+//            }
+//            if (! ins)
+//                System.out.println("Impossibile inserire la prenotazione richiesta poiché il docente non insegna quel corso!");
+//        } catch (SQLException e) {
+//            System.out.println("errore di connessione al db: " + e.getMessage());
+//        } finally {
+//            closeDBConnection();
+//        }
+//    }
+//
+//    public static void queryDeletePrenotazioneDB(String course, int id_doc, String user) {
+//        try {
+//            connectionToDB();
+//            Statement pren= conn1.createStatement();
+//            pren.executeUpdate("DELETE FROM prenotazione WHERE corso = '" + course + "' and docente = " + id_doc + " and utente = '" + user + "'");
+//        } catch (SQLException e) {
+//            System.out.println("errore di connessione al db: " + e.getMessage());
+//        } finally {
+//            closeDBConnection();
+//        }
+//    }
+
+    public static ArrayList<Prenotazione> queryPrenotazioneWithDataDB() {
         ArrayList<Prenotazione> out = new ArrayList<>();
         try {
             connectionToDB();
             Statement pren = conn1.createStatement();
             ResultSet rs = pren.executeQuery("SELECT * FROM PRENOTAZIONE");
             while (rs.next()) {
-                Prenotazione ins = new Prenotazione(rs.getInt("corso"), rs.getInt("docente"), rs.getInt("utente"));
+                Prenotazione ins = new Prenotazione(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"), rs.getInt("giorno"), rs.getInt("orario"));
                 out.add(ins);
             }
         } catch (SQLException e) {
@@ -187,60 +240,7 @@ public class DAO {
         return out;
     }
 
-    public static void queryAddPrenotazioneDB(int id_course, int id_doc, int id_user) {
-        try {
-            // non si deve poter aggiungere una prenotazione di corso e docente che NON sia presenti in insegnamento
-            ArrayList<Insegnamento> insegnamenti = queryInsegnamentoDB();
-            boolean ins = false;
-            for (Insegnamento i : insegnamenti) {
-                if(i.getIdCorso() == id_course && i.getIdDocente() == id_doc) {
-                    connectionToDB();
-                    Statement pren = conn1.createStatement();
-                    pren.executeUpdate("INSERT INTO prenotazione (corso, docente, utente) VALUES (" + id_course + ", " + id_doc + ", " + id_user + ")");
-                    ins = true;
-                    break;
-                }
-            }
-            if (! ins)
-                System.out.println("Impossibile inserire la prenotazione richiesta poiché il docente non insegna quel corso!");
-        } catch (SQLException e) {
-            System.out.println("errore di connessione al db: " + e.getMessage());
-        } finally {
-            closeDBConnection();
-        }
-    }
-
-    public static void queryDeletePrenotazioneDB(int id_course, int id_doc, int id_user) {
-        try {
-            connectionToDB();
-            Statement pren= conn1.createStatement();
-            pren.executeUpdate("DELETE FROM prenotazione WHERE corso = " + id_course + " and docente = " + id_doc + " and utente = " + id_user);
-        } catch (SQLException e) {
-            System.out.println("errore di connessione al db: " + e.getMessage());
-        } finally {
-            closeDBConnection();
-        }
-    }
-
-    public static ArrayList<Prenotazione_con_data> queryPrenotazioneWithDataDB() {
-        ArrayList<Prenotazione_con_data> out = new ArrayList<>();
-        try {
-            connectionToDB();
-            Statement pren = conn1.createStatement();
-            ResultSet rs = pren.executeQuery("SELECT * FROM PRENOTAZIONE_CON_DATA");
-            while (rs.next()) {
-                Prenotazione_con_data ins = new Prenotazione_con_data(rs.getInt("corso"), rs.getInt("docente"), rs.getInt("utente"), rs.getInt("giorno"), rs.getInt("orario"));
-                out.add(ins);
-            }
-        } catch (SQLException e) {
-            System.out.println("errore di connessione al db: " + e.getMessage());
-        } finally {
-            closeDBConnection();
-        }
-        return out;
-    }
-
-    public static void queryAddPrenotazioneWithDataDB(int id_course, int id_doc, int id_user, int day, int time) {
+    public static void queryAddPrenotazioneWithDataDB(String course, int id_doc, String user, int day, int time) {
         try {
             // non si deve poter aggiungere una prenotazione fuori da 15-18 del lunedì-venerdì
             if(day < 0 || day > 4 || time < 0 || time > 4){
@@ -251,21 +251,21 @@ public class DAO {
                 ArrayList<Insegnamento> insegnamenti = queryInsegnamentoDB();
                 boolean ins = false;
                 for (Insegnamento i : insegnamenti) {
-                    if (i.getIdCorso() == id_course && i.getIdDocente() == id_doc) {
+                    if (i.getCorso() == course && i.getIdDocente() == id_doc) {
                         ins = true;
                         break;
                     }
                 }
                 if(ins){    // ok: il docente insegna quel corso!
                     // controllo che non sia già occupato in quel giorno-orario con un'ALTRA lezione (diversa!!)
-                    ArrayList<Prenotazione_con_data> prenotazioni_con_data = queryPrenotazioneWithDataDB();
+                    ArrayList<Prenotazione> prenotazioni_con_data = queryPrenotazioneWithDataDB();
                     boolean doc_occ = false;
                     boolean user_occ = false;
-                    for (Prenotazione_con_data p : prenotazioni_con_data) {
-                        if (p.getGiorno() == day && p.getOrario() == time && p.getIdCorso() != id_course) {
+                    for (Prenotazione p : prenotazioni_con_data) {
+                        if (p.getGiorno() == day && p.getOrario() == time && p.getCorso() != course) {
                             if (p.getIdDocente() == id_doc)
                                 doc_occ = true;
-                            else if (p.getIdUtente() == id_user)
+                            else if (p.getUtente() == user)
                                 user_occ = true;
                             break;
                         }
@@ -277,7 +277,7 @@ public class DAO {
                     else{
                         connectionToDB();
                         Statement pren = conn1.createStatement();
-                        pren.executeUpdate("INSERT INTO prenotazione_con_data (corso, docente, utente, giorno, orario) VALUES (" + id_course + ", " + id_doc + ", " + id_user + ", " + day + ", " + time + ")");
+                        pren.executeUpdate("INSERT INTO prenotazione (corso, docente, utente, giorno, orario) VALUES ('" + course + "', " + id_doc + ", '" + user + "', " + day + ", " + time + ")");
                     }
                 } else
                     System.out.println("Impossibile inserire la prenotazione richiesta poiché il docente non insegna quel corso!");
@@ -289,11 +289,11 @@ public class DAO {
         }
     }
 
-    public static void queryDeletePrenotazioneWithDataDB(int id_course, int id_doc, int id_user, int day, int time) {
+    public static void queryDeletePrenotazioneWithDataDB(String course, int id_doc, String user, int day, int time) {
         try {
             connectionToDB();
             Statement pren= conn1.createStatement();
-            pren.executeUpdate("DELETE FROM prenotazione_con_data WHERE corso = " + id_course + " and docente = " + id_doc + " and utente = " + id_user + " and giorno = " + day + " and orario = " + time);
+            pren.executeUpdate("DELETE FROM prenotazione WHERE corso = '" + course + "' and docente = " + id_doc + " and utente = '" + user + "' and giorno = " + day + " and orario = " + time);
 
         } catch (SQLException e) {
             System.out.println("errore di connessione al db: " + e.getMessage());
@@ -314,7 +314,7 @@ public class DAO {
             Statement utente = conn1.createStatement();
             ResultSet rs = utente.executeQuery("SELECT * FROM UTENTE");
             while (rs.next()) {
-                Utente ut = new Utente(rs.getInt("id"), rs.getString("account"),rs.getString("password"), rs.getInt("ruolo"));
+                Utente ut = new Utente(rs.getString("username"),rs.getString("password"), rs.getString("ruolo"));
                 out.add(ut);
             }
         } catch (SQLException e) {
@@ -326,13 +326,13 @@ public class DAO {
     }
 
     // da sistemare: il metodo deve prendere l'ID dell'utente
-    public static String getUserRule (String account, String password){
+    public static String getUserRule (String username, String password){
         String rule = "";
         int n_rule = -1;
         try {
             connectionToDB();
             Statement utente = conn1.createStatement();
-            ResultSet rs = utente.executeQuery("SELECT ruolo FROM UTENTE WHERE account = '" + account + "' and password = '" + password + "'");
+            ResultSet rs = utente.executeQuery("SELECT ruolo FROM UTENTE WHERE username = '" + username + "' and password = '" + password + "'");
             if (rs.next()) {
                 n_rule = rs.getInt("ruolo");
             }

@@ -1,16 +1,16 @@
 package DAO;
 
 public class Insegnamento {
-    private int id_corso;
+    private String corso;
     private int id_docente;
 
-    public Insegnamento(int id_corso, int id_docente) {
-        this.id_corso = id_corso;
+    public Insegnamento(String corso, int id_docente) {
+        this.corso = corso;
         this.id_docente = id_docente;
     }
 
-    public int getIdCorso() {
-        return id_corso;
+    public String getCorso() {
+        return corso;
     }
 
     public int getIdDocente() {
@@ -20,7 +20,7 @@ public class Insegnamento {
     @Override
     public String toString() {
         return "Insegnamento{" +
-                "id_corso=" + id_corso +
+                "corso=" + corso +
                 ", id_docente=" + id_docente +
                 '}';
     }
