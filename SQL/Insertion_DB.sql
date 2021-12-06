@@ -22,17 +22,17 @@ INSERT INTO `docente`(nome,cognome) VALUES ('Liliana','Ardissono');
 INSERT INTO `docente`(nome,cognome) VALUES ('Alessandro','Mazzei');
 INSERT INTO `docente`(nome,cognome) VALUES ('Rossano','Schifanella');
 
-INSERT INTO `insegnamento`(docente,corso) VALUES (5,'Sicurezza');
-INSERT INTO `insegnamento`(docente,corso) VALUES (2,'Basi_di_dati');
-INSERT INTO `insegnamento`(docente,corso) VALUES (3,'ProgrammazioneI');
-INSERT INTO `insegnamento`(docente,corso) VALUES (5,'ProgrammazioneI');
-INSERT INTO `insegnamento`(docente,corso) VALUES (8,'ProgrammazioneI');
-INSERT INTO `insegnamento`(docente,corso) VALUES (2,'ProgrammazioneII');
-INSERT INTO `insegnamento`(docente,corso) VALUES (9,'ProgrammazioneII');
-INSERT INTO `insegnamento`(docente,corso) VALUES (7,'ProgrammazioneIII');
-INSERT INTO `insegnamento`(docente,corso) VALUES (9,'ProgrammazioneIII');
-INSERT INTO `insegnamento`(docente,corso) VALUES (2,'Architettura_degli_elaboratori');
-INSERT INTO `insegnamento`(docente,corso) VALUES (4,'Architettura_degli_elaboratori');
+INSERT INTO `insegnamento`(corso,docente) VALUES ('Sicurezza',5);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('Basi_di_dati',2);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneI',3);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneI',5);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneI',8);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneII',2);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneII',9);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneIII',7);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneIII',9);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura_degli_elaboratori',2);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura_degli_elaboratori',4);
 
 
 INSERT INTO `utente`(username,password,ruolo) VALUES ('ToneTuga',MD5('superpwd'),'amministratore');
@@ -51,7 +51,7 @@ VALUES ('Basi_di_dati',2,'Lorenzo','effettuata',0,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
 VALUES ('Architettura_degli_elaboratori',2,'Lorenzo','cancellata',0,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
-VALUES ('Sicurezza',3,'Anna','cancellata',1,0);
+VALUES ('Sicurezza',5,'Anna','cancellata',1,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
 VALUES ('ProgrammazioneIII',7,'Anna','cancellata',1,0);
 
