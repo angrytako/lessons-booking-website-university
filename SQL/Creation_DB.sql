@@ -34,7 +34,7 @@ CREATE TABLE prenotazione (
     corso varchar(32) NOT NULL,
     docente int NOT NULL,
     utente varchar(32) NOT NULL,
-    stato ENUM('attiva','effettuata','cancellata') DEFAULT 'attiva',
+    stato ENUM('attiva','effettuata','cancellata') NOT NULL DEFAULT 'attiva',
     giorno int NOT NULL,
     orario int NOT NULL,
     check(giorno>=0 and giorno <=4),
