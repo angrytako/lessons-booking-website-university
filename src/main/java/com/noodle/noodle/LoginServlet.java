@@ -33,6 +33,8 @@ public class LoginServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        response.setCharacterEncoding("UTF-8");
 
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
@@ -45,18 +47,22 @@ public class LoginServlet extends HttpServlet {
         JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
 
         // 1. JSON file to Java object
-        String username =  jobj.get("username").toString();
-        String password =  jobj.get("password").toString();
-        System.out.println(hashPw(password));
-
-        Utente user = DAO.DAO.getUser(username,hashPw(password));
-        if(user != null)
+        String username =  jobj.get("username").getAsString();
+        String pw =  jobj.get("password").getAsString();
+        Utente user = DAO.DAO.getUser(username,pw);
+        if(user != null) {
             System.out.println(user.toString());
-//        HttpSession session=request.getSession();
-//        session.setAttribute("uname","");
-        PrintWriter out = response.getWriter();
-        response.setCharacterEncoding("UTF-8");
-        out.print(data);
+            HttpSession session=request.getSession();
+            session.setAttribute("username",user.getUsername());
+            session.setAttribute("role",user.getRuolo());
+            out.print(jobj.toString());
+            response.setStatus(200);
+        }
+        else{
+            out.print("{\"error\":\"username or password are incorrect\"}");
+            response.setStatus(400);
+        }
+
         out.flush();
        return;
     }

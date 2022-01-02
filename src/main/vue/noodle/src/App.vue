@@ -6,8 +6,34 @@
 <script>
 
 import NavBar from "@/components/NavBar";
+async function getUserInfo() {
+  try {
+    const response = await fetch("/Noodle_war/MyInfoServlet");
+    console.log(response);
+    return await response.json();
+  }catch (e){
+    console.log(e);
+  }
+
+}
 export default {
   components: {NavBar},
+ async created() {
+      let userInfo;
+      try {
+          userInfo = await getUserInfo();
+      } catch (e){
+        console.log(e);
+        return;
+      }
+      console.log(userInfo);
+      try {
+        if(userInfo)
+          this.userType = userInfo.role ? userInfo.role : undefined;
+      }catch (e){
+        console.log(e);
+      }
+    },
   data(){
     return {
       userType: undefined

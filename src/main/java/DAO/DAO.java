@@ -516,8 +516,7 @@ public class DAO {
         try {
             connectionToDB();
             Statement utente = conn1.createStatement();
-            ResultSet rs = utente.executeQuery("SELECT username, password, ruolo FROM UTENTE WHERE username = '" + username + "'"
-                                            + " AND password ='" + password +"'");
+            ResultSet rs = utente.executeQuery("SELECT username, password, ruolo FROM UTENTE WHERE username = '" + username + "' AND password ='" + hashedPassword +"'");
             if(rs.next()){
                 user = new Utente(rs.getString("username"),rs.getString("password"),rs.getString("ruolo"));
             }
@@ -525,8 +524,9 @@ public class DAO {
             System.out.println("errore di connessione al db: " + e.getMessage());
         } finally {
             closeDBConnection();
+            return user;
         }
-        return user;
+
     }
     /*
      *  This method opens database connection.

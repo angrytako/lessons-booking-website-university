@@ -17,19 +17,27 @@
         </div>
         </div>
       <button class="btn btn-primary" v-on:click.prevent="submit">Login</button>
+      <div id="loginErrorBlock"  ref="loginErrorBlock" class="form-text text-danger"> prop text</div>
     </form>
   </div>
 </template>
 
 <script>
-const showError = (inputElem, alertDivElem) => {
+const showError = (alertDivElem, inputElem, message) => {
   alertDivElem.style.opacity = "1";
-  inputElem.classList.add("border");
-  inputElem.classList.add("border-danger");
+  if(message)
+    alertDivElem.innerText = message;
+  if(inputElem) {
+    inputElem.classList.add("border");
+    inputElem.classList.add("border-danger");
+  }
   setTimeout(
-      () => { alertDivElem.style.opacity = "0";
-        inputElem.classList.remove("border");
-        inputElem.classList.remove("border-danger"); }
+      () => {
+        alertDivElem.style.opacity = "0";
+        if(inputElem){
+          inputElem.classList.remove("border");
+          inputElem.classList.remove("border-danger");
+        } }
       ,2000);
 }
 
@@ -45,14 +53,14 @@ export default {
       if(!this.username){
         const usernameInput = this.$refs.username;
         const usernameAlertDiv =  this.$refs.usernameHelpBlock;
-        showError(usernameInput,usernameAlertDiv);
+        showError(usernameAlertDiv,usernameInput);
 
         return;
       }
       if(!this.password){
         const passwordInput = this.$refs.password;
         const passwordAlertDiv =  this.$refs.passwordHelpBlock;
-        showError(passwordInput,passwordAlertDiv);
+        showError(passwordAlertDiv, passwordInput);
         return;
       }
       try {
@@ -64,8 +72,13 @@ export default {
           body: JSON.stringify({username: this.username, password: this.password})
         });
         const res = await response.json();
-        console.log(res);
+        if(!res.error) {
+          window.location.href = "/Noodle_war/";
+        }else{
+          showError(this.$refs.loginErrorBlock,undefined,res.error)
+        }
       }catch (e){
+        showError(this.$refs.loginErrorBlock,undefined,"Unexpected error")
         console.log(e);
       }
     }
