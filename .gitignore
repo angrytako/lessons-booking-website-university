@@ -4,3 +4,5 @@
 /src/main/webapp/img/
 /src/main/webapp/js/
 /target/
+/src/main/vue/noodle/package-lock.json
+/.idea

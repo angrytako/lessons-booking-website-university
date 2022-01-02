@@ -8,17 +8,28 @@ import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
 @WebServlet(name = "loginServlet", value = "/loginServlet")
 public class LoginServlet extends HttpServlet {
-    private String message;
 
-    public void init() {
-        DAO.DAO.registerDriver("jdbc:mysql://localhost:3306/noodle","admin","");
-
+    public void init(ServletConfig config) {
+        try {
+            super.init(config);
+            ServletContext ctx = config.getServletContext();
+            String url = ctx.getInitParameter("url");
+            String user = ctx.getInitParameter("user");
+            String password = ctx.getInitParameter("password");
+            DAO.DAO.registerDriver(url, user, password);
+        } catch (ServletException e){
+            e.printStackTrace();
+        }
     }
+
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
