@@ -506,6 +506,28 @@ public class DAO {
         return rule;
     }
 
+
+    /*
+     *  This method returns a user obj, if a user with a given
+     * username and password exists, null otherwise
+     */
+    public static Utente getUser (String username, String hashedPassword){
+        Utente user= null;
+        try {
+            connectionToDB();
+            Statement utente = conn1.createStatement();
+            ResultSet rs = utente.executeQuery("SELECT username, password, ruolo FROM UTENTE WHERE username = '" + username + "'"
+                                            + " AND password ='" + password +"'");
+            if(rs.next()){
+                user = new Utente(rs.getString("username"),rs.getString("password"),rs.getString("ruolo"));
+            }
+        } catch (SQLException e) {
+            System.out.println("errore di connessione al db: " + e.getMessage());
+        } finally {
+            closeDBConnection();
+        }
+        return user;
+    }
     /*
      *  This method opens database connection.
      */
