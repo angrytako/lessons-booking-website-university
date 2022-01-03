@@ -1,5 +1,5 @@
 <template>
-  <NavBar :user-type="userType" />
+  <NavBar />
   <router-view/>
 </template>
 
@@ -26,18 +26,15 @@ export default {
         console.log(e);
         return;
       }
-      console.log(userInfo);
       try {
-        if(userInfo)
-          this.userType = userInfo.role ? userInfo.role : undefined;
+        console.log( this.$store.role);
+        if(userInfo) {
+          this.$store.state.role = userInfo.role ? userInfo.role : "guest";
+          this.$store.state.username = userInfo.username ? userInfo.username : undefined;
+        }
       }catch (e){
         console.log(e);
       }
-    },
-  data(){
-    return {
-      userType: undefined
-    }
     }
   }
 

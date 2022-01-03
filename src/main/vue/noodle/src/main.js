@@ -1,6 +1,18 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { createStore } from 'vuex'
 import "bootstrap/dist/css/bootstrap.min.css"
-createApp(App).use(router).mount('#app')
+const store = createStore({
+
+        state: function(){
+            return {
+                username:undefined,
+                role: "guest",
+                miePrenotazioni:undefined,
+                prenotazioni:undefined
+        }}
+})
+createApp(App).use(store).use(router).mount('#app')
+
 import "bootstrap/dist/js/bootstrap.js"

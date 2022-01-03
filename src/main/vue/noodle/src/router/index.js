@@ -21,6 +21,23 @@ const routes = [
     path: '/logout',
     name: 'Logout',
     component: () => import('../views/Logout.vue')
+  },
+  {
+    path: '/prenotazioni',
+    name: 'Prenotazioni',
+    component: () => import('../views/Prenotazioni.vue'),
+    beforeEnter(to, from, next) {
+      if (to.query.username) {
+        next({ name: 'MiePrenotazioni', query: to.query });
+      } else {
+        next();
+      }
+    }
+  },
+  {
+    path: '/prenotazioni',
+    name: 'MiePrenotazioni',
+    component: () => import('../views/MiePrenotazioni.vue')
   }
 ]
 

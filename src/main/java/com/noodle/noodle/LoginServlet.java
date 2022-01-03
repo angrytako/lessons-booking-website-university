@@ -51,7 +51,6 @@ public class LoginServlet extends HttpServlet {
         String pw =  jobj.get("password").getAsString();
         Utente user = DAO.DAO.getUser(username,pw);
         if(user != null) {
-            System.out.println(user.toString());
             HttpSession session=request.getSession();
             session.setAttribute("username",user.getUsername());
             session.setAttribute("role",user.getRuolo());
