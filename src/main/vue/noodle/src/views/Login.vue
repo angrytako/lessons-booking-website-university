@@ -16,20 +16,30 @@
           Insert password
         </div>
         </div>
-      <button class="btn btn-primary" v-on:click.prevent="submit">Login</button>
+      <div id="loginErrorBlock"  ref="loginErrorBlock" class="form-text text-danger"> prop text</div>
+      <button class="btn btn-primary" ref="submitBtn" v-on:click.prevent="submit">Login</button>
     </form>
   </div>
 </template>
 
 <script>
-const showError = (inputElem, alertDivElem) => {
+function showError(alertDivElem, inputElem, message, submitBtn){
   alertDivElem.style.opacity = "1";
-  inputElem.classList.add("border");
-  inputElem.classList.add("border-danger");
+  if(message)
+    alertDivElem.innerText = message;
+  if(inputElem) {
+    inputElem.classList.add("border");
+    inputElem.classList.add("border-danger");
+  }
+  submitBtn.disabled = true;
   setTimeout(
-      () => { alertDivElem.style.opacity = "0";
-        inputElem.classList.remove("border");
-        inputElem.classList.remove("border-danger"); }
+      () => {
+        submitBtn.disabled = false;
+        alertDivElem.style.opacity = "0";
+        if(inputElem){
+          inputElem.classList.remove("border");
+          inputElem.classList.remove("border-danger");
+        } }
       ,2000);
 }
 
@@ -45,14 +55,14 @@ export default {
       if(!this.username){
         const usernameInput = this.$refs.username;
         const usernameAlertDiv =  this.$refs.usernameHelpBlock;
-        showError(usernameInput,usernameAlertDiv);
+        showError(usernameAlertDiv,usernameInput,undefined, this.$refs.submitBtn);
 
         return;
       }
       if(!this.password){
         const passwordInput = this.$refs.password;
         const passwordAlertDiv =  this.$refs.passwordHelpBlock;
-        showError(passwordInput,passwordAlertDiv);
+        showError(passwordAlertDiv, passwordInput, undefined, this.$refs.submitBtn);
         return;
       }
       try {
@@ -64,8 +74,13 @@ export default {
           body: JSON.stringify({username: this.username, password: this.password})
         });
         const res = await response.json();
-        console.log(res);
+        if(!res.error) {
+          window.location.href = "/Noodle_war/";
+        }else{
+          showError(this.$refs.loginErrorBlock,undefined,res.error, this.$refs.submitBtn)
+        }
       }catch (e){
+        showError(this.$refs.loginErrorBlock,undefined,"Unexpected error")
         console.log(e);
       }
     }
@@ -82,13 +97,10 @@ form{
   height: fit-content;
   text-align: center;
 }
-#passwordHelpBlock{
+#passwordHelpBlock,#usernameHelpBlock,#loginErrorBlock{
   opacity: 0;
   transition: opacity 300ms ease-out;
-}#usernameHelpBlock{
-   opacity: 0;
-  transition: opacity 300ms ease-out;
- }
+}
 #login-div{
   width: 100%;
   height: 85vh;

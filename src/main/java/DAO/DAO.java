@@ -26,6 +26,75 @@ public class DAO {
     }
 
     /*
+     *  This method returns a user obj, if a user with a given
+     * username and password exists, null otherwise
+     */
+    public static Utente getUser (String username, String hashedPassword){
+        Utente user= null;
+        try {
+            connectionToDB();
+            Statement utente = conn1.createStatement();
+            ResultSet rs = utente.executeQuery("SELECT username, password, ruolo FROM UTENTE WHERE username = '" + username + "' AND password ='" + hashedPassword +"'");
+            if(rs.next()){
+                user = new Utente(rs.getString("username"),rs.getString("password"),rs.getString("ruolo"));
+            }
+        } catch (SQLException e) {
+            System.out.println("errore di connessione al db: " + e.getMessage());
+        } finally {
+            closeDBConnection();
+            return user;
+        }
+
+    }
+
+    /*
+     *  This method shows all bookings.
+     */
+    public static ArrayList<Prenotazione> queryShowAllPrenotazioniDB() {
+        ArrayList<Prenotazione> out = new ArrayList<>();
+        ResultSet rs = null;
+        try {
+            connectionToDB();
+            st = conn1.createStatement();
+            rs = st.executeQuery("SELECT * FROM PRENOTAZIONE");
+            while (rs.next()) {
+                Prenotazione p = new Prenotazione(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"), rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"));
+                out.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println("errore di connessione al db: " + e.getMessage());
+        } finally {
+            closeResultSet(rs);
+            closeStatement();
+            closeDBConnection();
+        }
+        return out;
+    }
+
+    /*
+     *  This method shows all bookings.
+     */
+    public static ArrayList<Prenotazione> queryShowUserPrenotazioniDB(String username) {
+        ArrayList<Prenotazione> out = new ArrayList<>();
+        ResultSet rs = null;
+        try {
+            connectionToDB();
+            st = conn1.createStatement();
+            rs = st.executeQuery("SELECT * FROM PRENOTAZIONE WHERE UTENTE = \"" + username + "\"" );
+            while (rs.next()) {
+                Prenotazione p = new Prenotazione(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"), rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"));
+                out.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println("errore di connessione al db: " + e.getMessage());
+        } finally {
+            closeResultSet(rs);
+            closeStatement();
+            closeDBConnection();
+        }
+        return out;
+    }
+    /*
      *  This method returns all courses in 'corso' table.
      *  If 'showOnlyDeleted' is false it only shows actived courses.
      *  Otherwise if 'showOnlyDeleted' is true it only shows deleted courses (it is used in 'queryAddCorsoDB' method).
@@ -334,29 +403,7 @@ public class DAO {
         return out;
     }
 
-    /*
-     *  This method shows all bookings.
-     */
-    public static ArrayList<Prenotazione> queryShowAllPrenotazioniDB() {
-        ArrayList<Prenotazione> out = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            connectionToDB();
-            st = conn1.createStatement();
-            rs = st.executeQuery("SELECT * FROM PRENOTAZIONE");
-            while (rs.next()) {
-                Prenotazione p = new Prenotazione(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"), rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"));
-                out.add(p);
-            }
-        } catch (SQLException e) {
-            System.out.println("errore di connessione al db: " + e.getMessage());
-        } finally {
-            closeResultSet(rs);
-            closeStatement();
-            closeDBConnection();
-        }
-        return out;
-    }
+
 
     /*
      *  This method adds a booking in 'prenotazione' table.
@@ -507,27 +554,7 @@ public class DAO {
     }
 
 
-    /*
-     *  This method returns a user obj, if a user with a given
-     * username and password exists, null otherwise
-     */
-    public static Utente getUser (String username, String hashedPassword){
-        Utente user= null;
-        try {
-            connectionToDB();
-            Statement utente = conn1.createStatement();
-            ResultSet rs = utente.executeQuery("SELECT username, password, ruolo FROM UTENTE WHERE username = '" + username + "'"
-                                            + " AND password ='" + password +"'");
-            if(rs.next()){
-                user = new Utente(rs.getString("username"),rs.getString("password"),rs.getString("ruolo"));
-            }
-        } catch (SQLException e) {
-            System.out.println("errore di connessione al db: " + e.getMessage());
-        } finally {
-            closeDBConnection();
-        }
-        return user;
-    }
+
     /*
      *  This method opens database connection.
      */

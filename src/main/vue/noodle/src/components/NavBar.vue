@@ -2,21 +2,16 @@
 <ul>
   <router-link id="logo" :to="{ name:'Home' }"><img alt="logo"  src="../assets/logo.png"></router-link>
   <li><router-link :to="{ name:'Home' }">Home page</router-link></li>
-  <li v-if="userType == 'guest'"><router-link :to="{ name:'Login' }">Login</router-link></li>
-  <li v-if="userType != 'guest'"><router-link :to="{ name:'Logout' }">Mie Prenotazioni</router-link></li>
-  <li v-if="userType != 'guest'"><router-link :to="{ name:'Logout' }">Logout</router-link></li>
+  <li v-if="$store.state.role == 'guest'"><router-link :to="{ name:'Login' }">Login</router-link></li>
+  <li v-if="$store.state.role != 'guest'"><router-link :to="{ name:'MiePrenotazioni', query:{username: $store.state.username} }">Mie Prenotazioni</router-link></li>
+  <li v-if="$store.state.role == 'amministratore'"><router-link :to="{ name:'Prenotazioni' }">Prenotazioni</router-link></li>
+  <li v-if="$store.state.role != 'guest'"><router-link :to="{ name:'Logout' }">Logout</router-link></li>
 </ul>
 </template>
 
 <script>
 export default {
-  name: "NavBar",
-  props:{
-    userType:{
-      type:String,
-      default:"guest"
-    }
-  }
+  name: "NavBar"
 }
 </script>
 
