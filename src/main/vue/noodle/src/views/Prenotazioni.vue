@@ -1,6 +1,7 @@
 <template>
 <ul>
-  <li v-for="prenotazione in $store.state.prenotazioni" :key="prenotazione.utente + prenotazione.docente + prenotazione.giorno + prenotazione.ora">
+  <li v-for="prenotazione in $store.state.prenotazioni" :key="prenotazione.utente +
+  prenotazione.docente + prenotazione.giorno + prenotazione.ora">
     <div class="prenotazione">
       <div class="corso">{{prenotazione.corso}}</div>
       <div class="utente">{{prenotazione.utente}}</div>

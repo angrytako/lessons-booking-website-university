@@ -190,6 +190,7 @@ public class DAO {
             rs = st.executeQuery("SELECT * FROM DOCENTE WHERE rimosso = false");
             while (rs.next()){
                 Docente doc = new Docente(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getBoolean("rimosso"));
+                out.add(doc);
             }
         } catch (SQLException e) {
             System.out.println("errore di connessione al db: " + e.getMessage());

@@ -38,6 +38,11 @@ const routes = [
     path: '/prenotazioni',
     name: 'MiePrenotazioni',
     component: () => import('../views/MiePrenotazioni.vue')
+  },
+  {
+    path: '/professori',
+    name: 'Professori',
+    component: () => import('../views/Professori.vue')
   }
 ]
 
