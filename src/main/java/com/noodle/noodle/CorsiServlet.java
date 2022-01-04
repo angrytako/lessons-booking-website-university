@@ -13,8 +13,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 
-@WebServlet(name = "ProfessoriServlet", value = "/ProfessoriServlet")
-public class ProfessoriServlet extends HttpServlet {
+@WebServlet(name = "CorsiServlet", value = "/CorsiServlet")
+public class CorsiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = jsonResponseSetup(response);
@@ -24,9 +24,9 @@ public class ProfessoriServlet extends HttpServlet {
         }
 
         if (isAuthorized(request)){
-            ArrayList<DAO.Docente> professori = DAO.DAO.queryShowAllDocentiDB();
-           // System.out.println(professori);
-            out.print(professoreToJson(professori));
+            ArrayList<DAO.Corso> corsi = DAO.DAO.queryShowAllCoursesDB(false);
+            System.out.println(corsi);
+            out.print(professoreToJson(corsi));
             response.setStatus(200);
         }
         else{
@@ -64,9 +64,9 @@ public class ProfessoriServlet extends HttpServlet {
         else return false;
     }
 
-    private String professoreToJson(ArrayList<DAO.Docente> docenti){
+    private String professoreToJson(ArrayList<DAO.Corso> corsi){
         Gson gson = new Gson();
-        return gson.toJson(docenti);
+        return gson.toJson(corsi);
     }
 
 }
