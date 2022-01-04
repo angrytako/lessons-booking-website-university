@@ -1,4 +1,4 @@
-package com.noodle.noodle;
+package com.servlet;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

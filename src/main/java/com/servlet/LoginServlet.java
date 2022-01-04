@@ -1,4 +1,4 @@
-package com.noodle.noodle;
+package com.servlet;
 
 import DAO.Utente;
 import com.google.gson.Gson;
@@ -16,7 +16,7 @@ import javax.servlet.annotation.*;
 
 @WebServlet(name = "loginServlet", value = "/loginServlet")
 public class LoginServlet extends HttpServlet {
-
+	// non più necessario credo --> tanto si deve già fare nell'AvailableSlotsServlet
 	public void init(ServletConfig config) {
 		try {
 			super.init(config);

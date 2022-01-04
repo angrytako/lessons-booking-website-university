@@ -34,11 +34,9 @@ INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneIII',9);
 INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura_degli_elaboratori',2);
 INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura_degli_elaboratori',4);
 
-
 INSERT INTO `utente`(username,password,ruolo) VALUES ('ToneTuga','superpwd','amministratore');
 INSERT INTO `utente`(username,password,ruolo) VALUES ('Lorenzo','loripwd','cliente');
-    INSERT INTO `utente`(username,password,ruolo) VALUES ('Anna','ninapwd','cliente');
-
+INSERT INTO `utente`(username,password,ruolo) VALUES ('Anna','ninapwd','cliente');
 
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
 VALUES ('Sicurezza',5,'ToneTuga','attiva',1,1);
