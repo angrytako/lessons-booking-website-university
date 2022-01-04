@@ -3,15 +3,18 @@ import App from './App.vue'
 import router from './router'
 import { createStore } from 'vuex'
 import "bootstrap/dist/css/bootstrap.min.css"
-const store = createStore({
+import { realState,lorenzo } from "@/mockUserData";
+
+export const store = createStore({
 
         state: function(){
-            return {
-                username:undefined,
-                role: "guest",
-                miePrenotazioni:undefined,
-                prenotazioni:undefined
-        }}
+            return realState },
+        logout: function (){
+                this.username = undefined;
+                this.role = "guest";
+                this.miePrenotazioni = undefined;
+                this.prenotazioni = undefined
+        }
 })
 createApp(App).use(store).use(router).mount('#app')
 

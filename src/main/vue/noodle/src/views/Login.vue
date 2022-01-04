@@ -75,7 +75,7 @@ export default {
         });
         const res = await response.json();
         if(!res.error) {
-          window.location.href = "/Noodle_war/";
+          this.$router.push({name:"Home"});
         }else{
           showError(this.$refs.loginErrorBlock,undefined,res.error, this.$refs.submitBtn)
         }

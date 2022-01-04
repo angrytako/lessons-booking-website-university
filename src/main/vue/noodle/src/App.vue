@@ -9,7 +9,6 @@ import NavBar from "@/components/NavBar";
 async function getUserInfo() {
   try {
     const response = await fetch("/Noodle_war/MyInfoServlet");
-    console.log(response);
     return await response.json();
   }catch (e){
     console.log(e);
@@ -27,7 +26,6 @@ export default {
         return;
       }
       try {
-        console.log( this.$store.role);
         if(userInfo) {
           this.$store.state.role = userInfo.role ? userInfo.role : "guest";
           this.$store.state.username = userInfo.username ? userInfo.username : undefined;

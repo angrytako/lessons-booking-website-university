@@ -8,11 +8,13 @@ export default {
   async mounted() {
     try {
       await fetch("/Noodle_war/LogoutServlet");
+      this.$store.logout();
     }
     catch (e){
       console.log(e);
     }
-    window.location.replace("/Noodle_war/");
+    this.$router.push({name:"Home"});
+//    window.location.replace("/Noodle_war/");
   }
 }
 </script>
