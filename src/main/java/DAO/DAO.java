@@ -48,17 +48,18 @@ public class DAO {
     }
 
     /*
-     *  This method shows all bookings.
+     *  This method shows all bookings with the role, since is important.
      */
-    public static ArrayList<Prenotazione> queryShowAllPrenotazioniDB() {
-        ArrayList<Prenotazione> out = new ArrayList<>();
+    public static ArrayList<PrenotazioneConRuolo> queryShowAllPrenotazioniDB() {
+        ArrayList<PrenotazioneConRuolo> out = new ArrayList<>();
         ResultSet rs = null;
         try {
             connectionToDB();
             st = conn1.createStatement();
-            rs = st.executeQuery("SELECT * FROM PRENOTAZIONE");
+            rs = st.executeQuery("SELECT * FROM PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME");
             while (rs.next()) {
-                Prenotazione p = new Prenotazione(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"), rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"));
+                PrenotazioneConRuolo p = new PrenotazioneConRuolo(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"),
+                                rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
                 out.add(p);
             }
         } catch (SQLException e) {

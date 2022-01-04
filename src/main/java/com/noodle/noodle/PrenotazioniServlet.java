@@ -1,5 +1,7 @@
 package com.noodle.noodle;
 
+import DAO.Prenotazione;
+import DAO.PrenotazioneConRuolo;
 import com.google.gson.Gson;
 
 import javax.servlet.*;
@@ -8,7 +10,9 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "PrenotazioniServlet", value = "/PrenotazioniServlet")
 public class PrenotazioniServlet extends HttpServlet {
@@ -40,8 +44,9 @@ public class PrenotazioniServlet extends HttpServlet {
            return;
        }else{
            if(isAuthorized(request)) {
-               ArrayList<DAO.Prenotazione> prenotazioni = DAO.DAO.queryShowAllPrenotazioniDB();
-               out.print(prenotazioniToJson(prenotazioni));
+               ArrayList<DAO.PrenotazioneConRuolo> prenotazioni = DAO.DAO.queryShowAllPrenotazioniDB();
+               ArrayList<DAO.Prenotazione> prenotazioniFiltered = filterAdmin(prenotazioni);
+               out.print(prenotazioniToJson(prenotazioniFiltered));
                response.setStatus(200);
 
            }
@@ -79,6 +84,16 @@ public class PrenotazioniServlet extends HttpServlet {
     private String prenotazioniToJson(ArrayList<DAO.Prenotazione> prenotazioni){
         Gson gson = new Gson();
         return gson.toJson(prenotazioni);
+    }
+    private ArrayList<DAO.Prenotazione> filterAdmin(ArrayList<DAO.PrenotazioneConRuolo> prenotazioni){
+        List<PrenotazioneConRuolo> prenotazioniFiltered =   prenotazioni.stream()
+                                                            .filter((prenotazione) -> !prenotazione.getRuolo().equals("amministratore"))
+                                                            .collect(Collectors.toList());
+        ArrayList<DAO.Prenotazione> result = new ArrayList<>() ;
+        for(PrenotazioneConRuolo p : prenotazioniFiltered)
+            result.add(new Prenotazione(p.getCorso(),p.getIdDocente(),p.getUtente(),p.getStato(),p.getGiorno(),p.getOrario()));
+        return result;
+
     }
     private boolean hasSession(HttpServletRequest request){
         HttpSession session = request.getSession();
