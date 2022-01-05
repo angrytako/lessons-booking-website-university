@@ -1,5 +1,5 @@
 <template>
- ---------------------------------------- I Prof: --------------------------
+I Prof:
   <ul>
     <li v-for="docente in $store.state.professori" :key="docente.id + docente.nome + docente.cognome">
       <div class="docente">

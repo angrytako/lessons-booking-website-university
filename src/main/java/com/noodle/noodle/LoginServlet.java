@@ -15,7 +15,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
 @WebServlet(name = "loginServlet", value = "/loginServlet")
-public class LoginServlet extends HttpServlet {
+public class LoginServlet extends SecuredHttpServlet {
 
     public void init(ServletConfig config) {
         try {

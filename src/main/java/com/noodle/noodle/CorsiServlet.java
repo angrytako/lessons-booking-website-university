@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 
 @WebServlet(name = "CorsiServlet", value = "/CorsiServlet")
-public class CorsiServlet extends HttpServlet {
+public class CorsiServlet extends SecuredHttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = jsonResponseSetup(response);
@@ -38,31 +38,7 @@ public class CorsiServlet extends HttpServlet {
 
     }
 
-    private PrintWriter jsonResponseSetup(HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        response.setCharacterEncoding("UTF-8");
-        return out;
-    }
-    private boolean hasSession(HttpServletRequest request){
-        HttpSession session = request.getSession();
-        if(session != null && session.getAttribute("username")!=null && session.getAttribute("role")!=null)
-            return true;
-        else return false;
-    }
-    private void json401ErrorResponse(HttpServletResponse response,PrintWriter out) throws IOException {
-        out.print("{\"error\":\"not authorized\"}");
-        response.setStatus(401);
-        out.flush();
-        return;
-    }
-
-    private boolean isAuthorized(HttpServletRequest request){
-        HttpSession session = request.getSession();
-        if(((String)session.getAttribute("role")).equals("amministratore"))
-            return true;
-        else return false;
-    }
+   
 
     private String professoreToJson(ArrayList<DAO.Corso> corsi){
         Gson gson = new Gson();
