@@ -8,7 +8,7 @@ import { realState,lorenzo } from "@/mockUserData";
 export const store = createStore({
 
         state: function(){
-            return realState },
+            return lorenzo },
         logout: function (){
                 this.username = undefined;
                 this.role = "guest";
