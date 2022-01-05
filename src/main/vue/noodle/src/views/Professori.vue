@@ -6,7 +6,7 @@ I Prof:
         <div class="id">{{docente.id}}</div>
         <div class="nome">{{docente.nome}}</div>
         <div class="cognome">{{docente.cognome}}</div>
-        <div class="elimina" onclick="eliminaDocente()">Elimina</div>
+        <div class="elimina" v-on:click="eliminaDocente(docente.id)">Elimina</div>
       </div>
 
     </li>
@@ -27,6 +27,7 @@ I Prof:
     <li v-for="corso in $store.state.corsi" :key="corso.materia ">
       <div class="corso">
         <div class="id">{{corso.materia}}</div>
+        <div class="elimina" v-on:click="eliminaCorso(corso.materia)">Elimina</div>
       </div>
     </li>
     <li>
@@ -48,9 +49,45 @@ I Prof:
 
 <script>
 
-
 async function eliminaDocente(id) {
-  console.log(id);
+  try {
+    const response = await fetch("/Noodle_war/ProfessoriServlet", {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({docente: id})
+    });
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    this.$store.state.professori=this.$store.state.professori.filter(professore=>professore.id!=id);
+
+    // window.location.reload();
+  }catch (e){
+    console.log(e);
+  }
+}
+async function eliminaCorso(materia) {
+  try {
+    const response = await fetch("/Noodle_war/CorsiServlet", {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({corso: materia})
+    });
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    this.$store.state.corsi=this.$store.state.corsi.filter(corso=>corso.materia!=materia);
+
+    // window.location.reload();
+  }catch (e){
+    console.log(e);
+  }
 }
 
 async function getProfessori() {
@@ -94,6 +131,9 @@ async function getProfessori() {
       docenteCognome: undefined
     }},
     methods:{
+      eliminaDocente,
+      eliminaCorso,
+
       submitCorso: async function(e){
         try {
           const response = await fetch("/Noodle_war/CorsiServlet", {
@@ -103,7 +143,7 @@ async function getProfessori() {
             },
             body: JSON.stringify({corso: this.corso})
           });
-          window.location.reload();
+          this.$store.state.corsi.push({materia: this.corso});
         }catch (e){
           console.log(e);
         }
@@ -118,7 +158,11 @@ async function getProfessori() {
             },
             body: JSON.stringify({nome: this.docenteNome,cognome: this.docenteCognome})
           });
-          window.location.reload();
+          const docenteResponse = await response.json();
+
+          this.$store.state.professori.push({id:docenteResponse.id, nome: this.docenteNome,cognome: this.docenteCognome});
+
+          //window.location.reload();
         }catch (e){
           console.log(e);
         }
