@@ -10,7 +10,9 @@ const store = createStore({
                 username:undefined,
                 role: "guest",
                 miePrenotazioni:undefined,
-                prenotazioni:undefined
+                prenotazioni:undefined,
+                professori:undefined,
+                corsi:undefined
         }}
 })
 createApp(App).use(store).use(router).mount('#app')
