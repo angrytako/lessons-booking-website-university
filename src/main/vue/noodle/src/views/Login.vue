@@ -48,7 +48,7 @@ export default {
   data(){
     return {
       username: undefined,
-      password: undefined
+      password: undefined,
     }},
   methods:{
     submit: async function(e){
@@ -75,7 +75,9 @@ export default {
         });
         const res = await response.json();
         if(!res.error) {
-           this.$router.push({name:"Home"});
+          this.$store.state.username = res.username;
+          this.$store.state.role = res.role;
+          this.$router.push({name:"Home"});
         }else{
           showError(this.$refs.loginErrorBlock,undefined,res.error, this.$refs.submitBtn)
         }

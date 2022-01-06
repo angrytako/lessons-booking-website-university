@@ -13,8 +13,9 @@ export default {
     catch (e){
       console.log(e);
     }
+    this.$store.state.username = undefined;
+    this.$store.state.role = "guest";
     this.$router.push({name:"Home"});
-//    window.location.replace("/Noodle_war/");
   }
 }
 </script>

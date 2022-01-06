@@ -32,7 +32,6 @@ public class LoginServlet extends HttpServlet {
 */
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		System.out.println("Mi sto eseguendo");
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		response.setCharacterEncoding("UTF-8");
@@ -53,9 +52,10 @@ public class LoginServlet extends HttpServlet {
 		Utente user = DAO.DAO.getUser(username, pw);
 		if (user != null) {
 			HttpSession session = request.getSession();
+			System.out.println(user.getRuolo());
 			session.setAttribute("username", user.getUsername());
 			session.setAttribute("role", user.getRuolo());
-			System.out.println(jobj);
+			jobj.addProperty("role",user.getRuolo());
 			out.print(jobj.toString());
 			response.setStatus(200);
 		} else {
