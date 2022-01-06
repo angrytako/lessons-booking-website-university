@@ -198,7 +198,7 @@ public class DAO {
 			st = conn1.createStatement();
 			st.executeUpdate("UPDATE CORSO SET rimosso = true WHERE materia = '" + materia + "'");
 			st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + materia + "'");
-			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '" + materia + "'");
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '" + materia + "' AND stato = 'attiva'");
 		} catch (SQLException e) {
 			System.out.println("errore di connessione al db: " + e.getMessage());
 			queryResult = false;
@@ -290,7 +290,7 @@ public class DAO {
 			st = conn1.createStatement();
 			st.executeUpdate("UPDATE DOCENTE SET rimosso = true WHERE id = " + idDoc);
 			st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE docente = " + idDoc);
-			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE docente = " + idDoc);
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE docente = " + idDoc + " AND stato = 'attiva'");
 		} catch (SQLException e) {
 			System.out.println("errore di connessione al db: " + e.getMessage());
 			queryResult = false;
@@ -402,8 +402,8 @@ public class DAO {
 		try {
 			connectionToDB();
 			st = conn1.createStatement();
-			st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' and docente = " + idDoc);
-			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '" + course + "' and docente = " + idDoc);
+			st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' AND docente = " + idDoc);
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '" + course + "' AND docente = " + idDoc + "AND stato = 'attiva'");
 		} catch (SQLException e) {
 			System.out.println("errore di connessione al db: " + e.getMessage());
 			queryResult = false;
