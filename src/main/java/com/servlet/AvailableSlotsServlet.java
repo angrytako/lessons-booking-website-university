@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 
 @WebServlet(name = "AvailableSlotsServlet", value = "/AvailableSlotsServlet")
-public class AvailableSlotsServlet extends HttpServlet {
+public class AvailableSlotsServlet extends SecuredHttpServlet {
 
 	public void init(ServletConfig config) {
 		try {
@@ -52,15 +52,8 @@ public class AvailableSlotsServlet extends HttpServlet {
 		return gson.toJson(slots);
 	}
 
-	/*
-	 * serve per dire che sto mandando json nella risposta --> chiave content-type, valore application/json
-	 */
-	private PrintWriter jsonResponseSetup(HttpServletResponse response) throws IOException {
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();
-		response.setCharacterEncoding("UTF-8");
-		return out;
-	}
+
+
 
 	/*
 	 *  This method shows all available slots.

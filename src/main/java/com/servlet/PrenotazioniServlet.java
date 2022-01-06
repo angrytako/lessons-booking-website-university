@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "PrenotazioniServlet", value = "/PrenotazioniServlet")
-public class PrenotazioniServlet extends HttpServlet {
+public class PrenotazioniServlet extends SecuredHttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = jsonResponseSetup(response);
@@ -69,18 +69,7 @@ public class PrenotazioniServlet extends HttpServlet {
 		}
 	}
 
-	private PrintWriter jsonResponseSetup(HttpServletResponse response) throws IOException {
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();
-		response.setCharacterEncoding("UTF-8");
-		return out;
-	}
-	private void json401ErrorResponse(HttpServletResponse response,PrintWriter out) throws IOException {
-		out.print("{\"error\":\"not authorized\"}");
-		response.setStatus(401);
-		out.flush();
-		return;
-	}
+
 	private String prenotazioniToJson(ArrayList<DAO.Prenotazione> prenotazioni){
 		Gson gson = new Gson();
 		return gson.toJson(prenotazioni);
@@ -95,23 +84,5 @@ public class PrenotazioniServlet extends HttpServlet {
 		return result;
 
 	}
-	private boolean hasSession(HttpServletRequest request){
-		HttpSession session = request.getSession();
-		if(session != null && session.getAttribute("username")!=null && session.getAttribute("role")!=null)
-			return true;
-		else return false;
-	}
-	private boolean isAuthorized(HttpServletRequest request, String requestedUsername){
-		HttpSession session = request.getSession();
-		System.out.println(((String)session.getAttribute("username")).equals(requestedUsername));
-		if(((String)session.getAttribute("role")).equals("amministratore") || session.getAttribute("username").equals(requestedUsername))
-			return true;
-		else return false;
-	}
-	private boolean isAuthorized(HttpServletRequest request){
-		HttpSession session = request.getSession();
-		if(((String)session.getAttribute("role")).equals("amministratore"))
-			return true;
-		else return false;
-	}
+
 }

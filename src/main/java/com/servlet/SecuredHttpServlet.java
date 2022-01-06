@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class SecuredHttpServlet extends HttpServlet {
-
+    /*
+     * serve per dire che sto mandando json nella risposta --> chiave content-type, valore application/json
+     */
     protected PrintWriter jsonResponseSetup(HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
