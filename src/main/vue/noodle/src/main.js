@@ -13,7 +13,9 @@ export const store = createStore({
                 this.username = undefined;
                 this.role = "guest";
                 this.miePrenotazioni = undefined;
-                this.prenotazioni = undefined
+                this.prenotazioni = undefined;
+                this.professori=undefined;
+                this.corsi=undefined;
         }
 })
 createApp(App).use(store).use(router).mount('#app')

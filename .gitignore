@@ -6,4 +6,4 @@
 /target/
 /src/main/vue/noodle/package-lock.json
 /.idea
-/package-lock.json
+src/main/vue/noodle/package-lock.json

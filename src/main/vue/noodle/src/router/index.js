@@ -56,6 +56,11 @@ const routes = [
     //     next({ name: 'Login'});
     //   else next();
     // }
+  },
+  {
+    path: '/professori',
+    name: 'Professori',
+    component: () => import('../views/Professori.vue')
   }
 ]
 
