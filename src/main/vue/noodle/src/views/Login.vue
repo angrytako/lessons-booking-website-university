@@ -61,32 +61,27 @@ export default {
                 const usernameAlertDiv = this.$refs.usernameHelpBlock;
                 showError(usernameAlertDiv, usernameInput, undefined, this.$refs.submitBtn);
 
-                return;
-            }
-            if (!this.password) {
-                const passwordInput = this.$refs.password;
-                const passwordAlertDiv = this.$refs.passwordHelpBlock;
-                showError(passwordAlertDiv, passwordInput, undefined, this.$refs.submitBtn);
-                return;
-            }
-            try {
-                const response = await fetch("/Noodle_war/loginServlet", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({username: this.username, password: this.password})
-                });
-                const res = await response.json();
-                if (!res.error) {
-                    window.location.href = "/Noodle_war/";
-                } else {
-                    showError(this.$refs.loginErrorBlock, undefined, res.error, this.$refs.submitBtn)
-                }
-            } catch (e) {
-                showError(this.$refs.loginErrorBlock, undefined, "Unexpected error")
-                console.log(e);
-            }
+        return;
+      }
+      if(!this.password){
+        const passwordInput = this.$refs.password;
+        const passwordAlertDiv =  this.$refs.passwordHelpBlock;
+        showError(passwordAlertDiv, passwordInput, undefined, this.$refs.submitBtn);
+        return;
+      }
+      try {
+        const response = await fetch("/Noodle_war/loginServlet", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({username: this.username, password: this.password})
+        });
+        const res = await response.json();
+        if(!res.error) {
+          this.$router.push({name:"Home"});
+        }else{
+          showError(this.$refs.loginErrorBlock,undefined,res.error, this.$refs.submitBtn)
         }
     }
 }

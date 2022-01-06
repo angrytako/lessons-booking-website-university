@@ -49,6 +49,7 @@ public class DAO {
 	 *  This method returns all bookings.
 	 *  If 'showAlsoDeleted' is true it shows all bookings.
 	 *  Otherwise if 'showAlsoDeleted' is false it only shows active or effectuated bookings.
+	 * anna
 	 */
 	public static ArrayList<Prenotazione> queryShowAllPrenotazioniDB(boolean showAlsoDeleted) {
 		ArrayList<Prenotazione> out = new ArrayList<>();
@@ -73,6 +74,32 @@ public class DAO {
 		}
 		return out;
 	}
+
+	/*
+     *  This method shows all bookings with the role, since is important.
+	 * lorenzo
+     */
+    public static ArrayList<PrenotazioneConRuolo> queryShowAllPrenotazioniDB() {
+        ArrayList<PrenotazioneConRuolo> out = new ArrayList<>();
+        ResultSet rs = null;
+        try {
+            connectionToDB();
+            st = conn1.createStatement();
+            rs = st.executeQuery("SELECT * FROM PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME");
+            while (rs.next()) {
+                PrenotazioneConRuolo p = new PrenotazioneConRuolo(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"),
+                                rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
+                out.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println("errore di connessione al db: " + e.getMessage());
+        } finally {
+            closeResultSet(rs);
+            closeStatement();
+            closeDBConnection();
+        }
+        return out;
+    }
 
 	/*
 	 *  This method shows all user's bookings.

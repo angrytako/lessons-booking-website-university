@@ -6,6 +6,13 @@
 <script>
 
 import NavBar from "@/components/NavBar";
+async function getUserInfo() {
+  try {
+    const response = await fetch("/Noodle_war/MyInfoServlet");
+    return await response.json();
+  }catch (e){
+    console.log(e);
+  }
 
 async function getUserInfo() {
     try {
@@ -18,23 +25,19 @@ async function getUserInfo() {
 }
 
 export default {
-    components: {NavBar},
-    async created() {
-        let userInfo;
-        try {
-            userInfo = await getUserInfo();
-        } catch (e) {
-            console.log(e);
-            return;
-        }
-        try {
-            console.log(this.$store.role);
-            if (userInfo) {
-                this.$store.state.role = userInfo.role ? userInfo.role : "guest";
-                this.$store.state.username = userInfo.username ? userInfo.username : undefined;
-            }
-        } catch (e) {
-            console.log(e);
+  components: {NavBar},
+ async created() {
+      let userInfo;
+      try {
+          userInfo = await getUserInfo();
+      } catch (e){
+        console.log(e);
+        return;
+      }
+      try {
+        if(userInfo) {
+          this.$store.state.role = userInfo.role ? userInfo.role : "guest";
+          this.$store.state.username = userInfo.username ? userInfo.username : undefined;
         }
     }
 }
