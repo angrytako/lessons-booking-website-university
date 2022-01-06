@@ -34,14 +34,16 @@ const routes = [
     name: 'Prenotazioni',
     component: () => import('../views/Prenotazioni.vue'),
     beforeEnter (to, from, next) {
-      //check authentication
-      // if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" ) {
-      //   next({name: 'Login'});
-      //   return;
-      // }
+
       if (to.query.username) {
         next({ name: 'MiePrenotazioni', query: to.query });
+        return;
       } else {
+        //check authentication
+        if(!store.state.role || store.state.role != "amministratore" ) {
+          next({name: 'Login'});
+          return;
+        }
         next();
       }
     }
@@ -50,12 +52,12 @@ const routes = [
     path: '/prenotazioni',
     name: 'MiePrenotazioni',
     component: () => import('../views/MiePrenotazioni.vue'),
-    // beforeEnter(to, from, next) {
-    //   //check authentication
-    //   if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
-    //     next({ name: 'Login'});
-    //   else next();
-    // }
+    beforeEnter(to, from, next) {
+      //check authentication
+      if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
+        next({ name: 'Login'});
+      else next();
+    }
   }
 ]
 

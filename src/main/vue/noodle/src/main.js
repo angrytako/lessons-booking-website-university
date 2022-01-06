@@ -3,12 +3,14 @@ import App from './App.vue'
 import router from './router'
 import { createStore } from 'vuex'
 import "bootstrap/dist/css/bootstrap.min.css"
-import { realState,lorenzo } from "@/mockUserData";
+import { realState, lorenzo } from "@/mockUserData";
 
 export const store = createStore({
 
         state: function(){
-            return lorenzo },
+            return lorenzo
+        },
+
         logout: function (){
                 this.username = undefined;
                 this.role = "guest";

@@ -128,6 +128,7 @@ export default {
   background-color: gray;
   z-index: 2;
 }
+
 #labels{
   background-color: aqua;
   height: 40px;
