@@ -17,7 +17,7 @@ import javax.servlet.annotation.*;
 @WebServlet(name = "loginServlet", value = "/loginServlet")
 public class LoginServlet extends HttpServlet {
 	// non più necessario credo --> tanto si deve già fare nell'AvailableSlotsServlet
-	public void init(ServletConfig config) {
+	/*public void init(ServletConfig config) {
 		try {
 			super.init(config);
 			ServletContext ctx = config.getServletContext();
@@ -29,9 +29,10 @@ public class LoginServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-
+*/
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		System.out.println("Mi sto eseguendo");
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		response.setCharacterEncoding("UTF-8");
@@ -54,6 +55,7 @@ public class LoginServlet extends HttpServlet {
 			HttpSession session = request.getSession();
 			session.setAttribute("username", user.getUsername());
 			session.setAttribute("role", user.getRuolo());
+			System.out.println(jobj);
 			out.print(jobj.toString());
 			response.setStatus(200);
 		} else {

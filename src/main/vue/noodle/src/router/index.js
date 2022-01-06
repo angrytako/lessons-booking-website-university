@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import  {store} from "../main.js"
 
@@ -22,12 +22,12 @@ const routes = [
     path: '/logout',
     name: 'Logout',
     component: () => import('../views/Logout.vue'),
-    beforeEnter(to, from, next) {
+    /*beforeEnter(to, from, next) {
       //check authentication
-        if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
-            next({ name: 'Login'});
-        else next();
-}
+      if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
+        next({ name: 'Login'});
+      else next();
+    }*/
   },
   {
     path: '/prenotazioni',
@@ -35,10 +35,10 @@ const routes = [
     component: () => import('../views/Prenotazioni.vue'),
     beforeEnter (to, from, next) {
       //check authentication
-      if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" ) {
-        next({name: 'Login'});
-        return;
-      }
+      // if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" ) {
+      //   next({name: 'Login'});
+      //   return;
+      // }
       if (to.query.username) {
         next({ name: 'MiePrenotazioni', query: to.query });
       } else {
@@ -50,18 +50,18 @@ const routes = [
     path: '/prenotazioni',
     name: 'MiePrenotazioni',
     component: () => import('../views/MiePrenotazioni.vue'),
-    beforeEnter(to, from, next) {
-      //check authentication
-      if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
-        next({ name: 'Login'});
-      else next();
-    }
+    // beforeEnter(to, from, next) {
+    //   //check authentication
+    //   if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
+    //     next({ name: 'Login'});
+    //   else next();
+    // }
   }
 ]
 
 const router = createRouter({
-	history: createWebHistory(process.env.BASE_URL),
-	routes
+  history: createWebHistory(process.env.BASE_URL),
+  routes
 })
 
 export default router
