@@ -60,8 +60,12 @@ public class CorsiServlet extends SecuredHttpServlet {
             String addCorso =  jobj.get("corso").getAsString();
             if (addCorso!=null)
             {
-                DAO.DAO.queryAddCorsoDB(addCorso);
-                resp.setStatus(200);
+                if(DAO.DAO.queryAddCorsoDB(addCorso)) resp.setStatus(200);
+                else {
+                    out.print("{\"error\":\"not had corso\"}");
+                    resp.setStatus(401);
+                }
+
             }
             else {
                 out.print("{\"error\":\"not had corso\"}");resp.setStatus(401);

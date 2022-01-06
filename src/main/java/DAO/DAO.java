@@ -234,6 +234,32 @@ public class DAO {
 	}
 
 	/*
+	 *  This method returns one specific teacher in 'docente' table with 'rimosso' variable set to false.
+	 */
+	public static int queryShowOneDocenteDB(String nome, String cognome) {
+		int id = -1;
+		ResultSet rs = null;
+		try {
+			connectionToDB();
+			st = conn1.createStatement();
+			rs = st.executeQuery("SELECT id FROM DOCENTE WHERE rimosso = false and nome='"+
+										nome+"' and cognome ='"+cognome+"' order by id desc limit 1");
+			while (rs.next()) {
+			id=rs.getInt("id");
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeResultSet(rs);
+			closeStatement();
+			closeDBConnection();
+		}
+		return id;
+	}
+
+
+
+	/*
 	 *  This method adds a teacher in 'docente' table.
 	 */
 	public static boolean queryAddDocenteDB(String nome, String cognome) {

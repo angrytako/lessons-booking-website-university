@@ -63,11 +63,21 @@ public class ProfessoriServlet extends SecuredHttpServlet {
 
             if (nome!=null&&cognome!=null)
             {
-                DAO.DAO.queryAddDocenteDB(nome,cognome);
-                resp.setStatus(200);
+                if(DAO.DAO.queryAddDocenteDB(nome,cognome)){
+                    int id = DAO.DAO.queryShowOneDocenteDB(nome, cognome);
+                    if (id!=-1){
+                        jobj.addProperty("id",id);
+                        out.print(jobj.toString());
+                        resp.setStatus(200);
+                    }else{
+                        out.print("{\"error\":\"error search id\"}");resp.setStatus(401);
+                    }
+                }else{
+                    out.print("{\"error\":\"error query\"}");resp.setStatus(401);
+                }
             }
             else {
-                out.print("{\"error\":\"not had corso\"}");resp.setStatus(401);
+                out.print("{\"error\":\"error in nome,cognome\"}");resp.setStatus(401);
             }
 
         }else{
@@ -75,7 +85,6 @@ public class ProfessoriServlet extends SecuredHttpServlet {
         }
 
         out.flush();
-
     }
 
 

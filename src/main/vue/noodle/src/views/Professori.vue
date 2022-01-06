@@ -143,7 +143,11 @@ async function getProfessori() {
             },
             body: JSON.stringify({corso: this.corso})
           });
-          this.$store.state.corsi.push({materia: this.corso});
+          if(response.status == 401){
+            console.log("Errore nella servlet post corso");
+          }else {
+            this.$store.state.corsi.push({materia: this.corso});
+          }
         }catch (e){
           console.log(e);
         }
@@ -158,11 +162,15 @@ async function getProfessori() {
             },
             body: JSON.stringify({nome: this.docenteNome,cognome: this.docenteCognome})
           });
-          const docenteResponse = await response.json();
+          if(response.status == 401){
+            console.log("Errore nella servlet post docente");
+          }else{
+            const docenteResponse = await response.json();
+            this.$store.state.professori.push({id:docenteResponse.id, nome: this.docenteNome,cognome: this.docenteCognome});
+          }
 
-          this.$store.state.professori.push({id:docenteResponse.id, nome: this.docenteNome,cognome: this.docenteCognome});
 
-          //window.location.reload();
+
         }catch (e){
           console.log(e);
         }
