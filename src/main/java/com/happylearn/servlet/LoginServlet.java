@@ -1,6 +1,7 @@
-package com.servlet;
+package com.happylearn.servlet;
 
-import DAO.Utente;
+import com.happylearn.DAO.DAO;
+import com.happylearn.DAO.Utente;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -8,9 +9,6 @@ import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
@@ -49,7 +47,7 @@ public class LoginServlet extends HttpServlet {
 		// 1. JSON file to Java object
 		String username = jobj.get("username").getAsString();
 		String pw = jobj.get("password").getAsString();
-		Utente user = DAO.DAO.getUser(username, pw);
+		Utente user = DAO.getUser(username, pw);
 		if (user != null) {
 			HttpSession session = request.getSession();
 			System.out.println(user.getRuolo());

@@ -1,4 +1,4 @@
-package DAO;
+package com.happylearn.DAO;
 
 public class Insegnamento {
 	private String corso;

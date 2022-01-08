@@ -1,4 +1,4 @@
-package com.servlet;
+package com.happylearn.servlet;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

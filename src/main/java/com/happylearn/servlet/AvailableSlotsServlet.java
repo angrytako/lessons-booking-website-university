@@ -1,9 +1,8 @@
-package com.servlet;
-
-import DAO.*;
+package com.happylearn.servlet;
 
 import com.google.gson.Gson;
-import support.Slot;
+import com.happylearn.DAO.*;
+import com.happylearn.support.Slot;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -11,6 +10,7 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  * This servlet takes all available slots. --> doGet
@@ -55,33 +55,50 @@ public class AvailableSlotsServlet extends SecuredHttpServlet {
 
 
 
+	/** TODO
+	 * DA METTERE NEL DAO!!!!!!
+	 *
+	 * Sistemare con i join!!!!!!!!!!!!!!!! :(
+	 * rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
+	 * 									"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
+	 */
+
 	/*
 	 *  This method shows all available slots.
 	 */
-	// meglio statico o non statico......??? Mi sembra che non cambi un tubo.
 	private ArrayList <Slot> showAllAvailableSlots() {
 		boolean toAdd;
 		ArrayList<Slot> allAvailableSlots = new ArrayList<>();
 		ArrayList<Insegnamento> allTeachings = DAO.queryShowAllInsegnamentiDB(false);
 		ArrayList<Prenotazione> allBookings = DAO.queryShowAllPrenotazioniDB(false);
 		ArrayList<Docente> allTeachers = DAO.queryShowAllDocentiDB();
+		ArrayList<Corso> allCourses = DAO.queryShowAllCoursesDB(false);
 
 		for (int day = 0; day < 5; day++) {
 			for (int time = 0; time < 4; time++) {
-				for (Insegnamento ins : allTeachings) {
-					toAdd = true;
-					for (Prenotazione pre : allBookings) {
-						if (day == pre.getGiorno() && time == pre.getOrario() && ins.getCorso().equals(pre.getCorso()) && ins.getIdDocente() == pre.getIdDocente()) {
-							toAdd = false;
-							break;
+				for (Corso c : allCourses) {
+					List<Docente> listTeachers = new ArrayList<>();
+					for (Insegnamento ins : allTeachings) {
+						if (c.getMateria().equals(ins.getCorso())){
+							toAdd = true;
+							System.out.println(ins.getCorso());
+							for (Prenotazione pre : allBookings) {
+								if (day == pre.getGiorno() && time == pre.getOrario() && ins.getCorso().equals(pre.getCorso()) && ins.getIdDocente() == pre.getIdDocente()) {
+									toAdd = false;
+									break;
+								}
+							}
+							if (toAdd) {
+								for (Docente d : allTeachers) {
+									if (ins.getIdDocente() == d.getId())
+										listTeachers.add(d);
+								}
+							}
+
 						}
 					}
-					if (toAdd) {
-						for (Docente d: allTeachers) {
-							if (ins.getIdDocente() == d.getId())
-								allAvailableSlots.add(new Slot(ins.getCorso(), d.getNome(), d.getCognome(), day, time));
-						}
-					}
+					if(! listTeachers.isEmpty())
+						allAvailableSlots.add(new Slot(c.getMateria(), listTeachers, day, time));
 				}
 			}
 		}

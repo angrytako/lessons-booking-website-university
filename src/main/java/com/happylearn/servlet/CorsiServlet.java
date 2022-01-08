@@ -1,9 +1,9 @@
-package com.servlet;
+package com.happylearn.servlet;
 
-
-import DAO.Docente;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.happylearn.DAO.Corso;
+import com.happylearn.DAO.DAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,19 +15,20 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 
-@WebServlet(name = "ProfessoriServlet", value = "/ProfessoriServlet")
-public class ProfessoriServlet extends SecuredHttpServlet {
+@WebServlet(name = "CorsiServlet", value = "/CorsiServlet")
+public class CorsiServlet extends SecuredHttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter out =  jsonResponseSetup(response);
+        PrintWriter out = jsonResponseSetup(response);
         if(!hasSession(request)) {
             json401ErrorResponse(response,out);
             return;
         }
 
         if (isAuthorized(request)){
-            ArrayList<DAO.Docente> professori = DAO.DAO.queryShowAllDocentiDB();
-            out.print(professoreToJson(professori));
+            ArrayList<Corso> corsi = DAO.queryShowAllCoursesDB(false);
+            //System.out.println(corsi);
+            out.print(CorsoToJson(corsi));
             response.setStatus(200);
         }
         else{
@@ -46,7 +47,8 @@ public class ProfessoriServlet extends SecuredHttpServlet {
             json401ErrorResponse(resp,out);
             return;
         }
-        if (isAuthorized(req)) {
+        if (isAuthorized(req))
+        {
             StringBuilder buffer = new StringBuilder();
             BufferedReader reader = req.getReader();
             String line;
@@ -56,28 +58,19 @@ public class ProfessoriServlet extends SecuredHttpServlet {
             }
             String data = buffer.toString();
             JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
-
             // 1. JSON file to Java object
-            String nome =  jobj.get("nome").getAsString();
-            String cognome =  jobj.get("cognome").getAsString();
-
-            if (nome!=null&&cognome!=null)
+            String addCorso =  jobj.get("corso").getAsString();
+            if (addCorso!=null)
             {
-                if(DAO.DAO.queryAddDocenteDB(nome,cognome)){
-                    int id = DAO.DAO.queryShowOneDocenteDB(nome, cognome);
-                    if (id!=-1){
-                        jobj.addProperty("id",id);
-                        out.print(jobj.toString());
-                        resp.setStatus(200);
-                    }else{
-                        out.print("{\"error\":\"error search id\"}");resp.setStatus(401);
-                    }
-                }else{
-                    out.print("{\"error\":\"error query\"}");resp.setStatus(401);
+                if(DAO.queryAddCorsoDB(addCorso)) resp.setStatus(200);
+                else {
+                    out.print("{\"error\":\"not had corso\"}");
+                    resp.setStatus(401);
                 }
+
             }
             else {
-                out.print("{\"error\":\"error in nome,cognome\"}");resp.setStatus(401);
+                out.print("{\"error\":\"not had corso\"}");resp.setStatus(401);
             }
 
         }else{
@@ -85,6 +78,7 @@ public class ProfessoriServlet extends SecuredHttpServlet {
         }
 
         out.flush();
+
     }
 
 
@@ -107,11 +101,11 @@ public class ProfessoriServlet extends SecuredHttpServlet {
             JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
 
             // 1. JSON file to Java object
-            String id =  jobj.get("docente").getAsString();
+            String id =  jobj.get("corso").getAsString();
             System.out.println(id);
             if (id!=null)
             {
-                DAO.DAO.queryDeleteDocenteDB(Integer.parseInt(id));
+                DAO.queryDeleteCorsoDB(id);
                 resp.setStatus(200);
             }
             else {
@@ -125,12 +119,12 @@ public class ProfessoriServlet extends SecuredHttpServlet {
         out.flush();
     }
 
-    private String professoreToJson(ArrayList<Docente> docenti){
+
+    private String CorsoToJson(ArrayList<Corso> corsi){
         Gson gson = new Gson();
-        return gson.toJson(docenti);
+        return gson.toJson(corsi);
+
     }
-
-
 
 }
 

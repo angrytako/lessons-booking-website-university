@@ -1,8 +1,16 @@
-package DAO;
+package com.happylearn.DAO;
+
+import com.happylearn.support.PrenotazioneDocenteRuolo;
+import com.happylearn.support.Slot;
 
 import java.sql.*;
 import java.util.*;
 
+/** TODO
+ * Sistemare con i join!!!!!!!!!!!!!!!! :(
+ * rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
+ * 									"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
+ */
 public class DAO {
 	private static String url;
 	private static String user;
@@ -79,17 +87,20 @@ public class DAO {
      *  This method shows all bookings with the role, since is important.
 	 * lorenzo
      */
-    public static ArrayList<PrenotazioneConRuolo> queryShowAllPrenotazioniDB() {
-        ArrayList<PrenotazioneConRuolo> out = new ArrayList<>();
+
+	/*this method is used to get one specific prenotazione*/
+    public static PrenotazioneDocenteRuolo queryGetPrenotazioneDB(String corso, String utente, int giorno, int orario) {
         ResultSet rs = null;
         try {
             connectionToDB();
             st = conn1.createStatement();
-            rs = st.executeQuery("SELECT * FROM PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME");
-            while (rs.next()) {
-                PrenotazioneConRuolo p = new PrenotazioneConRuolo(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"),
-                                rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
-                out.add(p);
+            rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
+									"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
+            if (rs.next()) {
+                return new PrenotazioneDocenteRuolo(
+						rs.getString("corso"), rs.getInt("docente"), rs.getString("nome"),
+						rs.getString("cognome"),rs.getString("utente"), rs.getString("stato"),
+						rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
             }
         } catch (SQLException e) {
             System.out.println("errore di connessione al db: " + e.getMessage());
@@ -98,21 +109,21 @@ public class DAO {
             closeStatement();
             closeDBConnection();
         }
-        return out;
+        return null;
     }
 
-	/*
-	 *  This method shows all user's bookings.
-	 */
-	public static ArrayList<Prenotazione> queryShowUserPrenotazioniDB(String username) {
-		ArrayList<Prenotazione> out = new ArrayList<>();
+	public static ArrayList<PrenotazioneDocenteRuolo> queryShowAllPrenotazioniDB() {
+		ArrayList<PrenotazioneDocenteRuolo> out = new ArrayList<>();
 		ResultSet rs = null;
 		try {
 			connectionToDB();
 			st = conn1.createStatement();
-			rs = st.executeQuery("SELECT * FROM PRENOTAZIONE WHERE utente = '" + username + "'");
+			rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID");
 			while (rs.next()) {
-				Prenotazione p = new Prenotazione(rs.getString("corso"), rs.getInt("docente"), rs.getString("utente"), rs.getString("stato"), rs.getInt("giorno"), rs.getInt("orario"));
+				PrenotazioneDocenteRuolo p = new PrenotazioneDocenteRuolo(
+						rs.getString("corso"), rs.getInt("docente"), rs.getString("nome"),
+						rs.getString("cognome"),rs.getString("utente"), rs.getString("stato"),
+						rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
 				out.add(p);
 			}
 		} catch (SQLException e) {
@@ -126,6 +137,226 @@ public class DAO {
 	}
 
 	/*
+	 *  This method shows all user's bookings.
+	 */
+	public static ArrayList<PrenotazioneDocenteRuolo> queryShowUserPrenotazioniDB(String username) {
+		ArrayList<PrenotazioneDocenteRuolo> out = new ArrayList<>();
+		ResultSet rs = null;
+		try {
+			connectionToDB();
+			st = conn1.createStatement();
+			rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID WHERE utente = '" + username + "'");
+			while (rs.next()) {
+				PrenotazioneDocenteRuolo p = new PrenotazioneDocenteRuolo(
+						rs.getString("corso"), rs.getInt("docente"), rs.getString("nome"),
+						rs.getString("cognome"),rs.getString("utente"), rs.getString("stato"),
+						rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
+				out.add(p);
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeResultSet(rs);
+			closeStatement();
+			closeDBConnection();
+		}
+		return out;
+	}
+
+	/*
+	 *  This method marks a booking as deleted.
+	 */
+	public static boolean queryMarkPrenotazioneAsDeletedDB(String course, int idDoc, String username, int day, int time) {
+		boolean queryResult = true;
+		try {
+			connectionToDB();
+			st = conn1.createStatement();
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato='cancellata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+			queryResult = false;
+		} finally {
+			closeStatement();
+			closeDBConnection();
+		}
+		return queryResult;
+	}
+
+	/*
+	 *  This method marks a booking as done.
+	 */
+	public static boolean queryMarkPrenotazioneAsDoneDB(String course, int idDoc, String username, int day, int time) {
+		boolean queryResult = false;
+		ResultSet rs = null;
+		try {
+			connectionToDB();
+			st = conn1.createStatement();
+			rs = st.executeQuery("SELECT ruolo FROM UTENTE WHERE username = '" + username + "'");
+			if (rs.next() && rs.getString("ruolo").equals("cliente")) {
+				st.executeUpdate("UPDATE PRENOTAZIONE SET stato='effettuata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
+				queryResult = true;
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeResultSet(rs);
+			closeStatement();
+			closeDBConnection();
+		}
+		return queryResult;
+	}
+
+
+	/*
+	 *  This method adds a booking in 'prenotazione' table.
+	 *  It checks that, if the couple (course, idDoc) already exists in 'insegnamento' table, its 'rimosso' variable is set to false.
+	 *  It checks that both the user and the teacher are not already occupied in that day-time slot.
+	 */
+	public static boolean queryAddPrenotazioneDB(String course, int idDoc, String username, int day, int time) {
+		boolean queryResult = false;
+		try {
+			List<Prenotazione> bookings = queryShowAllPrenotazioniDB(true);
+			connectionToDB();
+			st = conn1.createStatement();
+
+			ResultSet rsI = null;
+			boolean deletedTeaching = true;
+			try {
+				rsI = st.executeQuery("SELECT rimosso FROM INSEGNAMENTO WHERE corso = '" + course + "' AND docente = " + idDoc);
+				if (rsI.next()) {
+					deletedTeaching = rsI.getBoolean("rimosso");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				closeResultSet(rsI);
+			}
+
+			if (!deletedTeaching) {
+				// Here, if the teaching is present on the database, its 'rimosso' variable is set to false.
+				ResultSet rsP = null;
+				boolean toInsert = true;
+				try {
+					rsP = st.executeQuery("SELECT docente,utente,stato FROM PRENOTAZIONE WHERE giorno = " + day + " AND orario = " + time);
+					while (rsP.next()) {
+						int d = rsP.getInt("docente");
+						String u = rsP.getString("utente");
+						String s = rsP.getString("stato");
+						if ((d == idDoc || username.equals(u)) && (s.equals("effettuata") || s.equals("attiva"))) {
+							toInsert = false;
+							break;
+						}
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} finally {
+					closeResultSet(rsP);
+				}
+				if (toInsert) {
+					boolean existedBooking = false;
+					for (Prenotazione p : bookings) {
+						if (p.getCorso().equals(course) && p.getIdDocente() == idDoc && p.getUtente().equals(username) && p.getGiorno() == day && p.getOrario() == time) {
+							st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'attiva' WHERE corso = '" + course + "' AND docente = " + idDoc + " AND utente = '" + username + "' AND stato = '" + p.getStato() + "' AND giorno = " + day + " AND orario = " + time);
+							existedBooking = true;
+							queryResult = true;
+							break;
+						}
+					}
+					if(!existedBooking) {
+						st.executeUpdate("INSERT INTO PRENOTAZIONE (corso, docente, utente, giorno, orario) VALUES ('" + course + "', " + idDoc + ", '" + username + "', " + day + ", " + time + ")");
+						queryResult = true;
+					}
+				}
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeStatement();
+			closeDBConnection();
+		}
+		return queryResult;
+	}
+
+	/*
+	 *  This method shows all available slots.
+	 */
+//	private ArrayList <Slot> showAllAvailableSlots() {
+//		ArrayList<Corso> allAvailableSlots = new ArrayList<>();
+//		ResultSet rs = null;
+//		try{
+//			connectionToDB();
+//			st = conn1.createStatement();
+//			rs = st.executeQuery("SELECT * " +
+//					"FROM (PRENOTAZIONE AS P RIGHT JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
+//					"RIGHT JOIN INSEGNAMENTO AS I ON (I.CORSO = P.CORSO AND I.DOCENTE = P.DOCENTE) " +
+//					"WHERE stato = 'effettuata' OR stato = 'attiva'");
+//			while(rs.next()){
+//				rs.getString("I.corso");
+//				rs.getBoolean("I.rimosso");
+//
+//				rs.getInt("D.id");
+//				rs.getString("D.nome");
+//				rs.getString("D.cognome");
+//				rs.getBoolean("D.rimosso");
+//
+//				rs.getString("P.corso");
+//				rs.getInt("P.docente");
+//				rs.getInt("P.giorno");
+//				rs.getInt("P.orario");
+//			}
+//
+//			for (int day = 0; day < 5; day++) {
+//				for (int time = 0; time < 4; time++) {
+//					List<Docente> listTeachers = new ArrayList<>();
+//
+//
+//
+//					for (Insegnamento ins : allTeachings) {
+//						List<Docente> listTeachers = new ArrayList<>();
+//						toAdd = true;
+//						for (Prenotazione pre : allBookings) {
+//							if (day == pre.getGiorno() && time == pre.getOrario() && ins.getCorso().equals(pre.getCorso()) && ins.getIdDocente() == pre.getIdDocente()) {
+//								toAdd = false;
+//								break;
+//							}
+//						}
+//						if (toAdd) {
+//							for (Docente d: allTeachers) {
+//								if (ins.getIdDocente() == d.getId())
+//									listTeachers.add(d);
+//							}
+//						}
+//						allAvailableSlots.add(new Slot(ins.getCorso(), listTeachers, day, time));
+//					}
+//
+//				}
+//			}
+//
+//		}catch (SQLException e) {
+//			System.out.println("errore di connessione al db: " + e.getMessage());
+//		} finally {
+//			closeResultSet(rs);
+//			closeStatement();
+//			closeDBConnection();
+//		}
+//		return allAvailableSlots;
+//
+
+//		try {
+//			connectionToDB();
+//			st = conn1.createStatement();
+//			rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
+//					"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
+//			if (rs.next()) {
+//				return new PrenotazioneDocenteRuolo(
+//						rs.getString("corso"), rs.getInt("docente"), rs.getString("nome"),
+//						rs.getString("cognome"), rs.getString("utente"), rs.getString("stato"),
+//						rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
+//			}
+//		}
+//	}
+
+		/*
 	 *  This method returns all courses in 'corso' table.
 	 *  If 'showOnlyDeleted' is false it only shows actived courses.
 	 *  Otherwise if 'showOnlyDeleted' is true it only shows deleted courses (it is used in 'queryAddCorsoDB' method).
@@ -301,10 +532,10 @@ public class DAO {
 		return queryResult;
 	}
 
-	/*
+	/**
 	 *  This method returns all teachings in 'insegnamento' table.
 	 *  If 'showOnlyDeleted' is false it only shows actived teachings.
-	 *  If 'showOnlyDeleted' is true it only shows deleted teachings (it is used in 'queryAddInsegnamentoDB' method).
+	 *  If 'showOnlyDeleted' is true it only shows deleted teachings.
 	 */
 	public static ArrayList<Insegnamento> queryShowAllInsegnamentiDB(boolean showOnlyDeleted) {
 		ArrayList<Insegnamento> out = new ArrayList<>();
@@ -332,53 +563,53 @@ public class DAO {
 
 	/*
 	 *  This method adds a teaching in 'insegnamento' table.
+	 *  It checks that both the course and the teacher exist and have the 'rimosso' variables set to false.
 	 *  If couple (course,idDoc) already exists and its 'rimosso' variable is true, this method update it with false.
-	 *  It also checks that both the course and the teacher exist and have the 'rimosso' variables set to false.
 	 *  Otherwise it adds a new tuple.
 	 */
 	public static boolean queryAddInsegnamentoDB(String course, int idDoc) {
 		boolean queryResult = false;
 		try {
-			ArrayList<Insegnamento> insegnamenti = queryShowAllInsegnamentiDB(true);
+			ArrayList<Insegnamento> insegnamenti = queryShowAllInsegnamentiDB(false);
 			connectionToDB();
 			st = conn1.createStatement();
-			// If the teaching already exists, only the 'rimosso' variable is changed ('rimosso' = false)
-			boolean existedTeaching = false;
-			for (Insegnamento i : insegnamenti) {
-				if (i.getCorso().equals(course) && i.getIdDocente() == idDoc) {
-					st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = false WHERE corso = '" + course + "' AND docente = " + idDoc);
-					existedTeaching = true;
-					queryResult = true;
-					break;
-				}
+			// It checks if course already exists and if it's not removed. Same thing for teacher.
+			boolean courseIsRemoved = true;
+			boolean teacherIsRemoved = true;
+			ResultSet rsC = null;
+			try {
+				rsC = st.executeQuery("SELECT rimosso FROM CORSO WHERE materia = '" + course + "'");
+				if (rsC.next())
+					courseIsRemoved = rsC.getBoolean("rimosso");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				closeResultSet(rsC);
 			}
-			if (!existedTeaching) {
-				boolean courseIsRemoved = true;
-				boolean teacherIsRemoved = true;
-				ResultSet rsC = null;
+
+			if (!courseIsRemoved) {
+				ResultSet rsD = null;
 				try {
-					rsC = st.executeQuery("SELECT rimosso FROM CORSO WHERE materia = '" + course + "'");
-					if (rsC.next())
-						courseIsRemoved = rsC.getBoolean("rimosso");
+					rsD = st.executeQuery("SELECT rimosso FROM DOCENTE WHERE id = " + idDoc);
+					if (rsD.next())
+						teacherIsRemoved = rsD.getBoolean("rimosso");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				} finally {
-					closeResultSet(rsC);
+					closeResultSet(rsD);
 				}
 
-				if (!courseIsRemoved) {
-					ResultSet rsD = null;
-					try {
-						rsD = st.executeQuery("SELECT rimosso FROM DOCENTE WHERE id = " + idDoc);
-						if (rsD.next())
-							teacherIsRemoved = rsD.getBoolean("rimosso");
-					} catch (SQLException e) {
-						e.printStackTrace();
-					} finally {
-						closeResultSet(rsD);
+				if (!teacherIsRemoved) {
+					boolean existedTeaching = false;
+					for (Insegnamento i : insegnamenti) {
+						if (i.getCorso().equals(course) && i.getIdDocente() == idDoc) {
+							st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = false WHERE corso = '" + course + "' AND docente = " + idDoc);
+							existedTeaching = true;
+							queryResult = true;
+							break;
+						}
 					}
-
-					if (!teacherIsRemoved) {
+					if(!existedTeaching) {
 						st.executeUpdate("INSERT INTO INSEGNAMENTO (corso, docente) VALUES ('" + course + "', " + idDoc + ")");
 						queryResult = true;
 					}
@@ -462,106 +693,7 @@ public class DAO {
 	}
 
 
-	/*
-	 *  This method adds a booking in 'prenotazione' table.
-	 *  It checks that, if the couple (course, idDoc) already exists in 'insegnamento' table, its 'rimosso' variable is set to false.
-	 *  It checks that both the user and the teacher are not already occupied in that day-time slot.
-	 */
-	public static boolean queryAddPrenotazioneDB(String course, int idDoc, String username, int day, int time) {
-		boolean queryResult = false;
-		try {
-			connectionToDB();
-			st = conn1.createStatement();
 
-			ResultSet rsI = null;
-			boolean deletedTeaching = true;
-			try {
-				rsI = st.executeQuery("SELECT rimosso FROM INSEGNAMENTO WHERE corso = '" + course + "' AND docente = " + idDoc);
-				if (rsI.next()) {
-					deletedTeaching = rsI.getBoolean("rimosso");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				closeResultSet(rsI);
-			}
-
-			if (!deletedTeaching) {
-				// Here, if the teaching is present on the database, its 'rimosso' variable is set to false.
-				ResultSet rsP = null;
-				boolean toInsert = true;
-				try {
-					rsP = st.executeQuery("SELECT docente,utente,stato FROM PRENOTAZIONE WHERE giorno = " + day + " AND orario = " + time);
-					while (rsP.next()) {
-						int d = rsP.getInt("docente");
-						String u = rsP.getString("utente");
-						String s = rsP.getString("stato");
-						if ((d == idDoc || username.equals(u)) && (s.equals("effettuata") || s.equals("attiva"))) {
-							toInsert = false;
-							break;
-						}
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				} finally {
-					closeResultSet(rsP);
-				}
-				if (toInsert) {
-					st.executeUpdate("INSERT INTO prenotazione (corso, docente, utente, giorno, orario) VALUES ('" + course + "', " + idDoc + ", '" + username + "', " + day + ", " + time + ")");
-					queryResult = true;
-				}
-			}
-		} catch (SQLException e) {
-			System.out.println("errore di connessione al db: " + e.getMessage());
-		} finally {
-			closeStatement();
-			closeDBConnection();
-		}
-		return queryResult;
-	}
-
-	/*
-	 *  This method marks a booking as deleted.
-	 */
-	public static boolean queryMarkPrenotazioneAsDeletedDB(String course, int idDoc, String username, int day, int time) {
-		boolean queryResult = true;
-		try {
-			connectionToDB();
-			st = conn1.createStatement();
-			st.executeUpdate("UPDATE PRENOTAZIONE SET stato='cancellata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
-		} catch (SQLException e) {
-			System.out.println("errore di connessione al db: " + e.getMessage());
-			queryResult = false;
-		} finally {
-			closeStatement();
-			closeDBConnection();
-		}
-		return queryResult;
-	}
-
-	/*
-	 *  This method marks a booking as done.
-	 */
-	public static boolean queryMarkPrenotazioneAsDoneDB(String course, int idDoc, String username, int day, int time) {
-		boolean queryResult = false;
-		ResultSet rs = null;
-		try {
-			connectionToDB();
-			st = conn1.createStatement();
-			rs = st.executeQuery("SELECT ruolo FROM UTENTE WHERE username = '" + username + "'");
-			if (rs.next() && rs.getString("ruolo").equals("cliente")) {
-				st.executeUpdate("UPDATE PRENOTAZIONE SET stato='effettuata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
-				queryResult = true;
-			}
-		} catch (SQLException e) {
-			System.out.println("errore di connessione al db: " + e.getMessage());
-		} finally {
-			closeResultSet(rs);
-			closeStatement();
-			closeDBConnection();
-		}
-		return queryResult;
-	}
 
 	/*
 	 *  This method shows all users.
