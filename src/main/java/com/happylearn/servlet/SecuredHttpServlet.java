@@ -45,6 +45,9 @@ public class SecuredHttpServlet extends HttpServlet {
             return true;
         else return false;
     }
+    protected boolean isAdmin(HttpServletRequest request){
+        return request.getSession().getAttribute("role").equals("amministratore");
+    }
 
 
 

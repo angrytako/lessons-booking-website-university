@@ -5,7 +5,7 @@
   <li v-if="$store.state.role == 'guest'"><router-link :to="{ name:'Login' }">Login</router-link></li>
   <li v-if="$store.state.role != 'guest'"><router-link :to="{ name:'MiePrenotazioni', query:{username: $store.state.username} }">Mie Prenotazioni</router-link></li>
   <li v-if="$store.state.role == 'amministratore'"><router-link :to="{ name:'Prenotazioni' }">Prenotazioni</router-link></li>
-  <li v-if="$store.state.role == 'amministratore'"><router-link :to="{ name:'Professori' }">Professori</router-link></li>
+  <li v-if="$store.state.role == 'amministratore'"><router-link :to="{ name:'DocentiCorsi' }">Docenti-Corsi</router-link></li>
   <li v-if="$store.state.role != 'guest'"><router-link :to="{ name:'Logout' }">Logout</router-link></li>
 </ul>
 </template>

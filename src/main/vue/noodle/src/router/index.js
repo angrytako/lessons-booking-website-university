@@ -21,27 +21,23 @@ const routes = [
   {
     path: '/logout',
     name: 'Logout',
-    component: () => import('../views/Logout.vue'),
-    /*beforeEnter(to, from, next) {
-      //check authentication
-      if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
-        next({ name: 'Login'});
-      else next();
-    }*/
+    component: () => import('../views/Logout.vue')
   },
   {
     path: '/prenotazioni',
     name: 'Prenotazioni',
     component: () => import('../views/Prenotazioni.vue'),
     beforeEnter (to, from, next) {
-      //check authentication
-      // if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" ) {
-      //   next({name: 'Login'});
-      //   return;
-      // }
+
       if (to.query.username) {
         next({ name: 'MiePrenotazioni', query: to.query });
+        return;
       } else {
+        //check authentication
+        if(!store.state.role || store.state.role != "amministratore" ) {
+          next({name: 'Login'});
+          return;
+        }
         next();
       }
     }
@@ -50,17 +46,16 @@ const routes = [
     path: '/prenotazioni',
     name: 'MiePrenotazioni',
     component: () => import('../views/MiePrenotazioni.vue'),
-    // beforeEnter(to, from, next) {
-    //   //check authentication
-    //   if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
-    //     next({ name: 'Login'});
-    //   else next();
-    // }
-  },
+    beforeEnter(to, from, next) {
+      //check authentication
+      if(!store.state.role || (store.state.role != "cliente" && store.state.role != "amministratore") )
+        next({ name: 'Login'});
+      else next();
+    }},
   {
-    path: '/professori',
-    name: 'Professori',
-    component: () => import('../views/Professori.vue')
+    path: '/docenti-corsi',
+    name: 'DocentiCorsi',
+    component: () => import('../views/DocentiCorsi.vue')
   }
 ]
 
