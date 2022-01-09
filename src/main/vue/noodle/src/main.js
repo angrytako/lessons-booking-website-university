@@ -9,15 +9,7 @@ export const store = createStore({
 
         state: function(){
 
-            return realState },
-        logout: function (){
-                this.username = undefined;
-                this.role = "guest";
-                this.miePrenotazioni = undefined;
-                this.prenotazioni = undefined;
-                this.professori=undefined;
-                this.corsi=undefined;
-        }
+            return realState }
 })
 createApp(App).use(store).use(router).mount('#app')
 

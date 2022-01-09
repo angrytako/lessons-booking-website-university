@@ -693,6 +693,31 @@ public class DAO {
 	}
 
 
+	/*
+	 *  This method shows all courses for a given teacher.
+	 */
+	public static ArrayList<Corso> showCoursesForTeachersDB(int docenteId) {
+		ArrayList<Corso> courses = new ArrayList<>();
+		ResultSet rsI = null;
+		try {
+			connectionToDB();
+			st = conn1.createStatement();
+
+			rsI = st.executeQuery("SELECT CORSO C FROM INSEGNAMENTO WHERE DOCENTE = " + docenteId + " AND rimosso = false");
+			while (rsI.next())
+				courses.add(new Corso(rsI.getString("CORSO"), false));
+		}catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				closeResultSet(rsI);
+				closeStatement();
+				closeDBConnection();
+			}
+		return courses;
+
+	}
+
+
 
 
 	/*
