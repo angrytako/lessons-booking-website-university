@@ -23,13 +23,32 @@
 <!--				slotTime = matrCorsi[indexTime] qui sotto :)-->
 				<td v-for="(slotDay, indexDay) in slotTime" :key="indexDay">
 <!--					slotDay = matrCorsi[indexTime][indexDay] qui sotto :)-->
-					<p v-for="(slot, indexSlot) in slotDay" :key="indexSlot">
+					<p v-on:click="showTeachersFunction(slot)" v-for="(slot, indexSlot) in slotDay" :key="indexSlot" data-bs-toggle="modal" data-bs-target="#teachersBooking">
 						{{slot.course}}
 					</p>
 				</td>
 			</tr>
 		</tbody>
 	</table>
+
+	<!-- Modal -->
+	<div class="modal fade" id="teachersBooking" tabindex="-1" aria-labelledby="teachersBookingLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="teachersBookingLabel">{{selectedSlot.course}}</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					...
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 	<ul>
@@ -47,6 +66,8 @@
 </template>
 
 <script>
+
+import Prenotazioni from "@/views/Prenotazioni";
 async function getSlots() {
 	try {
 		const response = await fetch("/Noodle_war/AvailableSlotsServlet");
@@ -70,6 +91,12 @@ export default {
 			this.matrCorsi[slot.time][slot.day].push(slot);
 		}
 	},
+	methods: {
+		showTeachersFunction:function(slot){
+			this.selectedSlot = slot;
+		}
+
+	},
 	data() {
 		return {
 			matrCorsi: [
@@ -79,10 +106,10 @@ export default {
 				[[],[],[],[],[]]
 			],
 			days: { 0:"Lunedì", 1:"Martedì", 2:"Mercoledì", 3:"Giovedì", 4:"Venerdì"},
-			times:{ 0: "15-16", 1: "16-17", 2: "17-18", 3: "18-19"}
+			times: { 0: "15-16", 1: "16-17", 2: "17-18", 3: "18-19"},
+			selectedSlot: {},
 		}
 	}
-
 }
 </script>
 
