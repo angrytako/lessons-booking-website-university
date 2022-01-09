@@ -52,7 +52,67 @@ public class DAO {
 		}
 		return user;
 	}
+	/*
+	 *  This method returns a corso obj, if it exists
+	 * else it returns null
+	 */
+	public static Corso queryGetCorso(String materia) {
+		Corso corso = null;
+		try {
+			connectionToDB();
+			Statement utente = conn1.createStatement();
+			ResultSet rs = utente.executeQuery("SELECT * FROM CORSO WHERE materia = '" + materia + "' AND RIMOSSO = FALSE");
+			if (rs.next()) {
+				corso = new Corso(rs.getString("materia"), rs.getBoolean("rimosso"));
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeDBConnection();
+		}
+		return corso;
+	}
 
+	/*
+	 *  This method returns a user obj if a user with a given
+	 *  username and password exists, null otherwise
+	 */
+	public static Docente queryGetDocente(int docenteId) {
+		Docente docente = null;
+		try {
+			connectionToDB();
+			Statement utente = conn1.createStatement();
+			ResultSet rs = utente.executeQuery("SELECT * FROM DOCENTE WHERE ID = " + docenteId + " AND RIMOSSO = FALSE");
+			if (rs.next()) {
+				docente = new Docente(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getBoolean("rimosso"));
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeDBConnection();
+		}
+		return docente;
+	}
+	/*
+	 *  This method returns a user obj if a user with a given
+	 *  username and password exists, null otherwise
+	 */
+	public static Insegnamento queryGetInsegnamento(int docenteId, String materia) {
+		Insegnamento ins = null;
+		try {
+			connectionToDB();
+			Statement utente = conn1.createStatement();
+			ResultSet rs = utente.executeQuery("SELECT * FROM INSEGNAMENTO WHERE DOCENTE = " + docenteId + " AND CORSO = '" + materia + "'");
+			if (rs.next()) {
+				ins = new Insegnamento(rs.getString("corso"), rs.getInt("DOCENTE"), rs.getBoolean("rimosso"));
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeDBConnection();
+		}
+		return ins;
+	}
 	/*
 	 *  This method returns all bookings.
 	 *  If 'showAlsoDeleted' is true it shows all bookings.
