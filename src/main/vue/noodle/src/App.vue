@@ -17,24 +17,24 @@ async function getUserInfo() {
 }
 export default {
   components: {NavBar},
- async created() {
-      let userInfo;
-      try {
-          userInfo = await getUserInfo();
-      } catch (e){
-        console.log(e);
-        return;
+  async created() {
+    let userInfo;
+    try {
+      userInfo = await getUserInfo();
+    } catch (e){
+      console.log(e);
+      return;
+    }
+    try {
+      if(userInfo) {
+        this.$store.state.role = userInfo.role ? userInfo.role : "guest";
+        this.$store.state.username = userInfo.username ? userInfo.username : undefined;
       }
-      try {
-        if(userInfo) {
-          this.$store.state.role = userInfo.role ? userInfo.role : "guest";
-          this.$store.state.username = userInfo.username ? userInfo.username : undefined;
-        }
-      }catch (e){
-        console.log(e);
-      }
+    }catch (e){
+      console.log(e);
     }
   }
+}
 
 </script>
 

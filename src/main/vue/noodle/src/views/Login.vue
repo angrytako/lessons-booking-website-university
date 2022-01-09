@@ -15,7 +15,7 @@
         <div id="passwordHelpBlock" ref="passwordHelpBlock" class="form-text text-danger">
           Insert password
         </div>
-        </div>
+      </div>
       <div id="loginErrorBlock"  ref="loginErrorBlock" class="form-text text-danger"> prop text</div>
       <button class="btn btn-primary" ref="submitBtn" v-on:click.prevent="submit">Login</button>
     </form>
@@ -48,7 +48,7 @@ export default {
   data(){
     return {
       username: undefined,
-      password: undefined
+      password: undefined,
     }},
   methods:{
     submit: async function(e){
@@ -75,6 +75,8 @@ export default {
         });
         const res = await response.json();
         if(!res.error) {
+          this.$store.state.username = res.username;
+          this.$store.state.role = res.role;
           this.$router.push({name:"Home"});
         }else{
           showError(this.$refs.loginErrorBlock,undefined,res.error, this.$refs.submitBtn)

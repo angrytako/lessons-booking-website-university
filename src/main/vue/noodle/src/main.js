@@ -8,14 +8,15 @@ import { realState, lorenzo } from "@/mockUserData";
 export const store = createStore({
 
         state: function(){
-            return lorenzo
-        },
 
+            return realState },
         logout: function (){
                 this.username = undefined;
                 this.role = "guest";
                 this.miePrenotazioni = undefined;
-                this.prenotazioni = undefined
+                this.prenotazioni = undefined;
+                this.professori=undefined;
+                this.corsi=undefined;
         }
 })
 createApp(App).use(store).use(router).mount('#app')

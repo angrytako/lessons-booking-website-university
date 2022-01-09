@@ -22,12 +22,12 @@ const routes = [
     path: '/logout',
     name: 'Logout',
     component: () => import('../views/Logout.vue'),
-    beforeEnter(to, from, next) {
+    /*beforeEnter(to, from, next) {
       //check authentication
-        if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
-            next({ name: 'Login'});
-        else next();
-}
+      if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
+        next({ name: 'Login'});
+      else next();
+    }*/
   },
   {
     path: '/prenotazioni',
@@ -57,7 +57,11 @@ const routes = [
       if(!store.state.role || store.state.role != "cliente" || store.state.role != "amministratore" )
         next({ name: 'Login'});
       else next();
-    }
+    }},
+  {
+    path: '/professori',
+    name: 'Professori',
+    component: () => import('../views/Professori.vue')
   }
 ]
 

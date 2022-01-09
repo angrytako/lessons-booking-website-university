@@ -28,7 +28,7 @@
       <td>{{Days[prenotazione.giorno]}}</td>
       <td>{{Hours[prenotazione.orario]}}</td>
       <td>{{prenotazione.corso}}</td>
-      <td>{{prenotazione.docente}}</td>
+      <td>{{prenotazione.nomeDocente + " " + prenotazione.cognomeDocente  }}</td>
       <td v-if="prenotazione.stato != 'attiva'">{{prenotazione.stato}}
 
       </td>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-function confirmChoice(e){
+async function confirmChoice(e){
   //to stop html automatic submit
   e.preventDefault();
     //if confirmed, sending the choice to servlet
@@ -56,17 +56,17 @@ function confirmChoice(e){
     this.waitingConfirmation = null;
     return
   }
-  const response =  fetch("/Noodle_war/Prenotazioni", {
-                              method: 'UPDATE',
+  const response = await fetch("/Noodle_war/PrenotazioniServlet", {
+                              method: 'PUT',
                               headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json'
                               },
-                              body: JSON.stringify( this.waitingConfirmation)
+                              body: JSON.stringify(this.waitingConfirmation)
                             });
   this.waitingConfirmation = null;
   this.warningActive=false;
-  const decodedResponse =  response.json;
+  const decodedResponse = await  response.json();
   if(!decodedResponse.error)
     return;
 
