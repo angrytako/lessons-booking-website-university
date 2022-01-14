@@ -18,25 +18,52 @@ I Docenti:
           <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
             ~ {{corsi.materia}}
           </div>
+
+          <form>
+            <br>
+            Inserisci un nuovo insegnamento:
+            <div class="form-group row">
+              <label for="inputCognome" class="col-sm-2 col-form-label">Corso</label>
+              <div class="col-sm-10">
+                <input type="email" class="form-control"  v-model="corso">
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-sm-10">
+                <button  class="btn btn-primary" v-on:click.prevent="submitCorso" >Aggiungi insegnamento</button>
+              </div>
+            </div>
+          </form>
+
+
         </div>
       </div>
     </div>
   </div>
 
 
+  <form>
+    Aggiungi un nuovo docente:
+    <div class="form-group row">
+      <label for="inputNome" class="col-sm-2 col-form-label">Nome</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="inputNome" v-model="docenteNome">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputCognome" class="col-sm-2 col-form-label">Cognome</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="inputCognome" v-model="docenteCognome">
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-10">
+        <button  class="btn btn-primary" v-on:click.prevent="submitDocente" >Aggiungi docente</button>
+      </div>
+    </div>
+  </form>
 
-  <ul>
-    <li>
-      <form>
-        <div>
-          <label class="form-label">Aggiungi nuovo Docente:</label>
-          <input class="form-control" ref="docenteNome" type="text" id="docenteNome" name="docenteNome" v-model="docenteNome" aria-describedby="passwordHelpBlock">
-          <input class="form-control" ref="docenteCognome" type="text" id="docenteCognome" name="docenteCognome" v-model="docenteCognome" aria-describedby="passwordHelpBlock">
-        </div>
-        <button class="btn btn-primary" ref="submitBtn" v-on:click.prevent="submitDocente">Aggiungi</button>
-      </form>
-    </li>
-  </ul>
+
 
 
 
@@ -213,15 +240,3 @@ async function getInsegnamentoDocenti() {
     }
 }
 </script>
-
-<style scoped>
-li{
-  text-decoration: none;
-}
-.docente{
-  display: flex;
-}
-.corso{
-  display: flex;
-}
-</style>
