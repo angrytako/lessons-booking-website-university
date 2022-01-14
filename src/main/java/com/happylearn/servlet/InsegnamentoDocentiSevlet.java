@@ -28,12 +28,9 @@ public class InsegnamentoDocentiSevlet extends SecuredHttpServlet {
         ArrayList<InsegnamentoDocente> insegnamentoDocenti = new ArrayList<InsegnamentoDocente>();
         ArrayList<Docente> professori = DAO.queryShowAllDocentiDB();
         for (int i=0; i<professori.size();i++){
-            System.out.println(professori.get(i).getId());
             ArrayList<Corso> corsi = DAO.showCoursesForTeachersDB(professori.get(i).getId());
-            System.out.println(corsi);
             InsegnamentoDocente insegnamentoDocente = new InsegnamentoDocente(professori.get(i).getId(),corsi);
             insegnamentoDocenti.add(insegnamentoDocente);
-            System.out.println(insegnamentoDocente.getCorsi());
         }
 
 

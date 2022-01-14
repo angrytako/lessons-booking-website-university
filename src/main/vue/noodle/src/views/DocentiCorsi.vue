@@ -1,5 +1,5 @@
 <template>
-I Prof:
+I Docenti:
   <div class="row">
     <div class="col-4">
       <div class="list-group" id="list-tab" role="tablist">
@@ -13,9 +13,10 @@ I Prof:
       <div class="tab-content" id="nav-tabContent">
         <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
             class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
-          Professore: {{insegnamentoDocenti.id}}. Questi sono i corsi in cui insegna:
+          Professore: {{insegnamentoDocenti.id}}. <div class="pe-auto" v-on:click="eliminaDocente(insegnamentoDocenti.id)">Elimina Docente</div>
+          Questi sono i corsi in cui insegna:
           <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
-            {{corsi.materia}}-
+            ~ {{corsi.materia}}
           </div>
         </div>
       </div>
@@ -25,15 +26,6 @@ I Prof:
 
 
   <ul>
-    <li v-for="docente in $store.state.professori" :key="docente.id + docente.nome + docente.cognome">
-      <div class="docente">
-        <div class="id">{{docente.id}}</div>
-        <div class="nome">{{docente.nome}}</div>
-        <div class="cognome">{{docente.cognome}}</div>
-        <div class="pe-auto" v-on:click="eliminaDocente(docente.id)">Elimina</div>
-      </div>
-
-    </li>
     <li>
       <form>
         <div>
@@ -89,6 +81,8 @@ async function eliminaDocente(id) {
       return [];
     }
     this.$store.state.professori=this.$store.state.professori.filter(professore=>professore.id!=id);
+    this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=id);
+
 
     // window.location.reload();
   }catch (e){
@@ -207,6 +201,7 @@ async function getInsegnamentoDocenti() {
           }else{
             const docenteResponse = await response.json();
             this.$store.state.professori.push({id:docenteResponse.id, nome: this.docenteNome,cognome: this.docenteCognome});
+            this.$store.state.insegnamentoDocenti.push({id:docenteResponse.id})
           }
 
 
