@@ -44,6 +44,9 @@ public class ProfessoriCorsiServlet extends SecuredHttpServlet {
             response.setStatus(200);
         }
         else{
+
+
+
             out.print("{\"error\":\"Missing querystring params\"}");
             response.setStatus(400);
             }

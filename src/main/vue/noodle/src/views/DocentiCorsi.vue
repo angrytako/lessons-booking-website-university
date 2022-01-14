@@ -1,12 +1,36 @@
 <template>
 I Prof:
+  <div class="row">
+    <div class="col-4">
+      <div class="list-group" id="list-tab" role="tablist">
+        <a v-for="docente in $store.state.professori" :key="docente.id + docente.nome + docente.cognome"
+           class="list-group-item list-group-item-action" v-bind:id="'docente-list-'+docente.id" data-bs-toggle="list"
+           v-bind:href="'#docente'+docente.id" role="tab" v-bind:aria-controls="'docente'+docente.id">
+          {{docente.id}} {{docente.nome}} {{docente.cognome}}</a>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="tab-content" id="nav-tabContent">
+        <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
+            class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
+          Professore: {{insegnamentoDocenti.id}}. Questi sono i corsi in cui insegna:
+          <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
+            {{corsi.materia}}-
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
   <ul>
     <li v-for="docente in $store.state.professori" :key="docente.id + docente.nome + docente.cognome">
       <div class="docente">
         <div class="id">{{docente.id}}</div>
         <div class="nome">{{docente.nome}}</div>
         <div class="cognome">{{docente.cognome}}</div>
-        <div class="elimina" v-on:click="eliminaDocente(docente.id)">Elimina</div>
+        <div class="pe-auto" v-on:click="eliminaDocente(docente.id)">Elimina</div>
       </div>
 
     </li>
@@ -22,12 +46,14 @@ I Prof:
     </li>
   </ul>
 
+
+
   I Corsi:
   <ul>
     <li v-for="corso in $store.state.corsi" :key="corso.materia ">
       <div class="corso">
         <div class="id">{{corso.materia}}</div>
-        <div class="elimina" v-on:click="eliminaCorso(corso.materia)">Elimina</div>
+        <div class="pe-auto" v-on:click="eliminaCorso(corso.materia)">Elimina</div>
       </div>
     </li>
     <li>
@@ -116,6 +142,19 @@ async function getProfessori() {
     }
 }
 
+async function getInsegnamentoDocenti() {
+  try {
+    const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet");
+
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    return await response.json();
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 
   export default {
@@ -123,6 +162,7 @@ async function getProfessori() {
   async created() {
     this.$store.state.professori = await getProfessori();
     this.$store.state.corsi = await getCorsi();
+    this.$store.state.insegnamentoDocenti = await getInsegnamentoDocenti();
   },
   data(){
     return {

@@ -763,7 +763,7 @@ public class DAO {
 			connectionToDB();
 			st = conn1.createStatement();
 
-			rsI = st.executeQuery("SELECT CORSO C FROM INSEGNAMENTO WHERE DOCENTE = " + docenteId + " AND rimosso = false");
+			rsI = st.executeQuery("SELECT CORSO  FROM INSEGNAMENTO WHERE DOCENTE = " + docenteId + " AND rimosso = false");
 			while (rsI.next())
 				courses.add(new Corso(rsI.getString("CORSO"), false));
 		}catch (SQLException e) {
