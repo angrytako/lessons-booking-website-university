@@ -17,6 +17,7 @@ I Docenti:
           Questi sono i corsi in cui insegna:
           <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
             ~ {{corsi.materia}}
+            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamentoDocenti(insegnamentoDocenti.id,corsi.materia)">
           </div>
 
           <form>
@@ -25,12 +26,12 @@ I Docenti:
             <div class="form-group row">
               <label for="inputCognome" class="col-sm-2 col-form-label">Corso</label>
               <div class="col-sm-10">
-                <input type="email" class="form-control"  v-model="corso">
+                <input type="email" class="form-control"  v-model="insegnamentoDocentiCorso">
               </div>
             </div>
             <div class="form-group row">
               <div class="col-sm-10">
-                <button  class="btn btn-primary" v-on:click.prevent="submitCorso" >Aggiungi insegnamento</button>
+                <button  class="btn btn-primary" v-on:click.prevent="submitInsegnamentoDocenti(insegnamentoDocenti.id,insegnamentoDocentiCorso)" >Aggiungi insegnamento</button>
               </div>
             </div>
           </form>
@@ -137,6 +138,29 @@ async function eliminaCorso(materia) {
   }
 }
 
+async function eliminaInsegnamentoDocenti(id,mat) {
+  try {
+    const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({docente:id,corso: mat})
+    });
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }else if(response.status==200){
+      this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corso=>corso.materia!=mat);
+    }
+
+    // window.location.reload();
+  }catch (e){
+    console.log(e);
+  }
+}
+
+
 async function getProfessori() {
   try {
     const response = await fetch("/Noodle_war/ProfessoriServlet");
@@ -189,11 +213,13 @@ async function getInsegnamentoDocenti() {
     return {
       corso: undefined,
       docenteNome: undefined,
-      docenteCognome: undefined
+      docenteCognome: undefined,
+      insegnamentoDocentiCorso: undefined
     }},
     methods:{
       eliminaDocente,
       eliminaCorso,
+      eliminaInsegnamentoDocenti,
 
       submitCorso: async function(e){
         try {
@@ -231,12 +257,34 @@ async function getInsegnamentoDocenti() {
             this.$store.state.insegnamentoDocenti.push({id:docenteResponse.id})
           }
 
+        }catch (e){
+          console.log(e);
+        }
+      },
 
+      submitInsegnamentoDocenti: async function(id,mat){
+
+        try {
+          const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({docente:id,corso:mat})
+          });
+          if(response.status == 401){
+            console.log("Errore nella servlet post docente");
+          }else if (response.status == 200){
+            this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({materia:mat});
+          }
 
         }catch (e){
           console.log(e);
         }
       }
+
+
+
     }
 }
 </script>
