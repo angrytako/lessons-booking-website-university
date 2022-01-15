@@ -17,14 +17,14 @@ I Docenti:
           Questi sono i corsi in cui insegna:
           <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
             ~ {{corsi.materia}}
-            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamentoDocenti(insegnamentoDocenti.id,corsi.materia)">
+            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamento(insegnamentoDocenti.id,corsi.materia)">
           </div>
 
           <form>
             <br>
             Inserisci un nuovo insegnamento:
             <div class="form-group row">
-              <label for="inputCognome" class="col-sm-2 col-form-label">Corso -> </label>
+              <label for="inputCognome" class="col-sm-2 col-form-label">Corso:</label>
               <div class="col-sm-10">
                 <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
                   <option  v-for="corso in $store.state.corsi" :key="corso.materia" v-bind:value=corso.materia>{{corso.materia}}</option>
@@ -74,35 +74,35 @@ I Docenti:
       <div class="list-group" id="list-tab-corsi" role="tablist">
         <a v-for="corso in $store.state.corsi" :key="corso.materia "
            class="list-group-item list-group-item-action" v-bind:id="'corso-list-'+corso.materia" data-bs-toggle="list"
-           v-bind:href="'#corso'+corso.id" role="tab" v-bind:aria-controls="'corso'+corso.materia">
+           v-bind:href="'#corso-'+corso.materia" role="tab" v-bind:aria-controls="'corso-'+corso.materia">
           {{corso.materia}}</a>
       </div>
     </div>
     <div class="col-8">
       <div class="tab-content" id="nav-tabContent-corsi">
-        <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
-             class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
-          Professore: {{insegnamentoDocenti.id}}. <div class="pe-auto" v-on:click="eliminaDocente(insegnamentoDocenti.id)">Elimina Docente</div>
-          Questi sono i corsi in cui insegna:
-          <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
-            ~ {{corsi.materia}}
-            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamentoDocenti(insegnamentoDocenti.id,corsi.materia)">
+        <div v-for="insegnamentoCorsi in $store.state.insegnamentoCorsi" :key="insegnamentoCorsi.corso + insegnamentoCorsi.docenti"
+             class="tab-pane fade" v-bind:id="'corso-'+insegnamentoCorsi.corso"  role="tabpanel" v-bind:aria-labelledby="'corso-list-'+insegnamentoCorsi.corso">
+          Corso: {{insegnamentoCorsi.corso}}. <div class="pe-auto" v-on:click="eliminaCorso(insegnamentoCorsi.corso)">Elimina Corso</div>
+          Professori che insegnano questo corso:
+          <div v-for="docenti in insegnamentoCorsi.docenti" :key="docenti.id">
+            ~ {{docenti.id}} {{docenti.nome}} {{docenti.cognome}}
+            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamento(insegnamentoCorsi.corso,docenti.id)">
           </div>
 
           <form>
             <br>
             Inserisci un nuovo insegnamento:
             <div class="form-group row">
-              <label for="inputCognome" class="col-sm-2 col-form-label">Corso -> </label>
+              <label for="inputNome" class="col-sm-2 col-form-label">Professore </label>
               <div class="col-sm-10">
-                <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
-                  <option  v-for="corso in $store.state.corsi" :key="corso.materia" v-bind:value=corso.materia>{{corso.materia}}</option>
+                <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoCorsiDocente' +insegnamentoCorsi.corso">
+                  <option  v-for="docente in $store.state.professori" :key="docente.id" v-bind:value=docente.id >{{docente.id}} {{docente.nome}} {{docente.cognome}}</option>
                 </select>
               </div>
             </div>
             <div class="form-group row">
               <div class="col-sm-10">
-                <button  class="btn btn-primary" v-on:click.prevent="submitInsegnamentoDocenti(insegnamentoDocenti.id)" >Aggiungi insegnamento</button>
+                <button  class="btn btn-primary" v-on:click.prevent="submitInsegnamentoCorsi(insegnamentoCorsi.corso)" >Aggiungi Docente</button>
               </div>
             </div>
           </form>
@@ -112,25 +112,23 @@ I Docenti:
     </div>
   </div>
 
-  I Corsi:
-  <ul>
-    <li v-for="corso in $store.state.corsi" :key="corso.materia ">
-      <div class="corso">
-        <div class="id">{{corso.materia}}</div>
-        <div class="pe-auto" v-on:click="eliminaCorso(corso.materia)">Elimina</div>
-      </div>
-    </li>
-    <li>
-      <form>
-        <div>
-          <label class="form-label"  for="corso">Aggiungi nuovo corso:</label>
-          <input class="form-control" ref="corso" type="text" id="corso" name="corso" v-model="corso" aria-describedby="passwordHelpBlock">
-        </div>
 
-        <button class="btn btn-primary" ref="submitBtn" v-on:click.prevent="submitCorso">Aggiungi</button>
-      </form>
-    </li>
-  </ul>
+  <form>
+    Aggiungi un nuovo corso:
+    <div class="form-group row">
+      <label for="inputCognome" class="col-sm-2 col-form-label">Corso:</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="inputCorso" v-model="corso">
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-10">
+        <button  class="btn btn-primary" v-on:click.prevent="submitCorso" >Aggiungi Corso</button>
+      </div>
+    </div>
+  </form>
+
+
 
 
 
@@ -182,7 +180,7 @@ async function eliminaCorso(materia) {
   }
 }
 
-async function eliminaInsegnamentoDocenti(id,mat) {
+async function eliminaInsegnamento(id,mat) {
   try {
     const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
       method: 'DELETE',
@@ -198,6 +196,9 @@ async function eliminaInsegnamentoDocenti(id,mat) {
 
       this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi =
           this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corsi=> corsi.materia!=mat);
+
+      this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti =
+          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti.filter(docenti=> docenti.id!=id);
     }
 
     // window.location.reload();
@@ -205,6 +206,8 @@ async function eliminaInsegnamentoDocenti(id,mat) {
     console.log(e);
   }
 }
+
+
 
 
 async function getProfessori() {
@@ -279,7 +282,7 @@ async function getInsegnamentoCorsi() {
     methods:{
       eliminaDocente,
       eliminaCorso,
-      eliminaInsegnamentoDocenti,
+      eliminaInsegnamento,
 
       submitCorso: async function(e){
         try {
@@ -338,6 +341,31 @@ async function getInsegnamentoCorsi() {
             console.log("Errore nella servlet post docente");
           }else if (response.status == 200){
             this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({materia:mat , rimosso:false});
+            this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti.push({id:id, nome: "aggiornamento",cognome: "aggiornamento"});
+          }
+
+        }catch (e){
+          console.log(e);
+        }
+      },
+
+      submitInsegnamentoCorsi: async function(mat){
+        var id = document.getElementById("insegnamentoCorsiDocente"+ mat);
+        id=id.options[id.selectedIndex].value;
+
+        try {
+          const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({docente:id,corso:mat})
+          });
+          if(response.status == 401){
+            console.log("Errore nella servlet post docente");
+          }else if (response.status == 200){
+            this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({materia:mat , rimosso:false});
+            this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti.push({id:id, nome: "aggiornamento",cognome: "aggiornamento"});
           }
 
         }catch (e){

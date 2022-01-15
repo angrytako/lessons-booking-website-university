@@ -92,53 +92,6 @@ public class InsegnamentoCorsiSevlet extends SecuredHttpServlet {
     }
 
 
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter out = jsonResponseSetup(response);
-        if(!hasSession(request) || !isAdmin(request)) {
-            json401ErrorResponse(response,out);
-            return;
-        }
-        StringBuilder buffer = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            buffer.append(line);
-            buffer.append(System.lineSeparator());
-        }
-        String data = buffer.toString();
-        JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
-
-        // 1. JSON file to Java object
-        String materia = jobj.get("corso").getAsString();
-        Integer idDocente = jobj.get("docente").getAsInt();
-
-        if(materia == null || idDocente == null){
-            out.print("{\"error\":\"Missing params\"}");
-            response.setStatus(400);
-            out.flush();
-            return;
-        }
-        //check if teaching exists
-        Insegnamento ins = DAO.queryGetInsegnamento(idDocente,materia);
-        if(ins == null){
-            out.print("{\"error\":\"Specified resource does not exist\"}");
-            response.setStatus(400);
-            out.flush();
-            return;
-        }
-        if(DAO.queryDeleteInsegnamentoDB(materia,idDocente)){
-            out.print("{\"message\":\"Success\"}");
-            response.setStatus(200);
-        }
-        else{
-            out.print("{\"error\":\"Unexpected error\"}");
-            response.setStatus(500);
-        }
-        out.flush();
-        return;
-
-    }
-
+    //la delate è uguale a quella di insegnamentoDocente, si usa direttamente quella
 
 }
