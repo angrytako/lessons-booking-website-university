@@ -53,10 +53,15 @@ const routes = [
       else next();
     }},
   {
-    path: '/docenti-corsi',
-    name: 'DocentiCorsi',
-    component: () => import('../views/DocentiCorsi.vue')
-  }
+    path: '/docenti',
+    name: 'Docenti',
+    component: () => import('../views/Docenti.vue')
+  },
+  {
+    path: '/corsi',
+    name: 'Corsi',
+    component: () => import('../views/Corsi.vue')
+  },
 ]
 
 const router = createRouter({
