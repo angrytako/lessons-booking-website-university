@@ -12,11 +12,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Map;
 
 
-@WebServlet(name = "InsegnamentoDocentiSevlet", value = "/InsegnamentoDocentiSevlet")
-public class InsegnamentoDocentiSevlet extends SecuredHttpServlet {
+@WebServlet(name = "InsegnamentoCorsiSevlet", value = "/InsegnamentoCorsiSevlet")
+public class InsegnamentoCorsiSevlet extends SecuredHttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = jsonResponseSetup(response);
@@ -24,17 +23,17 @@ public class InsegnamentoDocentiSevlet extends SecuredHttpServlet {
             json401ErrorResponse(response, out);
             return;
         }
-        ArrayList<InsegnamentoDocente> insegnamentoDocenti = new ArrayList<InsegnamentoDocente>();
-        ArrayList<Docente> professori = DAO.queryShowAllDocentiDB();
-        for (int i=0; i<professori.size();i++){
-            ArrayList<Corso> corsi = DAO.showCoursesForTeachersDB(professori.get(i).getId());
-            InsegnamentoDocente insegnamentoDocente = new InsegnamentoDocente(professori.get(i).getId(),corsi);
-            insegnamentoDocenti.add(insegnamentoDocente);
+        ArrayList<InsegnamentoCorso> insegnamentoCorsi = new ArrayList<InsegnamentoCorso>();
+        ArrayList<Corso> corsi = DAO.queryShowAllCoursesDB(false);
+        for (int i=0; i<corsi.size();i++){
+            ArrayList<Docente> docenti = DAO.showDocentiForCourseDB(corsi.get(i).getMateria());
+            InsegnamentoCorso insegnamentoCorso = new InsegnamentoCorso(corsi.get(i).getMateria(),docenti);
+            insegnamentoCorsi.add(insegnamentoCorso);
         }
 
 
         Gson gson = new Gson();
-        String json = gson.toJson(insegnamentoDocenti);
+        String json = gson.toJson(insegnamentoCorsi);
         out.print(json);
         response.setStatus(200);
 

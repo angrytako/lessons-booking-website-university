@@ -24,24 +24,24 @@ I Docenti:
             <br>
             Inserisci un nuovo insegnamento:
             <div class="form-group row">
-              <label for="inputCognome" class="col-sm-2 col-form-label">Corso</label>
+              <label for="inputCognome" class="col-sm-2 col-form-label">Corso -> </label>
               <div class="col-sm-10">
-                <input type="email" class="form-control"  v-model="insegnamentoDocentiCorso">
+                <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
+                  <option  v-for="corso in $store.state.corsi" :key="corso.materia" v-bind:value=corso.materia>{{corso.materia}}</option>
+                </select>
               </div>
             </div>
             <div class="form-group row">
               <div class="col-sm-10">
-                <button  class="btn btn-primary" v-on:click.prevent="submitInsegnamentoDocenti(insegnamentoDocenti.id,insegnamentoDocentiCorso)" >Aggiungi insegnamento</button>
+                <button  class="btn btn-primary" v-on:click.prevent="submitInsegnamentoDocenti(insegnamentoDocenti.id)" >Aggiungi insegnamento</button>
               </div>
             </div>
           </form>
-
 
         </div>
       </div>
     </div>
   </div>
-
 
   <form>
     Aggiungi un nuovo docente:
@@ -65,8 +65,52 @@ I Docenti:
   </form>
 
 
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+  <br>
+  I Corsi:
+  <div class="row">
+    <div class="col-4">
+      <div class="list-group" id="list-tab-corsi" role="tablist">
+        <a v-for="corso in $store.state.corsi" :key="corso.materia "
+           class="list-group-item list-group-item-action" v-bind:id="'corso-list-'+corso.materia" data-bs-toggle="list"
+           v-bind:href="'#corso'+corso.id" role="tab" v-bind:aria-controls="'corso'+corso.materia">
+          {{corso.materia}}</a>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="tab-content" id="nav-tabContent-corsi">
+        <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
+             class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
+          Professore: {{insegnamentoDocenti.id}}. <div class="pe-auto" v-on:click="eliminaDocente(insegnamentoDocenti.id)">Elimina Docente</div>
+          Questi sono i corsi in cui insegna:
+          <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
+            ~ {{corsi.materia}}
+            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamentoDocenti(insegnamentoDocenti.id,corsi.materia)">
+          </div>
 
+          <form>
+            <br>
+            Inserisci un nuovo insegnamento:
+            <div class="form-group row">
+              <label for="inputCognome" class="col-sm-2 col-form-label">Corso -> </label>
+              <div class="col-sm-10">
+                <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
+                  <option  v-for="corso in $store.state.corsi" :key="corso.materia" v-bind:value=corso.materia>{{corso.materia}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-sm-10">
+                <button  class="btn btn-primary" v-on:click.prevent="submitInsegnamentoDocenti(insegnamentoDocenti.id)" >Aggiungi insegnamento</button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
 
   I Corsi:
   <ul>
@@ -151,7 +195,9 @@ async function eliminaInsegnamentoDocenti(id,mat) {
       window.location.href = "/Noodle_war/login";
       return [];
     }else if(response.status==200){
-      this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corso=>corso.materia!=mat);
+
+      this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi =
+          this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corsi=> corsi.materia!=mat);
     }
 
     // window.location.reload();
@@ -201,6 +247,20 @@ async function getInsegnamentoDocenti() {
   }
 }
 
+async function getInsegnamentoCorsi() {
+  try {
+    const response = await fetch("/Noodle_war/InsegnamentoCorsiSevlet");
+
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    return await response.json();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 
   export default {
   name: "Professori",
@@ -208,13 +268,13 @@ async function getInsegnamentoDocenti() {
     this.$store.state.professori = await getProfessori();
     this.$store.state.corsi = await getCorsi();
     this.$store.state.insegnamentoDocenti = await getInsegnamentoDocenti();
+    this.$store.state.insegnamentoCorsi = await getInsegnamentoCorsi();
   },
   data(){
     return {
       corso: undefined,
       docenteNome: undefined,
-      docenteCognome: undefined,
-      insegnamentoDocentiCorso: undefined
+      docenteCognome: undefined
     }},
     methods:{
       eliminaDocente,
@@ -262,7 +322,9 @@ async function getInsegnamentoDocenti() {
         }
       },
 
-      submitInsegnamentoDocenti: async function(id,mat){
+      submitInsegnamentoDocenti: async function(id){
+        var mat = document.getElementById("insegnamentoDocentiCorso"+ id);
+        mat=mat.options[mat.selectedIndex].value;
 
         try {
           const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
@@ -275,7 +337,7 @@ async function getInsegnamentoDocenti() {
           if(response.status == 401){
             console.log("Errore nella servlet post docente");
           }else if (response.status == 200){
-            this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({materia:mat});
+            this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({materia:mat , rimosso:false});
           }
 
         }catch (e){

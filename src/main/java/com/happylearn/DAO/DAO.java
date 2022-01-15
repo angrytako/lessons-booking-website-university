@@ -694,9 +694,9 @@ public class DAO {
 			connectionToDB();
 			st = conn1.createStatement();
 			st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' AND docente = " + idDoc);
-			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '" + course + "' AND docente = " + idDoc + "AND stato = 'attiva'");
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '"+course+"' AND docente = "+idDoc+" AND stato = 'attiva'");
 		} catch (SQLException e) {
-			System.out.println("errore di connessione al db: " + e.getMessage());
+			System.out.println("errore db:  " + e.getMessage());
 			queryResult = false;
 		} finally {
 			closeStatement();
