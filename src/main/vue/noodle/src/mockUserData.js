@@ -7,10 +7,10 @@ export const realState = {
 export const lorenzo = {
     username:"Lorenzo",
     role: "cliente",
-    miePrenotazioni:[{ corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"attiva",giorno:1,orario:0},
-        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"attiva",giorno:1,orario:0},
-        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"effettuata",giorno:0,orario:0},
-        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"cancellata",giorno:2,orario:1}],
+    miePrenotazioni:[{ corso:"Architetture",nomeDocente: "Pippo", cognomeDocente:"Paperino", utente:"Lorenzo",stato:"attiva",giorno:1,orario:0},
+        { corso:"Architetture", nomeDocente: "Pippo", cognomeDocente:"Paperino", utente:"Lorenzo",stato:"attiva",giorno:1,orario:0},
+        { corso:"Architetture", nomeDocente: "Pippo", cognomeDocente:"Paperino", utente:"Lorenzo",stato:"effettuata",giorno:0,orario:0},
+        { corso:"Architetture",nomeDocente: "Pippo", cognomeDocente:"Paperino", utente:"Lorenzo",stato:"cancellata",giorno:2,orario:1}],
     prenotazioni:undefined
 }
 export const toneTuga = {

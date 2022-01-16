@@ -53,12 +53,13 @@ public class LoginServlet extends HttpServlet {
 			System.out.println(user.getRuolo());
 			session.setAttribute("username", user.getUsername());
 			session.setAttribute("role", user.getRuolo());
+			jobj.remove("password");
 			jobj.addProperty("role",user.getRuolo());
 			out.print(jobj.toString());
 			response.setStatus(200);
 		} else {
-			out.print("{\"error\":\"username or password are incorrect\"}");
-			response.setStatus(400);
+				out.print("{\"error\":\"username or password are incorrect\"}");
+				response.setStatus(400);
 		}
 
 		out.flush();
