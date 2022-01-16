@@ -9,7 +9,7 @@ export const store = createStore({
 
         state: function(){
 
-            return realState }
+            return lorenzo }
 })
 createApp(App).use(store).use(router).mount('#app')
 

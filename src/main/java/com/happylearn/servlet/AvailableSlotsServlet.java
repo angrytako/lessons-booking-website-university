@@ -1,12 +1,14 @@
 package com.happylearn.servlet;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.happylearn.DAO.*;
 import com.happylearn.support.Slot;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -38,22 +40,63 @@ public class AvailableSlotsServlet extends SecuredHttpServlet {
 		PrintWriter out = jsonResponseSetup(response);
 		ArrayList<Slot> allAvailableSlots = showAllAvailableSlots();
 
-		System.out.println(allAvailableSlots);
-		System.out.println(allAvailableSlots.size());
-
 		out.print(slotsToJson(allAvailableSlots));
 		response.setStatus(200);
 		out.flush();
 		return;
 	}
 
+	// POST:
+	// prendere giorno e ora
+	// ritornare tutti gli utenti che non hanno una prenotazione attiva o effettuata
+	// solo l'admin può farlo
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// response.setContentType("text/html");
+		PrintWriter out = jsonResponseSetup(response);
+		if(!hasSession(request)) {
+			json401ErrorResponse(response,out);
+			return;
+		}
+		if (isAdmin(request)) {
+			StringBuilder buffer = new StringBuilder();
+			BufferedReader reader = request.getReader();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
+				buffer.append(System.lineSeparator());
+			}
+			String data = buffer.toString();
+			JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
+
+			// 1. JSON file to Java object
+			String nome =  jobj.get("nome").getAsString();
+			String cognome =  jobj.get("cognome").getAsString();
+
+			if (nome!=null&&cognome!=null){
+				if(DAO.queryAddDocenteDB(nome,cognome)){
+					int id = DAO.queryShowOneDocenteDB(nome, cognome);
+					//out.print(slotsToJson(allAvailableSlots));
+					response.setStatus(200);
+				}else{
+					out.print("{\"error\":\"error query\"}");response.setStatus(500);
+				}
+			}
+			else {
+				out.print("{\"error\":\"error in nome,cognome\"}");response.setStatus(400);
+			}
+
+		}else{
+			out.print("{\"error\":\"not authorized\"}");response.setStatus(401);
+		}
+		out.flush();
+	}
+
 	private String slotsToJson(ArrayList<Slot> slots) {
 		Gson gson = new Gson();
 		return gson.toJson(slots);
 	}
-
-
-
 
 	/** TODO
 	 * DA METTERE NEL DAO!!!!!!
@@ -74,6 +117,8 @@ public class AvailableSlotsServlet extends SecuredHttpServlet {
 		ArrayList<Docente> allTeachers = DAO.queryShowAllDocentiDB();
 		ArrayList<Corso> allCourses = DAO.queryShowAllCoursesDB(false);
 
+		System.out.println(allBookings);		// strano: l'ultima di ToneTuga da dove la trova?? Bu...
+
 		for (int day = 0; day < 5; day++) {
 			for (int time = 0; time < 4; time++) {
 				for (Corso c : allCourses) {
@@ -81,7 +126,6 @@ public class AvailableSlotsServlet extends SecuredHttpServlet {
 					for (Insegnamento ins : allTeachings) {
 						if (c.getMateria().equals(ins.getCorso())){
 							toAdd = true;
-							System.out.println(ins.getCorso());
 							for (Prenotazione pre : allBookings) {
 								if (day == pre.getGiorno() && time == pre.getOrario() && ins.getCorso().equals(pre.getCorso()) && ins.getIdDocente() == pre.getIdDocente()) {
 									toAdd = false;

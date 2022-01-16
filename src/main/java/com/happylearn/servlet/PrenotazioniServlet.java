@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 @WebServlet(name = "PrenotazioniServlet", value = "/PrenotazioniServlet")
 public class PrenotazioniServlet extends SecuredHttpServlet {
+	// ritorna le prenotazioni nel database.
+	// Se c'è lo username ritorna TUTTE le SUE prenotazioni
+	// Se NON c'è lo username le ritorna TUTTE
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = jsonResponseSetup(response);
@@ -25,8 +28,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 			return;
 		}
 		//getting the querystring variables as a map
-		//if username is present, the list of prenotazioni will be given for that user,
-		//if the user is the same as the one requesting, or it is an admin
+		//if username is present, the list of prenotazioni will be given for that user, if the user is the same as the one requesting, or it is an admin
 		//otherwise it returns all prenotazioni, if the user is an admin
 		Map<String, String[]> params = request.getParameterMap();
 		if(params.containsKey("username")){
@@ -68,6 +70,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 
 	}
 
+	// aggiunge una prenotazione al database
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = jsonResponseSetup(response);
@@ -98,6 +101,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 			out.flush();
 			return;
 		}
+
 		//check if booking exists, and if it does, show error
 		PrenotazioneDocenteRuolo prenotazione = DAO.queryGetPrenotazioneDB(corso,username,giorno,orario);
 		if(prenotazione != null){
@@ -109,12 +113,13 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 
 		if(isAuthorized(request, username)) {
 			//if the user whose data is being changed is admin, you cannot change it, unless you are that admin
-			if(prenotazione.getRuolo().equals("amministratore") && !prenotazione.getUtente().equals( request.getSession().getAttribute("username"))){
-				out.print("{\"error\":\"not authorized\"}");
-				response.setStatus(401);
-				out.flush();
-				return;
-			}
+			//TODO: un admin non può prenotare per un altro admin
+//			if(isAdmin(request) && !prenotazione.getUtente().equals( request.getSession().getAttribute("username"))){
+//				out.print("{\"error\":\"not authorized\"}");
+//				response.setStatus(401);
+//				out.flush();
+//				return;
+//			}
 			if(DAO.queryAddPrenotazioneDB(corso,idDocente,username,giorno,orario)){
 				out.print("{\"message\":\"Success\"}");
 				response.setStatus(200);

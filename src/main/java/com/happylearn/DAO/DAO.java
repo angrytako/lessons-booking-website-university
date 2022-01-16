@@ -663,7 +663,7 @@ public class DAO {
 					boolean existedTeaching = false;
 					for (Insegnamento i : insegnamenti) {
 						if (i.getCorso().equals(course) && i.getIdDocente() == idDoc) {
-							st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = false WHERE corso = '" + course + "' AND docente = " + idDoc);
+							st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' AND docente = " + idDoc);
 							existedTeaching = true;
 							queryResult = true;
 							break;
