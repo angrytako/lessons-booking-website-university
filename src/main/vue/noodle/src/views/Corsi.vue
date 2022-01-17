@@ -103,8 +103,8 @@ async function eliminaInsegnamento(id,mat) {
       this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi =
           this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corsi=> corsi.materia!=mat);
 
-      this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti =
-          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti.filter(docenti=> docenti.id!=id);
+      this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti =
+          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.filter(docenti=> docenti.id!=id);
     }
 
     // window.location.reload();
@@ -126,6 +126,18 @@ async function getCorsi() {
     console.log(e);
   }
 }
+async function getProfessori() {
+  try {
+    const response = await fetch("/Noodle_war/ProfessoriServlet");
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    return await response.json();
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 
 async function getInsegnamentoCorsi() {
@@ -142,18 +154,36 @@ async function getInsegnamentoCorsi() {
   }
 }
 
+async function getInsegnamentoDocenti() {
+  try {
+    const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet");
+
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    return await response.json();
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 
 
 export default {
   name: "Corsi",
   async created() {
-    this.$store.state.corsi = await getCorsi();
-    this.$store.state.insegnamentoCorsi = await getInsegnamentoCorsi();
+
+    if  (this.$store.state.corsi==undefined) {  this.$store.state.corsi = await getCorsi();}
+    if  (this.$store.state.professori==undefined) {this.$store.state.professori= await getProfessori();}
+
+    if  (this.$store.state.insegnamentoDocenti==undefined) {this.$store.state.insegnamentoDocenti= await getInsegnamentoDocenti();}
+    if  ( this.$store.state.insegnamentoCorsi==undefined) { this.$store.state.insegnamentoCorsi = await getInsegnamentoCorsi();}
+
   },
   data(){
     return {
-      corso: undefined,
+      corso: undefined
     }},
   methods: {
     eliminaCorso,
@@ -193,15 +223,20 @@ export default {
         if (response.status == 401) {
           console.log("Errore nella servlet post docente");
         } else if (response.status == 200) {
+
+
+          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.push({
+            id: id,
+            nome: this.$store.state.professori.find(docente => docente.id == id).nome,
+            cognome: this.$store.state.professori.find(docente => docente.id == id).cognome,
+            rimosso: false
+          });
+
           this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({
             materia: mat,
             rimosso: false
           });
-          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti.push({
-            id: id,
-            nome: "aggiornamento",
-            cognome: "aggiornamento"
-          });
+
         }
 
       } catch (e) {
