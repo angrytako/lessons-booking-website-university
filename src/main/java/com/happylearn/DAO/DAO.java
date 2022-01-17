@@ -154,7 +154,7 @@ public class DAO {
             connectionToDB();
             st = conn1.createStatement();
             rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
-									"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
+									"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario + " AND P.STATO <> 'cancellata'");
             if (rs.next()) {
                 return new PrenotazioneDocenteRuolo(
 						rs.getString("corso"), rs.getInt("docente"), rs.getString("nome"),

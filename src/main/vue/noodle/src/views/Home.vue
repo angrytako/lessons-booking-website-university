@@ -121,8 +121,10 @@
 			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
-			}
-			else if (response.status === 200) {
+			} else if(response.status === 500) {
+				console.log(response);
+				return [];
+			} else if (response.status === 200) {
 				// se sono un client svuota la casella
 				if (this.$store.state.role === "cliente")
 					this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day] = [];
@@ -150,7 +152,7 @@
 				response = await fetch("/Noodle_war/PrenotazioniServlet");
 			else
 				window.location.href = "/Noodle_war/login";
-			if(response.status == 401){
+			if(response.status === 401){
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
