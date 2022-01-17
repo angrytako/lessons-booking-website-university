@@ -694,9 +694,9 @@ public class DAO {
 			connectionToDB();
 			st = conn1.createStatement();
 			st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' AND docente = " + idDoc);
-			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '" + course + "' AND docente = " + idDoc + "AND stato = 'attiva'");
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '"+course+"' AND docente = "+idDoc+" AND stato = 'attiva'");
 		} catch (SQLException e) {
-			System.out.println("errore di connessione al db: " + e.getMessage());
+			System.out.println("errore db:  " + e.getMessage());
 			queryResult = false;
 		} finally {
 			closeStatement();
@@ -763,7 +763,7 @@ public class DAO {
 			connectionToDB();
 			st = conn1.createStatement();
 
-			rsI = st.executeQuery("SELECT CORSO C FROM INSEGNAMENTO WHERE DOCENTE = " + docenteId + " AND rimosso = false");
+			rsI = st.executeQuery("SELECT CORSO  FROM INSEGNAMENTO WHERE DOCENTE = " + docenteId + " AND rimosso = false");
 			while (rsI.next())
 				courses.add(new Corso(rsI.getString("CORSO"), false));
 		}catch (SQLException e) {

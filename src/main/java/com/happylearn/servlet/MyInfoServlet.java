@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 public class MyInfoServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Ciao");
 		HttpSession session = request.getSession();
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();

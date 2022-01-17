@@ -2,54 +2,42 @@ package com.happylearn.servlet;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.happylearn.DAO.Corso;
-import com.happylearn.DAO.DAO;
-import com.happylearn.DAO.Docente;
-import com.happylearn.DAO.Insegnamento;
+import com.happylearn.DAO.*;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Map;
 
-@WebServlet(name = "ProfessoriCorsiServlet", value = "/ProfessoriCorsiServlet")
-public class ProfessoriCorsiServlet extends SecuredHttpServlet {
+
+@WebServlet(name = "InsegnamentoDocentiSevlet", value = "/InsegnamentoDocentiSevlet")
+public class InsegnamentoDocentiSevlet extends SecuredHttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = jsonResponseSetup(response);
-        if(!hasSession(request) || !isAdmin(request)) {
-            json401ErrorResponse(response,out);
+        if (!hasSession(request) || !isAdmin(request)) {
+            json401ErrorResponse(response, out);
             return;
         }
-        /*querystring must have corso or docente, otherwise is a bad request*/
-        Map<String, String[]> params = request.getParameterMap();
-        if(params.containsKey("corso")){
-            String corso = params.get("corso")[0];
-            ArrayList<Docente> docenti = DAO.showDocentiForCourseDB(corso);
-            Gson gson = new Gson();
-            String json =  gson.toJson(docenti);
-            out.print(json);
-            response.setStatus(200);
+        ArrayList<InsegnamentoDocente> insegnamentoDocenti = new ArrayList<InsegnamentoDocente>();
+        ArrayList<Docente> professori = DAO.queryShowAllDocentiDB();
+        for (int i=0; i<professori.size();i++){
+            ArrayList<Corso> corsi = DAO.showCoursesForTeachersDB(professori.get(i).getId());
+            InsegnamentoDocente insegnamentoDocente = new InsegnamentoDocente(professori.get(i).getId(),corsi);
+            insegnamentoDocenti.add(insegnamentoDocente);
         }
-        else if(params.containsKey("docente")){
-            int docenteId = Integer.parseInt(params.get("docente")[0]);
-            ArrayList<Corso> corsi = DAO.showCoursesForTeachersDB(docenteId);
-            Gson gson = new Gson();
-            String json =  gson.toJson(corsi);
-            out.print(json);
-            response.setStatus(200);
-        }
-        else{
 
 
+        Gson gson = new Gson();
+        String json = gson.toJson(insegnamentoDocenti);
+        out.print(json);
+        response.setStatus(200);
 
-            out.print("{\"error\":\"Missing querystring params\"}");
-            response.setStatus(400);
-            }
         out.flush();
         return;
     }
@@ -72,8 +60,8 @@ public class ProfessoriCorsiServlet extends SecuredHttpServlet {
         JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
 
         // 1. JSON file to Java object
-        String materia = jobj.get("materia").getAsString();
-        Integer idDocente = jobj.get("idDocente").getAsInt();
+        String materia = jobj.get("corso").getAsString();
+        Integer idDocente = jobj.get("docente").getAsInt();
 
         if(materia == null || idDocente == null){
             out.print("{\"error\":\"Missing params\"}");
@@ -84,7 +72,8 @@ public class ProfessoriCorsiServlet extends SecuredHttpServlet {
         //check to see if both teacher and course exist
         Docente docente = DAO.queryGetDocente(idDocente);
         Corso corso = DAO.queryGetCorso(materia);
-        if(docente != null || corso == null){
+
+        if(docente == null || corso == null){
             out.print("{\"error\":\"Specified parameters do not exist\"}");
             response.setStatus(400);
             out.flush();
@@ -94,14 +83,15 @@ public class ProfessoriCorsiServlet extends SecuredHttpServlet {
         if(DAO.queryAddInsegnamentoDB(materia,idDocente)){
             out.print("{\"message\":\"Success\"}");
             response.setStatus(200);
-            }
+        }
         else{
             out.print("{\"error\":\"Unexpected error\"}");
             response.setStatus(500);
-            }
+        }
         out.flush();
         return;
     }
+
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -121,8 +111,8 @@ public class ProfessoriCorsiServlet extends SecuredHttpServlet {
         JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
 
         // 1. JSON file to Java object
-        String materia = jobj.get("materia").getAsString();
-        Integer idDocente = jobj.get("idDocente").getAsInt();
+        String materia = jobj.get("corso").getAsString();
+        Integer idDocente = jobj.get("docente").getAsInt();
 
         if(materia == null || idDocente == null){
             out.print("{\"error\":\"Missing params\"}");
@@ -150,4 +140,6 @@ public class ProfessoriCorsiServlet extends SecuredHttpServlet {
         return;
 
     }
+
+
 }

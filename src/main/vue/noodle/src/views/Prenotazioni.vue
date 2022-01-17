@@ -1,17 +1,22 @@
 <template>
 	<table>
-		<div id="warningDiv" v-if="warningActive">
-			<form id="warningForm">
-				<h2>Sicuro sicuro?</h2>
-				<label>Si</label>
-				<input  type="radio" value="true" name="confirmation" v-model="selectedConfirmation">
-				<label>No</label>
-				<input checked type="radio" value="false" name="confirmation" v-model="selectedConfirmation">
-				<div>
-					<button v-on:click="confirmChoice">OK</button>
-				</div>
-			</form>
-		</div>
+    <div class="modal fade" id="confirmation" ref="confirmation" tabindex="-1" aria-labelledby="confirmationLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="teachersBookingLabel">Vuoi segnare la prenotazione per {{this.waitingConfirmation.corso}} come {{this.waitingConfirmation.stato}}?</h5>
+          </div>
+          <div class="modal-body">
+            <h5>Potresti non poter più tornare indietro!</h5>
+          </div>
+          <div class="modal-footer">
+            <button v-on:click="confirmChoice" type="button" class="btn btn-primary" data-bs-dismiss="modal">Si</button>
+            <button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
 		<tr id="labels">
 			<th>Giorno</th>
 			<th>Orario</th>
@@ -48,36 +53,35 @@
 </template>
 
 <script>
-async function confirmChoice(e){
-	//to stop html automatic submit
-	e.preventDefault();
-	//if confirmed, sending the choice to servlet
-	if(this.selectedConfirmation == "false") {
-		this.waitingConfirmation.stato = "attiva";
-		this.warningActive=false;
-		this.waitingConfirmation = null;
-		return
-	}
-	const response = await fetch("/Noodle_war/PrenotazioniServlet", {
-		method: 'PUT',
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify( this.waitingConfirmation)
-	});
-	this.waitingConfirmation = null;
-	this.warningActive=false;
-	const decodedResponse =  await response.json();
-
-	if(!decodedResponse.error)
-		return;
+import { Modal } from "bootstrap";
+async function confirmChoice(){
+  const response = await fetch("/Noodle_war/PrenotazioniServlet", {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(this.waitingConfirmation)
+  });
+  this.waitingConfirmation = {};
+  const decodedResponse = await  response.json();
+  if(decodedResponse.error) {
+    this.waitingConfirmation.stato = "attiva";
+    //TODO show error
+  }
 
 }
+function dismissChoice(e){
+  this.waitingConfirmation.stato = "attiva";
+  this.waitingConfirmation = {};
+  return
+}
 function showWarning(e, prenotazione){
-	this.warningActive=true;
-	//store the
-	this.waitingConfirmation = prenotazione;
+  if(!this.myModal)
+    this.myModal = new Modal(this.$refs.confirmation)
+  this.myModal.show();
+  //store the
+  this.waitingConfirmation = prenotazione;
 }
     async function getPrenotazioni() {
         try {
@@ -101,16 +105,17 @@ function showWarning(e, prenotazione){
         },
 		methods:{
 			showWarning,
-			confirmChoice
+			confirmChoice,
+      dismissChoice
 
-		},
+
+    },
         data() {
 			return {
 				Days: { 0:"Lunedì",1:"Martedì",2:"Mercoledì",3:"Giovedì",4:"Venerdì",5:"Sabato",6:"Domenica" },
 				Hours:{ 0: "15-16", 1: "16-17",  2: "17-18", 3: "18-19"},
-				warningActive:false,
-				waitingConfirmation:null,
-				selectedConfirmation:"false"
+				waitingConfirmation:{},
+        myModal: undefined
 			};
         }
     }
