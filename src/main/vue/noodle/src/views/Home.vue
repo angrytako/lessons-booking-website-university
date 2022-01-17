@@ -36,8 +36,8 @@
 	</table>
 
 	<!-- Modal -->
-	<div class="modal fade" id="teachersBooking" tabindex="-1" aria-labelledby="teachersBookingLabel"
-		 aria-hidden="true">
+
+	<div class="modal fade" id="teachersBooking" tabindex="-1" aria-labelledby="teachersBookingLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -62,11 +62,18 @@
 							{{ teacher.nome + " " + teacher.cognome + " " + teacher.id + " " + selectedTeacher.id}}
 						</label>
 					</div>
+<!--					<div class="form-check" v-for="(user, index) in allAvailableUsers">-->
+<!--						&lt;!&ndash;		v-bind: l'espressione dipende da qlc di javascript-->
+<!--									checked: attributo di html settato a true/false-->
+<!--									-&#45;&#45;&#45;&#45;&#45;&#45;segnalo come checked solo se l'id del professore è uguale al prof selezionato-->
+<!--									&ndash;&gt;-->
+<!--						<input class="form-check-input" type="radio" v-on:change="showSelectedUser(user)" name="userBookingSelect" id="userBooking" v-bind:value=user.username v-bind:checked="user.username === allAvailableUsers.username">-->
+<!--						<label class="form-check-label" for="userBooking">-->
+<!--							{{ user.username + " " + allAvailableUsers.username}}-->
+<!--						</label>-->
+<!--					</div>-->
 				</div>
 				<div class="modal-footer" v-if="$store.state.role !== 'guest'">
-					<button type="button" class="btn btn-secondary" v-if="$store.state.role === 'amministratore'" data-bs-toggle="modal" data-bs-target="#booking">
-						Prenota per altro utente
-					</button>
 					<button type="button" class="btn btn-success" data-bs-dismiss="modal" v-on:click="addBookings">
 						Prenota
 					</button>
@@ -75,30 +82,6 @@
 		</div>
 	</div>
 
-	<!-- Modal -->
-	<div class="modal fade" id="booking" tabindex="-1" aria-labelledby="bookingLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="bookingLabel">{{ selectedSlot.course + " " + selectedTeacher.nome + " " + selectedTeacher.cognome + " " + days[selectedSlot.day] + " " + times[selectedSlot.time] }}</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					non va:(
-<!--					<div class="form-check" v-for="username in AllUsers">-->
-<!--						<input class="form-check-input" type="radio" v-model="selectedTeacher.id" name="teacherBookingSelect" id="AllUsers" v-bind:value=username>-->
-<!--						<label class="form-check-label" for="allUsers">-->
-<!--							{{ teacher.nome + " " + teacher.cognome + " " + teacher.id + " " + selectedTeacher.id}}-->
-<!--						</label>-->
-<!--					</div>-->
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-					<button type="button" class="btn btn-success" data-bs-dismiss="modal" v-on:click="addBookings">Conferma</button>
-				</div>
-			</div>
-		</div>
-	</div>
 
 	<ul>
 		<!--		prima un for sugli slot e poi un for sui docenti nell'array di docenti-->
@@ -115,6 +98,7 @@
 </template>
 
 <script>
+	import { Modal } from "bootstrap";
 	async function addBookings() {
 		const booking = {};
 		booking.corso = this.selectedSlot.course;
@@ -139,11 +123,14 @@
 				return [];
 			}
 			else if (response.status === 200) {
-				// svuota la casella
-				this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day] = [];
+				// se sono un client svuota la casella
+				if (this.$store.state.role === "cliente")
+					this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day] = [];
+
 				// set timeout --> cosa che metto sora con un v-if
 				// filter funziona come in Haskell: gli passi una lambda --> per ogni elemento dell'array SE ritorna vero viene tenuto l'elemento, altrimenti viene buttato via
 				// filter ritorna un altro array dove tutti gli elementi del nuovo array rispettano la proprietà true (...)
+
 				this.selectedSlot.teacherList = this.selectedSlot.teacherList.filter(teacher => teacher.id !== booking.idDocente);
 				if (this.selectedSlot.teacherList.length === 0) {
 					this.$store.state.slots = this.$store.state.slots.filter(slot => (slot.course !== booking.corso) && (slot.day !== booking.giorno) && (slot.time !== booking.orario));
@@ -167,10 +154,7 @@
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
-
-			console.log(await response.filter(booking => booking.stato !== "cancellata").json());
-
-			return await response.filter(booking => booking.stato !== "cancellata").json();
+			return await response.json();
 		}catch (e){
 			console.log(e);
 		}
@@ -199,12 +183,23 @@
 			if(servletSlots) {
 				if (this.$store.state.role === "guest")
 					this.$store.state.slots = servletSlots;
-				else if (this.$store.state.role === "client") {
-					const myNotDeletedBookings = await getMyBookings();
-					this.$store.state.slots = servletSlots.filter(slot => (slot.day !== myNotDeletedBookings.giorno) && (slot.time !== myNotDeletedBookings.orario));
+				else if (this.$store.state.role === "cliente") {
+					// bind serve per dare un this alle funzioni perché altrimenti le funzioni userebbero un loro this
+					// --> a quale this ci si riferisce???
+					let myNotDeletedBookings = await getMyBookings.bind(this)();
+					myNotDeletedBookings = myNotDeletedBookings.filter(booking => booking.stato !== "cancellata");
+					// find: prende un elemento su cui sto facendo find
+					// myNotDeletedBookings.find(notDelBooking => (notDelBooking.giorno === slot.day) && (notDelBooking.orario === slot.time)
+					// se c'è uno slot lo trova
+					this.$store.state.slots = servletSlots.filter(slot => !myNotDeletedBookings.find(notDelBooking => (notDelBooking.giorno === slot.day) && (notDelBooking.orario === slot.time)));
 				}
 				else if (this.$store.state.role === "amministratore"){
 					// TODO: da sistemare ancora!!
+					let myNotDeletedBookings = await getMyBookings.bind(this)();
+					myNotDeletedBookings = myNotDeletedBookings.filter(booking => booking.stato !== "cancellata");
+
+					console.log(myNotDeletedBookings);
+
 					this.$store.state.slots = servletSlots;
 				}
 			}
@@ -223,7 +218,8 @@
 			showSelectedTeacher: function (teacher) {
 				this.selectedTeacher = teacher;
 			},
-			addBookings
+			addBookings,
+			getMyBookings
 		},
 		data() {
 			return {
@@ -236,7 +232,8 @@
 				days: {0: "Lunedì", 1: "Martedì", 2: "Mercoledì", 3: "Giovedì", 4: "Venerdì"},
 				times: {0: "15-16", 1: "16-17", 2: "17-18", 3: "18-19"},
 				selectedSlot: {},
-				selectedTeacher: {}
+				selectedTeacher: {},
+				allAvailableUsers: {}
 			}
 		}
 	}
@@ -279,6 +276,10 @@
 	li {
 		/*text-align: left;*/
 		text-decoration: none;
+	}
+
+	h1{
+		margin-top: 50px;
 	}
 
 	.slot {

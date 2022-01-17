@@ -45,9 +45,9 @@ VALUES ('Sicurezza',5,'ToneTuga','attiva',3,1);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
 VALUES ('Sicurezza',5,'ToneTuga','attiva',1,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
-VALUES ('Basi_di_dati',2,'Lorenzo','effettuata',0,0);
+VALUES ('Basi di dati',2,'Lorenzo','effettuata',0,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
-VALUES ('Architettura_degli_elaboratori',2,'Lorenzo','cancellata',0,0);
+VALUES ('Architettura degli elaboratori',2,'Lorenzo','cancellata',0,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
 VALUES ('Sicurezza',5,'Anna','cancellata',1,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)

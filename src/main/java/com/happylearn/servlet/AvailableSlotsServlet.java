@@ -117,8 +117,6 @@ public class AvailableSlotsServlet extends SecuredHttpServlet {
 		ArrayList<Docente> allTeachers = DAO.queryShowAllDocentiDB();
 		ArrayList<Corso> allCourses = DAO.queryShowAllCoursesDB(false);
 
-		System.out.println(allBookings);		// strano: l'ultima di ToneTuga da dove la trova?? Bu...
-
 		for (int day = 0; day < 5; day++) {
 			for (int time = 0; time < 4; time++) {
 				for (Corso c : allCourses) {

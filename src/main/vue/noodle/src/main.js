@@ -13,5 +13,3 @@ export const store = createStore({
             return lorenzo }
 })
 createApp(App).use(store).use(router).mount('#app')
-
-

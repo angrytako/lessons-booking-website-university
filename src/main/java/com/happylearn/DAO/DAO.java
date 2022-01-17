@@ -1,7 +1,6 @@
 package com.happylearn.DAO;
 
 import com.happylearn.support.PrenotazioneDocenteRuolo;
-import com.happylearn.support.Slot;
 
 import java.sql.*;
 import java.util.*;

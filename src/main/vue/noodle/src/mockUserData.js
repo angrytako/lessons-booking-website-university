@@ -7,8 +7,9 @@ export const realState = {
 }
 export const lorenzo = {
     username:"Lorenzo",
-    role: "amministratore",
-    miePrenotazioni:[{ corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"attiva",giorno:1,orario:0},
+    role: "cliente",
+    miePrenotazioni:[
+        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"attiva",giorno:1,orario:1},
         { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"attiva",giorno:1,orario:0},
         { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"effettuata",giorno:0,orario:0},
         { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"cancellata",giorno:2,orario:1}],
