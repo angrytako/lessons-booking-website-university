@@ -26,9 +26,19 @@
             <div class="form-group row">
               <label for="inputCognome" class="col-sm-2 col-form-label">Corso:</label>
               <div class="col-sm-10">
+
                 <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
-                  <option  v-for="corso in $store.state.corsi" :key="corso.materia" v-bind:value=corso.materia>{{corso.materia}}</option>
+
+                  <option v-for="corso in $store.state.corsi"
+                          v-bind:value=corso.materia>
+                    <a v-if="insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)" > Insegnamento già in corso: {{corso.materia}} </a>
+                    <a v-else>{{corso.materia}}</a>
+                  </option>
                 </select>
+
+
+
+
               </div>
             </div>
             <div class="form-group row">
@@ -109,8 +119,8 @@ async function eliminaInsegnamento(id,mat) {
       this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi =
           this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corsi=> corsi.materia!=mat);
 
-      this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti =
-          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti.filter(docenti=> docenti.id!=id);
+      this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti =
+          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.filter(docenti=> docenti.id!=id);
     }
 
     // window.location.reload();
@@ -134,6 +144,18 @@ async function getProfessori() {
 }
 
 
+async function getCorsi() {
+  try {
+    const response = await fetch("/Noodle_war/CorsiServlet");
+    if(response.status == 401){
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    return await response.json();
+  }catch (e){
+    console.log(e);
+  }
+}
 
 async function getInsegnamentoDocenti() {
   try {
@@ -149,11 +171,29 @@ async function getInsegnamentoDocenti() {
   }
 }
 
+async function getInsegnamentoCorsi() {
+  try {
+    const response = await fetch("/Noodle_war/InsegnamentoCorsiSevlet");
+
+    if (response.status == 401) {
+      window.location.href = "/Noodle_war/login";
+      return [];
+    }
+    return await response.json();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export default {
   name: "Docenti",
   async created() {
-    this.$store.state.professori = await getProfessori();
-    this.$store.state.insegnamentoDocenti = await getInsegnamentoDocenti();
+    if ( this.$store.state.professori==undefined) {this.$store.state.professori = await getProfessori();}
+    if  (this.$store.state.corsi==undefined) {this.$store.state.corsi = await getCorsi();}
+
+    if  ( this.$store.state.insegnamentoCorsi==undefined) {this.$store.state.insegnamentoCorsi = await getInsegnamentoCorsi();}
+    if  ( this.$store.state.insegnamentoDocenti ==undefined) { this.$store.state.insegnamentoDocenti = await getInsegnamentoDocenti();}
+
   },
 
   data(){
@@ -193,8 +233,7 @@ export default {
 
     submitInsegnamentoDocenti: async function (id) {
       var mat = document.getElementById("insegnamentoDocentiCorso" + id);
-      mat = mat.options[mat.selectedIndex].value;
-
+      mat = mat.options[mat.selectedIndex].text;
       try {
         const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
           method: 'POST',
@@ -210,10 +249,12 @@ export default {
             materia: mat,
             rimosso: false
           });
-          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.materia == mat).docenti.push({
+
+          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.push({
             id: id,
-            nome: "aggiornamento",
-            cognome: "aggiornamento"
+            nome: this.$store.state.professori.find(docente => docente.id == id).nome,
+            cognome: this.$store.state.professori.find(docente => docente.id == id).cognome,
+            rimosso: false
           });
         }
 
