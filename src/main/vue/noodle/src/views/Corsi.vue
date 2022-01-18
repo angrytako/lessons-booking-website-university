@@ -25,10 +25,15 @@
             <br>
             Inserisci un nuovo insegnamento:
             <div class="form-group row">
-              <label for="inputNome" class="col-sm-2 col-form-label">Professore </label>
+              <label class="col-sm-2 col-form-label">Professore </label>
               <div class="col-sm-10">
                 <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoCorsiDocente' +insegnamentoCorsi.corso">
-                  <option  v-for="docente in $store.state.professori" :key="docente.id" v-bind:value=docente.id >{{docente.id}} {{docente.nome}} {{docente.cognome}}</option>
+
+                  <option  v-for="docente in $store.state.professori"
+                          v-bind:class="{nonDisplay:insegnamentoCorsi.docenti.find(docenti => docenti.id==docente.id)}"
+                           v-bind:value=docente.id>
+                           {{docente.id}} {{docente.nome}} {{docente.cognome}}
+                  </option>
                 </select>
               </div>
             </div>
@@ -48,7 +53,7 @@
   <form>
     Aggiungi un nuovo corso:
     <div class="form-group row">
-      <label for="inputCognome" class="col-sm-2 col-form-label">Corso:</label>
+      <label class="col-sm-2 col-form-label">Corso:</label>
       <div class="col-sm-10">
         <input type="email" class="form-control" id="inputCorso" v-model="corso">
       </div>
@@ -86,7 +91,8 @@ async function eliminaCorso(materia) {
 }
 
 
-async function eliminaInsegnamento(id,mat) {
+async function eliminaInsegnamento(mat,id) {
+
   try {
     const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
       method: 'DELETE',
@@ -251,5 +257,7 @@ export default {
 </script>
 
 <style scoped>
-
+.nonDisplay{
+  display:none;
+}
 </style>

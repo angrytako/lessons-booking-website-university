@@ -629,7 +629,7 @@ public class DAO {
 	public static boolean queryAddInsegnamentoDB(String course, int idDoc) {
 		boolean queryResult = false;
 		try {
-			ArrayList<Insegnamento> insegnamenti = queryShowAllInsegnamentiDB(false);
+			ArrayList<Insegnamento> insegnamenti = queryShowAllInsegnamentiDB(true);
 			connectionToDB();
 			st = conn1.createStatement();
 			// It checks if course already exists and if it's not removed. Same thing for teacher.
@@ -657,10 +657,10 @@ public class DAO {
 				} finally {
 					closeResultSet(rsD);
 				}
-
 				if (!teacherIsRemoved) {
 					boolean existedTeaching = false;
 					for (Insegnamento i : insegnamenti) {
+						System.out.println(i.getCorso()+i.getIdDocente()+course+idDoc);
 						if (i.getCorso().equals(course) && i.getIdDocente() == idDoc) {
 							st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' AND docente = " + idDoc);
 							existedTeaching = true;
