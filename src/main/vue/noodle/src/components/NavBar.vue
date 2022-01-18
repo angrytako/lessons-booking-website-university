@@ -15,13 +15,13 @@
   <li class="navbar-item" ></li>
   <li  class="navbar-item" v-if="$store.state.role == 'cliente'"><router-link  class="nav-link" :to="{ name:'MiePrenotazioni', query:{username: $store.state.username} }">Mie Prenotazioni</router-link></li>
 
-  <li  class="navbar-item d-sm-block" v-if="$store.state.role == 'amministratore'"><router-link  class="nav-link" :to="{ name:'MiePrenotazioni', query:{username: $store.state.username} }">Mie Prenotazioni</router-link></li>
-  <li class="navbar-item d-sm-block" v-if="$store.state.role == 'amministratore'"><router-link class=" nav-link" :to="{ name:'Prenotazioni' }">Prenotazioni</router-link></li>
+  <li  class="navbar-item d-md-none d-sm-block" v-if="$store.state.role == 'amministratore'"><router-link  class="nav-link" :to="{ name:'MiePrenotazioni', query:{username: $store.state.username} }">Mie Prenotazioni</router-link></li>
+  <li class="navbar-item  d-md-none d-sm-block" v-if="$store.state.role == 'amministratore'"><router-link class=" nav-link" :to="{ name:'Prenotazioni' }">Prenotazioni</router-link></li>
 
   <li class="navbar-item" v-bind:class="{dropdown:$store.state.role == 'amministratore'}" v-if="$store.state.role != 'guest'"></li>
   <li  class="nav-item dropdown d-sm-none d-md-block"  v-if="$store.state.role == 'amministratore'">
     <div class="nav-link dropdown-toggle"   id="navbarDropdownMenuLink"  role="button"  data-bs-toggle="dropdown"  aria-expanded="false">
-      Dropdown link
+      Prenotazioni
     </div>
     <ul class="dropdown-menu"  id="my-dropdown" aria-labelledby="navbarDropdownMenuLink">
        <li><router-link class="dropdown-item nav-link" :to="{ name:'MiePrenotazioni', query:{username: $store.state.username} }">Mie Prenotazioni</router-link></li>
