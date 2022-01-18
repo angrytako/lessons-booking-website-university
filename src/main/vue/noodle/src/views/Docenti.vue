@@ -30,7 +30,9 @@
                 <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
 
                   <option v-for="corso in $store.state.corsi"
+                          v-bind:class="{nonDisplay:insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)}"
                           v-bind:value=corso.materia>
+
                     <a v-if="insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)" > Insegnamento già in corso: {{corso.materia}} </a>
                     <a v-else>{{corso.materia}}</a>
                   </option>
@@ -268,5 +270,7 @@ export default {
 </script>
 
 <style scoped>
-
+.nonDisplay{
+  display:none;
+}
 </style>
