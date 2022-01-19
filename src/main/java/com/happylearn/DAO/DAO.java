@@ -31,7 +31,28 @@ public class DAO {
 		}
 	}
 
-	/*
+	/**
+	 *  This method returns a user obj if a user with a given
+	 *  username exists, null otherwise
+	 */
+	public static Utente getUser(String username) {
+		Utente user = null;
+		try {
+			connectionToDB();
+			Statement utente = conn1.createStatement();
+			ResultSet rs = utente.executeQuery("SELECT username, password, ruolo FROM UTENTE WHERE username = '" + username + "'");
+			if (rs.next()) {
+				user = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("ruolo"));
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeDBConnection();
+		}
+		return user;
+	}
+
+	/**
 	 *  This method returns a user obj if a user with a given
 	 *  username and password exists, null otherwise
 	 */
@@ -51,6 +72,7 @@ public class DAO {
 		}
 		return user;
 	}
+
 	/*
 	 *  This method returns a corso obj, if it exists
 	 * else it returns null

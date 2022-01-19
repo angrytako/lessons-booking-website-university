@@ -26,7 +26,7 @@
 			<!--				slotTime = matrCorsi[indexTime] qui sotto :)-->
 			<td v-for="(slotDay, indexDay) in slotTime" :key="indexDay">
 				<!--					slotDay = matrCorsi[indexTime][indexDay] qui sotto :)-->
-				<p class="courseToClick" v-for="(slot, indexSlot) in slotDay" :key="indexSlot"  v-on:click="showTeachersFunction(slot)"
+				<p class="courseToClick" v-for="(slot, indexSlot) in slotDay" :key="indexSlot"  v-on:click="showTeachersAndUsersFunction(slot)"
 				   data-bs-toggle="modal" data-bs-target="#teachersBooking">
 					{{ slot.course }}
 				</p>
@@ -62,16 +62,13 @@
 							{{ teacher.nome + " " + teacher.cognome + " " + teacher.id + " " + selectedTeacher.id}}
 						</label>
 					</div>
-<!--					<div class="form-check" v-for="(user, index) in allAvailableUsers">-->
-<!--						&lt;!&ndash;		v-bind: l'espressione dipende da qlc di javascript-->
-<!--									checked: attributo di html settato a true/false-->
-<!--									-&#45;&#45;&#45;&#45;&#45;&#45;segnalo come checked solo se l'id del professore è uguale al prof selezionato-->
-<!--									&ndash;&gt;-->
-<!--						<input class="form-check-input" type="radio" v-on:change="showSelectedUser(user)" name="userBookingSelect" id="userBooking" v-bind:value=user.username v-bind:checked="user.username === allAvailableUsers.username">-->
-<!--						<label class="form-check-label" for="userBooking">-->
-<!--							{{ user.username + " " + allAvailableUsers.username}}-->
-<!--						</label>-->
-<!--					</div>-->
+					<br/>
+					<p v-if="$store.state.role === 'amministratore'"> Seleziona l'utente per cui vuoi effettuare la prenotazione: </p>
+					<select class="form-select" aria-label="User select" v-if="$store.state.role === 'amministratore'">
+						<option v-for="user in selectedSlotUsers" v-bind:value=user.username v-on:change="showSelectedUser(user)">
+							{{ user.username + " " + selectedUser.username }}
+						</option>
+					</select>
 				</div>
 				<div class="modal-footer" v-if="$store.state.role !== 'guest'">
 					<button type="button" class="btn btn-success" data-bs-dismiss="modal" v-on:click="addBookings">
@@ -103,7 +100,10 @@
 		const booking = {};
 		booking.corso = this.selectedSlot.course;
 		booking.idDocente = this.selectedTeacher.id;
-		booking.utente = this.$store.state.username;
+		if(this.$store.state.role === "amministratore")
+			booking.utente = this.selectedUser.username;
+		else
+			booking.utente = this.$store.state.username;
 		booking.giorno = this.selectedSlot.day;
 		booking.orario = this.selectedSlot.time;
 
@@ -148,8 +148,17 @@
 			let response;
 			if(this.$store.state.role === "cliente")
 				response = await fetch("/Noodle_war/PrenotazioniServlet?username=" + this.$store.state.username);
-			else if (this.$store.state.role === "amministratore")
-				response = await fetch("/Noodle_war/PrenotazioniServlet");
+			else if (this.$store.state.role === "amministratore") {
+				const myResponse = await fetch("/Noodle_war/PrenotazioniServlet?username=" + this.$store.state.username);
+				const allResponse = await fetch("/Noodle_war/PrenotazioniServlet");
+				if(myResponse.status === 401 || allResponse.status === 401){
+					window.location.href = "/Noodle_war/login";
+					return [];
+				}
+				const myResponseSupport = await myResponse.json();
+				const allResponseSupport = await allResponse.json();
+				return myResponseSupport.concat(allResponseSupport);
+			}
 			else
 				window.location.href = "/Noodle_war/login";
 			if(response.status === 401){
@@ -162,10 +171,23 @@
 		}
 	}
 
+	async function getAllUsers(){
+		try {
+			const response = await fetch("/Noodle_war/AllUsersServlet");
+			if (response.status === 401) {
+				window.location.href = "/Noodle_war/login";
+				return [];
+			}
+			return await response.json();
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
 	async function getSlots() {
 		try {
 			const response = await fetch("/Noodle_war/AvailableSlotsServlet");
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -196,12 +218,11 @@
 					this.$store.state.slots = servletSlots.filter(slot => !myNotDeletedBookings.find(notDelBooking => (notDelBooking.giorno === slot.day) && (notDelBooking.orario === slot.time)));
 				}
 				else if (this.$store.state.role === "amministratore"){
-					// TODO: da sistemare ancora!!
-					let myNotDeletedBookings = await getMyBookings.bind(this)();
-					myNotDeletedBookings = myNotDeletedBookings.filter(booking => booking.stato !== "cancellata");
-
-					console.log(myNotDeletedBookings);
-
+					this.allNotDeletedBookings = await getMyBookings.bind(this)();
+					this.allNotDeletedBookings = this.allNotDeletedBookings.filter(booking => booking.stato !== "cancellata");
+					// vado a prendere tutti gli utenti --> SOLO AMMINISTRATORE!!!
+					// li metto in una variabile LOCALE --> allAvailableUsers
+					this.allAvailableUsers = await getAllUsers.bind(this)();
 					this.$store.state.slots = servletSlots;
 				}
 			}
@@ -213,15 +234,34 @@
 			}
 		},
 		methods: {
-			showTeachersFunction: function (slot) {
+			showTeachersAndUsersFunction: function (slot) {
 				this.selectedSlot = slot;
-				this.selectedTeacher = slot.teacherList[0];		//seleziona sempre il primo docente della lista --> il checked di sopra è uguale solo se è il primo!!!!!!!
+				if(this.$store.state.role === "cliente" || this.$store.state.role === "amministratore")
+					this.selectedTeacher = slot.teacherList[0];		//seleziona sempre il primo docente della lista --> il checked di sopra è uguale solo se è il primo!!!!!!!
+				if (this.$store.state.role === "amministratore") {
+					let allAvailableUsersSlot = [];
+					let toAdd = true;
+					for(let user of this.allAvailableUsers){
+						toAdd = true;
+						for (let booking of this.allNotDeletedBookings) {
+							if(slot.day === booking.giorno && slot.time === booking.orario && user.username === booking.utente)
+								toAdd = false;
+						}
+						if (toAdd)
+							allAvailableUsersSlot.push(user);
+					}
+					this.selectedSlotUsers = allAvailableUsersSlot;
+				}
 			},
 			showSelectedTeacher: function (teacher) {
 				this.selectedTeacher = teacher;
 			},
+			showSelectedUser: function(user) {
+				this.selectedUser = user;
+			},
 			addBookings,
-			getMyBookings
+			getMyBookings,
+			getAllUsers
 		},
 		data() {
 			return {
@@ -234,8 +274,11 @@
 				days: {0: "Lunedì", 1: "Martedì", 2: "Mercoledì", 3: "Giovedì", 4: "Venerdì"},
 				times: {0: "15-16", 1: "16-17", 2: "17-18", 3: "18-19"},
 				selectedSlot: {},
+				selectedUser: {},
 				selectedTeacher: {},
-				allAvailableUsers: {}
+				allAvailableUsers: [],		// tutti gli utenti
+				selectedSlotUsers: [],
+				allNotDeletedBookings: []
 			}
 		}
 	}
