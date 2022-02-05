@@ -64,8 +64,8 @@
 					</div>
 					<br/>
 					<p v-if="$store.state.role === 'amministratore'"> Seleziona l'utente per cui vuoi effettuare la prenotazione: </p>
-					<select class="form-select" aria-label="User select" v-if="$store.state.role === 'amministratore'">
-						<option v-for="user in selectedSlotUsers" v-bind:value=user.username v-on:change="showSelectedUser(user)">
+					<select class="form-select" aria-label="User select" v-if="$store.state.role === 'amministratore'" v-model="selectedUser.username">
+						<option v-for="(user, index) in selectedSlotUsers" v-bind:value="user.username">
 							{{ user.username + " " + selectedUser.username }}
 						</option>
 					</select>
@@ -79,19 +79,23 @@
 		</div>
 	</div>
 
+	<!-- Modal confirmed booking -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" ref="confirmed" aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+				<symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+					<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+				</symbol>
+			</svg>
 
-	<ul>
-		<!--		prima un for sugli slot e poi un for sui docenti nell'array di docenti-->
-		<li v-for="slotAll in $store.state.slots"
-			:key="slotAll.course + slotAll.day + slotAll.time">
-			<div class="course">{{ slotAll.course }}</div>
-			<div class="teacher" v-for="teacher in slotAll.teacherList">
-				{{ teacher.nome + " " + teacher.cognome }}
+			<div class="alert alert-success d-flex align-items-center" role="alert">
+				<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+				<div>
+					La prenotazione è stata effettuata con successo!
+				</div>
 			</div>
-			<div class="day">{{ slotAll.day }}</div>
-			<div class="time">{{ slotAll.time }}</div>
-		</li>
-	</ul>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -106,8 +110,6 @@
 			booking.utente = this.$store.state.username;
 		booking.giorno = this.selectedSlot.day;
 		booking.orario = this.selectedSlot.time;
-
-		console.log(booking);
 
 		try {
 			const response = await fetch("/Noodle_war/PrenotazioniServlet", {
@@ -128,7 +130,8 @@
 				// se sono un client svuota la casella
 				if (this.$store.state.role === "cliente")
 					this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day] = [];
-
+				else if(this.$store.state.role === "amministratore")		// vero se fa parte del nuovo array
+					this.allNotDeletedBookings.push(booking);
 				// set timeout --> cosa che metto sora con un v-if
 				// filter funziona come in Haskell: gli passi una lambda --> per ogni elemento dell'array SE ritorna vero viene tenuto l'elemento, altrimenti viene buttato via
 				// filter ritorna un altro array dove tutti gli elementi del nuovo array rispettano la proprietà true (...)
@@ -137,6 +140,11 @@
 				if (this.selectedSlot.teacherList.length === 0) {
 					this.$store.state.slots = this.$store.state.slots.filter(slot => (slot.course !== booking.corso) && (slot.day !== booking.giorno) && (slot.time !== booking.orario));
 				}
+				if(!this.myModal)
+					this.myModal = new Modal(this.$refs.confirmed)
+				this.myModal.show();
+				const supModal = this.myModal;
+				setTimeout(()=> supModal.hide(),3000);
 			}
 		} catch (e) {
 			console.log(e);
@@ -251,13 +259,14 @@
 							allAvailableUsersSlot.push(user);
 					}
 					this.selectedSlotUsers = allAvailableUsersSlot;
+					// ... spread operator --> ...arr -> arr[0], arr[1], ..etc
+					// ...obj -> key1:value1, key2:value2, ..etc
+					// allAvailableUsersSlot[0] return user object at the zero position
+					this.selectedUser = allAvailableUsersSlot || allAvailableUsersSlot.length ? {...allAvailableUsersSlot[0]} : undefined;
 				}
 			},
 			showSelectedTeacher: function (teacher) {
 				this.selectedTeacher = teacher;
-			},
-			showSelectedUser: function(user) {
-				this.selectedUser = user;
 			},
 			addBookings,
 			getMyBookings,
@@ -278,7 +287,8 @@
 				selectedTeacher: {},
 				allAvailableUsers: [],		// tutti gli utenti
 				selectedSlotUsers: [],
-				allNotDeletedBookings: []
+				allNotDeletedBookings: [],
+				myModal: undefined
 			}
 		}
 	}

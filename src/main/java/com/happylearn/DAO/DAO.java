@@ -165,11 +165,8 @@ public class DAO {
 	}
 
 	/*
-     *  This method shows all bookings with the role, since is important.
-	 * lorenzo
-     */
-
-	/*this method is used to get one specific prenotazione*/
+	 * This method is used to get one specific booking.
+	 */
     public static PrenotazioneDocenteRuolo queryGetPrenotazioneDB(String corso, String utente, int giorno, int orario) {
         ResultSet rs = null;
         try {

@@ -1,6 +1,8 @@
 <template>
   <NavBar />
   <router-view/>
+<!--	TODO: footer coi nostri nomi :) -->
+<!--	footer-->
 </template>
 
 <script>
