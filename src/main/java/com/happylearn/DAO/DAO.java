@@ -269,11 +269,8 @@ public class DAO {
 		try {
 			connectionToDB();
 			st = conn1.createStatement();
-			rs = st.executeQuery("SELECT ruolo FROM UTENTE WHERE username = '" + username + "'");
-			if (rs.next() && rs.getString("ruolo").equals("cliente")) {
-				st.executeUpdate("UPDATE PRENOTAZIONE SET stato='effettuata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
-				queryResult = true;
-			}
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato='effettuata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
+			queryResult = true;
 		} catch (SQLException e) {
 			System.out.println("errore di connessione al db: " + e.getMessage());
 		} finally {
