@@ -24,6 +24,10 @@ public class Slot {
 		return teacherList;
 	}
 
+	public void addTeacherToList(Docente d){
+		teacherList.add(d);
+	}
+
 	public int getDay() {
 		return day;
 	}

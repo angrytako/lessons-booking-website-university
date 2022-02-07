@@ -1,4 +1,24 @@
 <template>
+
+  <div class="modal fade" id="confirmation" ref="confirmation" tabindex="-1" aria-labelledby="confirmationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="teachersBookingLabel">Ne sei sicuro?</h5>
+        </div>
+        <div class="modal-body">
+          <h5>Potresti non poter più tornare indietro!</h5>
+        </div>
+        <div class="modal-footer">
+          <button v-on:click="eliminaDocente" type="button" class="btn btn-primary" data-bs-dismiss="modal">Si</button>
+          <button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   I Docenti:
   <div class="row">
     <div class="col-4">
@@ -13,7 +33,9 @@
       <div class="tab-content" id="nav-tabContent">
         <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
              class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
-          Professore: {{insegnamentoDocenti.id}}. <div class="pe-auto" v-on:click="eliminaDocente(insegnamentoDocenti.id)">Elimina Docente</div>
+          Professore: {{insegnamentoDocenti.id}}.
+          <div class="pe-auto" v-on:click="showWarning(insegnamentoDocenti.id)">Elimina Docente</div>
+
           Questi sono i corsi in cui insegna:
           <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
             ~ {{corsi.materia}}
@@ -24,7 +46,7 @@
             <br>
             Inserisci un nuovo insegnamento:
             <div class="form-group row">
-              <label for="inputCognome" class="col-sm-2 col-form-label">Corso:</label>
+              <label class="col-sm-2 col-form-label">Corso:</label>
               <div class="col-sm-10">
 
                 <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
@@ -32,9 +54,7 @@
                   <option v-for="corso in $store.state.corsi"
                           v-bind:class="{nonDisplay:insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)}"
                           v-bind:value=corso.materia>
-
-                    <a v-if="insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)" > Insegnamento già in corso: {{corso.materia}} </a>
-                    <a v-else>{{corso.materia}}</a>
+                    {{corso.materia}}
                   </option>
                 </select>
 
@@ -58,13 +78,13 @@
   <form>
     Aggiungi un nuovo docente:
     <div class="form-group row">
-      <label for="inputNome" class="col-sm-2 col-form-label">Nome</label>
+      <label class="col-sm-2 col-form-label">Nome</label>
       <div class="col-sm-10">
         <input type="email" class="form-control" id="inputNome" v-model="docenteNome">
       </div>
     </div>
     <div class="form-group row">
-      <label for="inputCognome" class="col-sm-2 col-form-label">Cognome</label>
+      <label class="col-sm-2 col-form-label">Cognome</label>
       <div class="col-sm-10">
         <input type="email" class="form-control" id="inputCognome" v-model="docenteCognome">
       </div>
@@ -80,21 +100,23 @@
 <script>
 
 
-async function eliminaDocente(id) {
+import {Modal} from "bootstrap";
+
+async function eliminaDocente() {
   try {
     const response = await fetch("/Noodle_war/ProfessoriServlet", {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({docente: id})
+      body: JSON.stringify({docente: this.docenteDaEliminare})
     });
     if (response.status == 401) {
       window.location.href = "/Noodle_war/login";
       return [];
     }
-    this.$store.state.professori=this.$store.state.professori.filter(professore=>professore.id!=id);
-    this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=id);
+    this.$store.state.professori=this.$store.state.professori.filter(professore=>professore.id!=this.docenteDaEliminare);
+    this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=this.docenteDaEliminare);
 
 
     // window.location.reload();
@@ -105,6 +127,7 @@ async function eliminaDocente(id) {
 
 
 async function eliminaInsegnamento(id,mat) {
+
   try {
     const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
       method: 'DELETE',
@@ -186,6 +209,14 @@ async function getInsegnamentoCorsi() {
     console.log(e);
   }
 }
+function showWarning(idDocente){
+  if(!this.myModal)
+    this.myModal = new Modal(this.$refs.confirmation)
+  this.myModal.show();
+  //store the
+  this.docenteDaEliminare = idDocente;
+}
+
 
 export default {
   name: "Docenti",
@@ -200,12 +231,14 @@ export default {
 
   data(){
     return {
+      docenteDaEliminare: undefined,
       docenteNome: undefined,
       docenteCognome: undefined
     }},
   methods: {
     eliminaDocente,
     eliminaInsegnamento,
+    showWarning,
 
     submitDocente: async function (e) {
       try {
