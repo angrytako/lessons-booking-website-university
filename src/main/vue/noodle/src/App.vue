@@ -1,13 +1,15 @@
 <template>
-  <NavBar />
-  <router-view/>
-<!--	TODO: footer coi nostri nomi :) -->
-<!--	footer-->
+	<NavBar/>
+	<router-view/>
+	<Footer/>
 </template>
 
 <script>
 
 import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import "bootstrap/dist/css/bootstrap.min.css"
+
 async function getUserInfo() {
   try {
     const response = await fetch("/Noodle_war/MyInfoServlet");
@@ -18,7 +20,7 @@ async function getUserInfo() {
 
 }
 export default {
-  components: {NavBar},
+  components: {NavBar, Footer},
   async created() {
     let userInfo;
     try {

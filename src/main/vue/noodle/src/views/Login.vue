@@ -114,5 +114,18 @@ form{
 .mb-3{
   text-align: start;
 }
+button {
+	border: none;
+	outline: none;
+	padding: 8px 18px;
+	border-radius: 10px;
+	margin-bottom: 50px;
+	box-shadow: 0 3px 20px 0 #0000003b;
+}
+button:hover{
+	color: #0a53be;
+	background: #ffffff;
+	border: 1px solid #0a53be;
+}
 
 </style>
