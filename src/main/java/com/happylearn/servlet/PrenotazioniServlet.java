@@ -31,6 +31,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 		//if username is present, the list of prenotazioni will be given for that user, if the user is the same as the one requesting, or it is an admin
 		//otherwise it returns all prenotazioni, if the user is an admin
 		Map<String, String[]> params = request.getParameterMap();
+
 		if(params.containsKey("username")){
 			String requestedUsername = params.get("username")[0];
 			System.out.println(requestedUsername);

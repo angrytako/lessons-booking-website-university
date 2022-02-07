@@ -1,6 +1,6 @@
 <template>
 
-  I Corsi:
+  <h1>I Corsi:</h1>
   <div class="row">
     <div class="col-4">
       <div class="list-group" id="list-tab-corsi" role="tablist">
@@ -29,7 +29,7 @@
               <div class="col-sm-10">
                 <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoCorsiDocente' +insegnamentoCorsi.corso">
 
-                  <option  v-for="docente in $store.state.professori"
+                  <option  v-for="docente in $store.state.professori" :key="docente.id"
                           v-bind:class="{nonDisplay:insegnamentoCorsi.docenti.find(docenti => docenti.id==docente.id)}"
                            v-bind:value=docente.id>
                            {{docente.id}} {{docente.nome}} {{docente.cognome}}
@@ -259,5 +259,8 @@ export default {
 <style scoped>
 .nonDisplay{
   display:none;
+}
+h1{
+  margin-top: 50px;
 }
 </style>

@@ -4,13 +4,13 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="teachersBookingLabel">Ne sei sicuro?</h5>
+          <h5 class="modal-title" id="teachersBookingLabel">Sei sicuro di voler eliminare il {{this.message}}?</h5>
         </div>
         <div class="modal-body">
           <h5>Potresti non poter più tornare indietro!</h5>
         </div>
         <div class="modal-footer">
-          <button v-on:click="eliminaDocente" type="button" class="btn btn-primary" data-bs-dismiss="modal">Si</button>
+          <button v-on:click="confirmChoise" type="button" class="btn btn-primary" data-bs-dismiss="modal">Si</button>
           <button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
 
         </div>
@@ -19,7 +19,7 @@
   </div>
 
 
-  I Docenti:
+  <h1>I Docenti:</h1>
   <div class="row">
     <div class="col-4">
       <div class="list-group" id="list-tab" role="tablist">
@@ -34,12 +34,12 @@
         <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
              class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
           Professore: {{insegnamentoDocenti.id}}.
-          <div class="pe-auto" v-on:click="showWarning(insegnamentoDocenti.id)">Elimina Docente</div>
+          <div class="pe-auto" v-on:click="showWarning(insegnamentoDocenti.id,null)">Elimina Docente</div>
 
           Questi sono i corsi in cui insegna:
           <div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
             ~ {{corsi.materia}}
-            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamento(insegnamentoDocenti.id,corsi.materia)">
+            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="showWarning(insegnamentoDocenti.id,corsi.materia)">
           </div>
 
           <form>
@@ -102,22 +102,23 @@
 
 import {Modal} from "bootstrap";
 
-async function eliminaDocente() {
+async function eliminaDocente(id) {
+  console.log("eliminaDocente:  "+id);
   try {
     const response = await fetch("/Noodle_war/ProfessoriServlet", {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({docente: this.docenteDaEliminare})
+      body: JSON.stringify({docente: id})
     });
     if (response.status == 401) {
       window.location.href = "/Noodle_war/login";
       return [];
     }
-    this.$store.state.professori=this.$store.state.professori.filter(professore=>professore.id!=this.docenteDaEliminare);
-    this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=this.docenteDaEliminare);
-
+    this.$store.state.professori=this.$store.state.professori.filter(docente=>docente.id!=id);
+    this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=id);
+  //TODO togliere da insegnamentoCorsi il docente eliminato
 
     // window.location.reload();
   }catch (e){
@@ -127,6 +128,7 @@ async function eliminaDocente() {
 
 
 async function eliminaInsegnamento(id,mat) {
+  console.log("eliminaInsegnamento:  "+id+mat);
 
   try {
     const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet", {
@@ -209,13 +211,48 @@ async function getInsegnamentoCorsi() {
     console.log(e);
   }
 }
-function showWarning(idDocente){
+function showWarning(idDocente,corso){
+  if (corso==null)  {
+    this.chois="eliminaDocente";
+    this.docenteDaEliminare = idDocente;
+    this.message= "il docente: "+idDocente+"?";
+
+  }
+  else{
+    this.chois="eliminaInsegnamento";
+    this.eliminaInsegnamentoDocente=idDocente;
+    this.eliminaInsegnamentoCorso=corso;
+    this.message= "l'insegnamento con docente: "+idDocente+" e corso: "+corso+"?";
+
+  }
   if(!this.myModal)
     this.myModal = new Modal(this.$refs.confirmation)
   this.myModal.show();
   //store the
   this.docenteDaEliminare = idDocente;
 }
+
+function dismissChoice(){
+  this.docenteDaEliminare=undefined;
+  this.eliminaInsegnamentoDocente=undefined;
+  this.eliminaInsegnamentoCorso=undefined;
+}
+function confirmChoise() {
+if(this.chois=="eliminaDocente"){
+  eliminaDocente(this.docenteDaEliminare);
+  this.docenteDaEliminare=undefined;
+}
+else if(this.chois=="eliminaInsegnamento"){
+  eliminaInsegnamento(this.eliminaInsegnamentoDocente,this.eliminaInsegnamentoCorso);
+  this.eliminaInsegnamentoDocente=undefined;
+  this.eliminaInsegnamentoCorso=undefined;
+}
+else console.log("errore nella choise");
+this.choise=undefined;
+}
+
+
+
 
 
 export default {
@@ -233,12 +270,18 @@ export default {
     return {
       docenteDaEliminare: undefined,
       docenteNome: undefined,
-      docenteCognome: undefined
+      docenteCognome: undefined,
+      eliminaInsegnamentoDocente: undefined,
+      eliminaInsegnamentoCorso:undefined,
+      choise:undefined,
+      message:undefined
     }},
   methods: {
     eliminaDocente,
     eliminaInsegnamento,
     showWarning,
+    dismissChoice,
+    confirmChoise,
 
     submitDocente: async function (e) {
       try {
@@ -258,7 +301,7 @@ export default {
             nome: this.docenteNome,
             cognome: this.docenteCognome
           });
-          this.$store.state.insegnamentoDocenti.push({id: docenteResponse.id})
+          this.$store.state.insegnamentoDocenti.push({id: docenteResponse.id, corsi:[]})
         }
 
       } catch (e) {
@@ -305,5 +348,9 @@ export default {
 <style scoped>
 .nonDisplay{
   display:none;
+}
+
+h1{
+  margin-top: 50px;
 }
 </style>
