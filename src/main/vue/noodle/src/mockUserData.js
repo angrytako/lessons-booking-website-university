@@ -19,11 +19,31 @@ export const lorenzo = {
                                             {id:1, nome: "Lilli", cognome: "Vagabondo", rimosso: false}],day:1,time:0},
         { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:1,time:0},
         { course:"Fisica", teacherList:[{id:1, nome: "Lilli", cognome: "Vagabondo", rimosso: false},
-                                        {id:2, nome: "Pippi", cognome: "Calzelunghe", rimosso: false}],day:1,time:0}]
+                                        {id:2, nome: "Pippi", cognome: "Calzelunghe", rimosso: false}],day:1,time:0},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:2,time:3},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:1,time:2},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:4,time:3},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:1,time:1},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:3,time:3}]
 }
 export const toneTuga = {
-    username:"ToneTuga",
+    username:"Lorenzo",
     role: "amministratore",
-    miePrenotazioni:[],
-    prenotazioni:[]
+    miePrenotazioni:[
+        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"attiva",giorno:1,orario:1},
+        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"attiva",giorno:1,orario:0},
+        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"effettuata",giorno:0,orario:0},
+        { corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"cancellata",giorno:2,orario:1}],
+    prenotazioni:undefined,
+    slots: [
+        { course:"Algoritmi", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false},
+                {id:1, nome: "Lilli", cognome: "Vagabondo", rimosso: false}],day:1,time:0},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:1,time:0},
+        { course:"Fisica", teacherList:[{id:1, nome: "Lilli", cognome: "Vagabondo", rimosso: false},
+                {id:2, nome: "Pippi", cognome: "Calzelunghe", rimosso: false}],day:1,time:0},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:2,time:3},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:1,time:2},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:4,time:3},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:1,time:1},
+        { course:"Architettura", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false}],day:3,time:3}]
 }

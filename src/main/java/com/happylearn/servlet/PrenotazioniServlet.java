@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class PrenotazioniServlet extends SecuredHttpServlet {
 	// ritorna le prenotazioni nel database.
 	// Se c'è lo username ritorna TUTTE le SUE prenotazioni
-	// Se NON c'è lo username le ritorna TUTTE
+	// Se NON c'è lo username le ritorna TUTTE tranne quelle degli admin
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = jsonResponseSetup(response);

@@ -31,7 +31,28 @@ public class DAO {
 		}
 	}
 
-	/*
+	/**
+	 *  This method returns a user obj if a user with a given
+	 *  username exists, null otherwise
+	 */
+	public static Utente getUser(String username) {
+		Utente user = null;
+		try {
+			connectionToDB();
+			Statement utente = conn1.createStatement();
+			ResultSet rs = utente.executeQuery("SELECT username, password, ruolo FROM UTENTE WHERE username = '" + username + "'");
+			if (rs.next()) {
+				user = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("ruolo"));
+			}
+		} catch (SQLException e) {
+			System.out.println("errore di connessione al db: " + e.getMessage());
+		} finally {
+			closeDBConnection();
+		}
+		return user;
+	}
+
+	/**
 	 *  This method returns a user obj if a user with a given
 	 *  username and password exists, null otherwise
 	 */
@@ -51,6 +72,7 @@ public class DAO {
 		}
 		return user;
 	}
+
 	/*
 	 *  This method returns a corso obj, if it exists
 	 * else it returns null
@@ -143,11 +165,8 @@ public class DAO {
 	}
 
 	/*
-     *  This method shows all bookings with the role, since is important.
-	 * lorenzo
-     */
-
-	/*this method is used to get one specific prenotazione*/
+	 * This method is used to get one specific booking.
+	 */
     public static PrenotazioneDocenteRuolo queryGetPrenotazioneDB(String corso, String utente, int giorno, int orario) {
         ResultSet rs = null;
         try {
@@ -250,11 +269,8 @@ public class DAO {
 		try {
 			connectionToDB();
 			st = conn1.createStatement();
-			rs = st.executeQuery("SELECT ruolo FROM UTENTE WHERE username = '" + username + "'");
-			if (rs.next() && rs.getString("ruolo").equals("cliente")) {
-				st.executeUpdate("UPDATE PRENOTAZIONE SET stato='effettuata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
-				queryResult = true;
-			}
+			st.executeUpdate("UPDATE PRENOTAZIONE SET stato='effettuata' WHERE corso = '" + course + "' and docente = " + idDoc + " and utente = '" + username + "' and giorno = " + day + " and orario = " + time);
+			queryResult = true;
 		} catch (SQLException e) {
 			System.out.println("errore di connessione al db: " + e.getMessage());
 		} finally {

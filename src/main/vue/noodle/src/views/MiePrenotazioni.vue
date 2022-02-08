@@ -94,7 +94,7 @@ async function getMiePrenotazioni(username) {
 }
 function showWarning(e, prenotazione){
   if(!this.myModal)
-  this.myModal = new Modal(this.$refs.confirmation)
+  	this.myModal = new Modal(this.$refs.confirmation)
   this.myModal.show();
   //store the
   this.waitingConfirmation = prenotazione;
