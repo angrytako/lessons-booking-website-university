@@ -82,6 +82,7 @@ async function eliminaCorso(materia) {
       window.location.href = "/Noodle_war/login";
       return [];
     }
+    console.log(this.$store.state.corsi);
     this.$store.state.corsi=this.$store.state.corsi.filter(corso=>corso.materia!=materia);
 
     // window.location.reload();
@@ -242,6 +243,9 @@ export default {
             materia: mat,
             rimosso: false
           });
+
+          document.getElementById("corso-"+mat).classList.add("active");
+          document.getElementById("corso-"+mat).classList.add("show");
 
         }
 

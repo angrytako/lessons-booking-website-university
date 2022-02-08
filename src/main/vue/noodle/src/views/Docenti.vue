@@ -34,6 +34,7 @@
         <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
              class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
           Professore: {{insegnamentoDocenti.id}}.
+          <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="showWarning(insegnamentoDocenti.id, null)">
           <div class="pe-auto" v-on:click="showWarning(insegnamentoDocenti.id,null)">Elimina Docente</div>
 
           Questi sono i corsi in cui insegna:
@@ -115,12 +116,20 @@ async function eliminaDocente(id) {
     if (response.status == 401) {
       window.location.href = "/Noodle_war/login";
       return [];
-    }
-    this.$store.state.professori=this.$store.state.professori.filter(docente=>docente.id!=id);
-    this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=id);
-  //TODO togliere da insegnamentoCorsi il docente eliminato
+    }else{
 
-    // window.location.reload();
+      console.log(this.$store.state.corsi);
+      console.log(this.$store.state.insegnamentoDocenti);
+      console.log(this.$store.state.professori);
+
+     // this.$store.state.professori=this.$store.state.professori.filter(prof=>prof.id!=id);
+      console.log(this.$store.state.professori);
+      //  this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=id);
+      //TODO togliere da insegnamentoCorsi il docente eliminato
+
+    }
+
+
   }catch (e){
     console.log(e);
   }
@@ -228,8 +237,7 @@ function showWarning(idDocente,corso){
   if(!this.myModal)
     this.myModal = new Modal(this.$refs.confirmation)
   this.myModal.show();
-  //store the
-  this.docenteDaEliminare = idDocente;
+
 }
 
 function dismissChoice(){
@@ -237,12 +245,15 @@ function dismissChoice(){
   this.eliminaInsegnamentoDocente=undefined;
   this.eliminaInsegnamentoCorso=undefined;
 }
-function confirmChoise() {
+
+async function confirmChoise() {
 if(this.chois=="eliminaDocente"){
-  eliminaDocente(this.docenteDaEliminare);
+  console.log("elimina docente");
+  eliminaDocente.bind(this)(this.docenteDaEliminare);
   this.docenteDaEliminare=undefined;
 }
 else if(this.chois=="eliminaInsegnamento"){
+  console.log("elimina insegnamento");
   eliminaInsegnamento(this.eliminaInsegnamentoDocente,this.eliminaInsegnamentoCorso);
   this.eliminaInsegnamentoDocente=undefined;
   this.eliminaInsegnamentoCorso=undefined;
