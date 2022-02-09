@@ -32,7 +32,10 @@
     <div class="col-8">
       <div class="tab-content" id="nav-tabContent">
         <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
-             class="tab-pane fade" v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
+             v-bind:class="{ 'tab-pane fade active show':docenteSelected==insegnamentoDocenti.id,
+                             'tab-pane fade': docenteSelected!=insegnamentoDocenti.it}"
+             v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
+
           Professore: {{insegnamentoDocenti.id}}.
           <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="showWarning(insegnamentoDocenti.id, null)">
           <div class="pe-auto" v-on:click="showWarning(insegnamentoDocenti.id,null)">Elimina Docente</div>
@@ -118,15 +121,14 @@ async function eliminaDocente(id) {
       return [];
     }else{
 
-      console.log(this.$store.state.corsi);
-      console.log(this.$store.state.insegnamentoDocenti);
-      console.log(this.$store.state.professori);
+      this.$store.state.professori=this.$store.state.professori.filter(prof=>prof.id!=id);
+      this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=id);
 
-     // this.$store.state.professori=this.$store.state.professori.filter(prof=>prof.id!=id);
-      console.log(this.$store.state.professori);
-      //  this.$store.state.insegnamentoDocenti=this.$store.state.insegnamentoDocenti.filter(insegnamentoDocenti=>insegnamentoDocenti.id!=id);
-      //TODO togliere da insegnamentoCorsi il docente eliminato
+      this.$store.state.corsi.forEach(  mat =>
+          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat.materia).docenti =
+          this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat.materia).docenti.filter(docenti=> docenti.id!=id));
 
+      this.docenteSelected=id;
     }
 
 
@@ -254,7 +256,7 @@ if(this.chois=="eliminaDocente"){
 }
 else if(this.chois=="eliminaInsegnamento"){
   console.log("elimina insegnamento");
-  eliminaInsegnamento(this.eliminaInsegnamentoDocente,this.eliminaInsegnamentoCorso);
+  eliminaInsegnamento.bind(this)(this.eliminaInsegnamentoDocente,this.eliminaInsegnamentoCorso);
   this.eliminaInsegnamentoDocente=undefined;
   this.eliminaInsegnamentoCorso=undefined;
 }
@@ -262,7 +264,15 @@ else console.log("errore nella choise");
 this.choise=undefined;
 }
 
+function showLabel(id){
+  if (docenteSelected!=undefined){
+    console.log( document.getElementById("docente"+id));
+    console.log( document.getElementById("docente"+docenteSelected));
+    document.getElementById("docente"+docenteSelected).classList.add("active");
+    document.getElementById("docente"+docenteSelected).classList.add("show");
+  }else console.log("ciao");
 
+}
 
 
 
@@ -279,6 +289,7 @@ export default {
 
   data(){
     return {
+      docenteSelected: 1,
       docenteDaEliminare: undefined,
       docenteNome: undefined,
       docenteCognome: undefined,
@@ -288,8 +299,7 @@ export default {
       message:undefined
     }},
   methods: {
-    eliminaDocente,
-    eliminaInsegnamento,
+    showLabel,
     showWarning,
     dismissChoice,
     confirmChoise,
@@ -345,11 +355,15 @@ export default {
             cognome: this.$store.state.professori.find(docente => docente.id == id).cognome,
             rimosso: false
           });
+
+          this.docenteSelected=id;
         }
 
       } catch (e) {
         console.log(e);
       }
+
+
     }
 
   }

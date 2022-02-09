@@ -1,5 +1,26 @@
 <template>
 
+
+  <div class="modal fade" id="confirmation" ref="confirmation" tabindex="-1" aria-labelledby="confirmationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="teachersBookingLabel">Sei sicuro di voler eliminare il {{this.message}}?</h5>
+        </div>
+        <div class="modal-body">
+          <h5>Potresti non poter più tornare indietro!</h5>
+        </div>
+        <div class="modal-footer">
+          <button v-on:click="confirmChoise" type="button" class="btn btn-primary" data-bs-dismiss="modal">Si</button>
+          <button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
   <h1>I Corsi:</h1>
   <div class="row">
     <div class="col-4">
@@ -244,14 +265,16 @@ export default {
             rimosso: false
           });
 
+          console.log( document.getElementById("corso-"+mat));
           document.getElementById("corso-"+mat).classList.add("active");
           document.getElementById("corso-"+mat).classList.add("show");
-
         }
 
       } catch (e) {
         console.log(e);
       }
+
+
     }
 
   }
