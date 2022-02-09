@@ -26,20 +26,26 @@
     <div class="col-4">
       <div class="list-group" id="list-tab-corsi" role="tablist">
         <a v-for="corso in $store.state.corsi" :key="corso.materia "
-           class="list-group-item list-group-item-action" v-bind:id="'corso-list-'+corso.materia" data-bs-toggle="list"
-           v-bind:href="'#corso-'+corso.materia" role="tab" v-bind:aria-controls="'corso-'+corso.materia">
+           class="list-group-item list-group-item-action" v-bind:id="'corso-list-'+corso.materia.replace(/\s+/g, '')" data-bs-toggle="list"
+           v-bind:href="'#corso-'+corso.materia.replace(/\s+/g, '')" role="tab" v-bind:aria-controls="'corso-'+corso.materia.replace(/\s+/g, '')">
           {{corso.materia}}</a>
       </div>
     </div>
     <div class="col-8">
       <div class="tab-content" id="nav-tabContent-corsi">
         <div v-for="insegnamentoCorsi in $store.state.insegnamentoCorsi" :key="insegnamentoCorsi.corso + insegnamentoCorsi.docenti"
-             class="tab-pane fade" v-bind:id="'corso-'+insegnamentoCorsi.corso"  role="tabpanel" v-bind:aria-labelledby="'corso-list-'+insegnamentoCorsi.corso">
-          Corso: {{insegnamentoCorsi.corso}}. <div class="pe-auto" v-on:click="eliminaCorso(insegnamentoCorsi.corso)">Elimina Corso</div>
+             v-bind:class="{ 'tab-pane fade active show':corsoSelected==insegnamentoCorsi.corso,
+                             'tab-pane fade': corsoSelected!=insegnamentoCorsi.corso}"
+             v-bind:id="'corso-'+insegnamentoCorsi.corso.replace(/\s+/g, '')"  role="tabpanel" v-bind:aria-labelledby="'corso-list-'+insegnamentoCorsi.corso.replace(/\s+/g, '')">
+
+          Corso: {{insegnamentoCorsi.corso}}.
+          <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="showWarning(insegnamentoCorsi.corso, null)">
+          <div class="pe-auto" v-on:click="showWarning(insegnamentoCorsi.corso, null)">Elimina Corso</div>
+
           Professori che insegnano questo corso:
           <div v-for="docenti in insegnamentoCorsi.docenti" :key="docenti.id">
             ~ {{docenti.id}} {{docenti.nome}} {{docenti.cognome}}
-            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="eliminaInsegnamento(insegnamentoCorsi.corso,docenti.id)">
+            <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="showWarning(insegnamentoCorsi.corso,docenti.id)">
           </div>
 
           <form>
@@ -90,6 +96,8 @@
 
 <script>
 
+import {Modal} from "bootstrap";
+
 async function eliminaCorso(materia) {
   try {
     const response = await fetch("/Noodle_war/CorsiServlet", {
@@ -133,6 +141,9 @@ async function eliminaInsegnamento(mat,id) {
 
       this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti =
           this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.filter(docenti=> docenti.id!=id);
+
+      this.corsoSelected = mat;
+
     }
 
     // window.location.reload();
@@ -196,7 +207,47 @@ async function getInsegnamentoDocenti() {
   }
 }
 
+function showWarning(corso,idDocente){
+  if (idDocente==null)  {
+    this.chois="eliminaCorso";
+    this.corsoDaEliminare = corso;
+    this.message= "il corso: "+corso+"?";
 
+  }
+  else{
+    this.chois="eliminaInsegnamento";
+    this.eliminaInsegnamentoDocente=idDocente;
+    this.eliminaInsegnamentoCorso=corso;
+    this.message= "l'insegnamento con docente: "+idDocente+" e corso: "+corso+"?";
+
+  }
+  if(!this.myModal)
+    this.myModal = new Modal(this.$refs.confirmation)
+  this.myModal.show();
+
+}
+
+function dismissChoice(){
+  this.corsoDaEliminare=undefined;
+  this.eliminaInsegnamentoDocente=undefined;
+  this.eliminaInsegnamentoCorso=undefined;
+}
+
+async function confirmChoise() {
+  if(this.chois=="eliminaCorso"){
+    console.log("elimina corso");
+    eliminaCorso.bind(this)(this.docenteDaEliminare);
+    this.corsoDaEliminare=undefined;
+  }
+  else if(this.chois=="eliminaInsegnamento"){
+    console.log("elimina insegnamento");
+    eliminaInsegnamento.bind(this)(this.eliminaInsegnamentoCorso,this.eliminaInsegnamentoDocente);
+    this.eliminaInsegnamentoDocente=undefined;
+    this.eliminaInsegnamentoCorso=undefined;
+  }
+  else console.log("errore nella choise");
+  this.choise=undefined;
+}
 
 export default {
   name: "Corsi",
@@ -211,11 +262,18 @@ export default {
   },
   data(){
     return {
-      corso: undefined
+      corso: undefined,
+      corsoSelected: "aaa",
+      corsoDaEliminare: undefined,
+      eliminaInsegnamentoDocente: undefined,
+      eliminaInsegnamentoCorso:undefined,
+      chooise: undefined,
+      message: undefined
     }},
   methods: {
-    eliminaCorso,
-    eliminaInsegnamento,
+    showWarning,
+    dismissChoice,
+    confirmChoise,
 
     submitCorso: async function (e) {
       try {
@@ -230,6 +288,7 @@ export default {
           console.log("Errore nella servlet post corso");
         } else {
           this.$store.state.corsi.push({materia: this.corso});
+          this.$store.state.insegnamentoCorsi.push({corso: this.corso, docenti:[]})
         }
       } catch (e) {
         console.log(e);
@@ -265,9 +324,7 @@ export default {
             rimosso: false
           });
 
-          console.log( document.getElementById("corso-"+mat));
-          document.getElementById("corso-"+mat).classList.add("active");
-          document.getElementById("corso-"+mat).classList.add("show");
+          this.corsoSelected = mat;
         }
 
       } catch (e) {

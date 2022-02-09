@@ -33,7 +33,7 @@
       <div class="tab-content" id="nav-tabContent">
         <div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti" :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
              v-bind:class="{ 'tab-pane fade active show':docenteSelected==insegnamentoDocenti.id,
-                             'tab-pane fade': docenteSelected!=insegnamentoDocenti.it}"
+                             'tab-pane fade': docenteSelected!=insegnamentoDocenti.id}"
              v-bind:id="'docente'+insegnamentoDocenti.id"  role="tabpanel" v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
 
           Professore: {{insegnamentoDocenti.id}}.
@@ -46,25 +46,20 @@
             <img src="../assets/delate.png" alt="Delate" width="20" height="20" v-on:click="showWarning(insegnamentoDocenti.id,corsi.materia)">
           </div>
 
+
           <form>
             <br>
             Inserisci un nuovo insegnamento:
             <div class="form-group row">
               <label class="col-sm-2 col-form-label">Corso:</label>
               <div class="col-sm-10">
-
                 <select class="form-select" aria-label="Default select example" v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
-
                   <option v-for="corso in $store.state.corsi"
                           v-bind:class="{nonDisplay:insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)}"
                           v-bind:value=corso.materia>
                     {{corso.materia}}
                   </option>
                 </select>
-
-
-
-
               </div>
             </div>
             <div class="form-group row">
@@ -73,6 +68,8 @@
               </div>
             </div>
           </form>
+
+
 
         </div>
       </div>
@@ -128,7 +125,7 @@ async function eliminaDocente(id) {
           this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat.materia).docenti =
           this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat.materia).docenti.filter(docenti=> docenti.id!=id));
 
-      this.docenteSelected=id;
+
     }
 
 
@@ -159,6 +156,8 @@ async function eliminaInsegnamento(id,mat) {
 
       this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti =
           this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.filter(docenti=> docenti.id!=id);
+
+      this.docenteSelected=id;
     }
 
     // window.location.reload();
@@ -264,15 +263,6 @@ else console.log("errore nella choise");
 this.choise=undefined;
 }
 
-function showLabel(id){
-  if (docenteSelected!=undefined){
-    console.log( document.getElementById("docente"+id));
-    console.log( document.getElementById("docente"+docenteSelected));
-    document.getElementById("docente"+docenteSelected).classList.add("active");
-    document.getElementById("docente"+docenteSelected).classList.add("show");
-  }else console.log("ciao");
-
-}
 
 
 
@@ -299,7 +289,6 @@ export default {
       message:undefined
     }},
   methods: {
-    showLabel,
     showWarning,
     dismissChoice,
     confirmChoise,
