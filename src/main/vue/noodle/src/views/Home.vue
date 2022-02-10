@@ -3,50 +3,66 @@
 		<div class="overlay">
 			<h1>HappyLearn</h1>
 			<h3>Imparare in allegria</h3>
-			<div class ="par" v-if="$store.state.role === 'guest'">Clicca su un corso per poter visualizzare i docenti disponibili</div>
-			<div class = "par" v-else-if="$store.state.role !== 'guest'">Clicca su un corso per poterlo prenotare</div>
 		</div>
 	</header>
 
 	<br><br>
+	<div class ="par" v-if="$store.state.role === 'guest'">Clicca su un corso per poter visualizzare i docenti disponibili</div>
+	<div class = "par" v-else-if="$store.state.role === 'cliente'">
+		Clicca su un corso per poterlo prenotare
+		<br>
+		<div class = "p3">
+			Se una casella è vuota significa che non ci sono ripetizioni disponibili oppure che hai già prenotazioni attive o effettuate.<br>
+			Controlla le tue prenotazioni per maggiori informazioni.
+		</div>
+	</div>
+	<div class = "par" v-else-if="$store.state.role === 'amministratore'">
+		Clicca su un corso per poterlo prenotare
+		<br>
+		<div class = "p3">Se una casella è vuota significa che non ci sono ripetizioni disponibili</div>
+	</div>
 	<div class = "container">
 		<table class="table table-bordered table-hover table-hover-cells">
 			<thead>
-			<tr id=labels>
-				<th scope="col"></th>
-				<th scope="col" class="light">Lunedì</th>
-				<th scope="col" class="dark">Martedì</th>
-				<th scope="col" class="light">Mercoledì</th>
-				<th scope="col" class="dark">Giovedì</th>
-				<th scope="col" class="light">Venerdì</th>
-			</tr>
+				<tr id=labels>
+					<th scope="col"></th>
+					<th scope="col" class="light">Lunedì</th>
+					<th scope="col" class="dark">Martedì</th>
+					<th scope="col" class="light">Mercoledì</th>
+					<th scope="col" class="dark">Giovedì</th>
+					<th scope="col" class="light">Venerdì</th>
+				</tr>
 			</thead>
 
 			<!--		mettere con slot orari diversi colori diversi!!!!!!!-->
 			<tbody>
-			<tr v-for="(slotTime, indexTime) in matrCorsi" :key="indexTime">
-				<th scope="row" v-bind:class="{light:indexTime % 2===0, dark:indexTime % 2===1}">{{ times[indexTime] }}</th>
-				<td v-for="(slotDay, indexDay) in slotTime" :key="indexDay">
-					<p class="courseToClick" v-for="(slot, indexSlot) in slotDay" :key="indexSlot"  v-on:click="showTeachersAndUsersFunction(slot)"
-					   data-bs-toggle="modal" data-bs-target="#teachersBooking">
-						{{ slot.course }}
-					</p>
-				</td>
-			</tr>
+				<tr v-for="(slotTime, indexTime) in matrCorsi" :key="indexTime">
+					<th scope="row" v-bind:class="{light:indexTime % 2===0, dark:indexTime % 2===1}">{{ times[indexTime] }}</th>
+					<td v-for="(slotDay, indexDay) in slotTime" :key="indexDay">
+						<p class="courseToClick" v-for="(slot, indexSlot) in slotDay" :key="indexSlot"  v-on:click="showTeachersAndUsersFunction(slot)"
+						   data-bs-toggle="modal" data-bs-target="#teachersBooking">
+							{{ slot.course }}
+						</p>
+					</td>
+				</tr>
 			</tbody>
 		</table>
 	</div>
 
 	<!-- Modal -->
-
 	<div class="modal fade" id="teachersBooking" tabindex="-1" aria-labelledby="teachersBookingLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header text-center">
-					<h5 class="modal-title w-100" id="teachersBookingLabel">{{ "Corso: " + selectedSlot.course + " ---> " + days[selectedSlot.day] + ": " + times[selectedSlot.time] }}</h5>
+					<h5 class="modal-title w-100" id="teachersBookingLabel">
+						{{ "Corso: " + selectedSlot.course }}
+						<img src="../assets/arrow.png" alt="Arrow" width="20" height="20"/>
+						{{days[selectedSlot.day] + ": " + times[selectedSlot.time] }}
+					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="p2"> Seleziona il docente con cui vuoi effettuare la prenotazione:</div>
+				<div class="p2" v-if="$store.state.role === 'guest'"> Docenti disponibili:</div>
+				<div class="p2" v-else-if="$store.state.role !== 'guest'"> Seleziona il docente con cui vuoi effettuare la prenotazione:</div>
 				<div class="modal-body" v-if="$store.state.role === 'guest'">
 					<ul>
 						<li v-for="teacher in selectedSlot.teacherList">
@@ -66,23 +82,35 @@
 						</label>
 					</div>
 					<br/>
-					<div class = "p2" v-if="$store.state.role === 'amministratore'"> Seleziona l'utente per cui vuoi effettuare la prenotazione: </div>
-					<select class="form-select" aria-label="User select" v-if="$store.state.role === 'amministratore'" v-model="selectedUser.username">
-						<option v-for="(user, index) in selectedSlotUsers" v-bind:value="user.username">
-							{{ user.username + " " + selectedUser.username }}
-						</option>
-					</select>
+					<div v-if="$store.state.role === 'amministratore'">
+						<hr>
+						<div v-if="selectedSlotUsers.length !== 0">
+							<div class = "p2" v-if="$store.state.role === 'amministratore'">Seleziona l'utente per cui vuoi effettuare la prenotazione:</div>
+							<select class="form-select" aria-label="User select" v-if="$store.state.role === 'amministratore'" v-model="selectedUser.username">
+								<option v-for="(user, index) in selectedSlotUsers" v-bind:value="user.username">
+									{{ user.username }}
+								</option>
+							</select>
+						</div>
+						<div v-else>
+							<p>Gli utenti sono tutti impegnati!</p>
+						</div>
+					</div>
 				</div>
-				<div class="modal-footer" v-if="$store.state.role !== 'guest'">
+				<div class="modal-footer" v-if="$store.state.role === 'cliente'">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-					<button type="button" class="btn btn-success" data-bs-dismiss="modal" v-on:click="addBookings">Prenota</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="addBookings">Prenota</button>
+				</div>
+				<div class="modal-footer" v-if="$store.state.role === 'amministratore' && selectedSlotUsers.length !== 0">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="addBookings">Prenota</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Modal confirmed booking -->
-	<div class="modal fade" id="exampleModal" tabindex="-1" ref="confirmed" aria-labelledby="modalLabel" aria-hidden="true">
+	<div class="modal fade" tabindex="-1" ref="confirmed" aria-labelledby="modalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
 				<symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
@@ -92,9 +120,7 @@
 
 			<div class="alert alert-success d-flex align-items-center" role="alert">
 				<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
-				<div>
-					La prenotazione è stata effettuata con successo!
-				</div>
+				<div>La prenotazione è stata effettuata con successo!</div>
 			</div>
 		</div>
 	</div>
@@ -129,18 +155,20 @@
 				console.log(response);
 				return [];
 			} else if (response.status === 200) {
-				// se sono un client svuota la casella
+				// se sono un cliente svuota la casella
 				if (this.$store.state.role === "cliente")
 					this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day] = [];
 				else if(this.$store.state.role === "amministratore")		// vero se fa parte del nuovo array
 					this.allNotDeletedBookings.push(booking);
-				// set timeout --> cosa che metto sora con un v-if
+
 				// filter funziona come in Haskell: gli passi una lambda --> per ogni elemento dell'array SE ritorna vero viene tenuto l'elemento, altrimenti viene buttato via
 				// filter ritorna un altro array dove tutti gli elementi del nuovo array rispettano la proprietà true (...)
 
 				this.selectedSlot.teacherList = this.selectedSlot.teacherList.filter(teacher => teacher.id !== booking.idDocente);
+				//TODO: if role==='amministratore' and teacherList.length === 0 remove slot from interface
 				if (this.selectedSlot.teacherList.length === 0) {
 					this.$store.state.slots = this.$store.state.slots.filter(slot => (slot.course !== booking.corso) && (slot.day !== booking.giorno) && (slot.time !== booking.orario));
+					// this.matrCorsi[slot.time][slot.day] = this.matrCorsi[slot.time][slot.day].filter(slot => (slot.course !== booking.corso) && (slot.day !== booking.giorno) && (slot.time !== booking.orario));
 				}
 				if(!this.myModal)
 					this.myModal = new Modal(this.$refs.confirmed)
@@ -297,32 +325,35 @@
 </script>
 
 <style scoped>
-	/*#labels {*/
-	/*	background-color: aqua;*/
-	/*	height: 40px;*/
-	/*	font-size: 25px;*/
-	/*}*/
-
 	table {
 		cursor: default;
 		width: 90%;
 		height: 100%;
 		margin: auto auto;
 		background-image: linear-gradient( 135deg, rgba(35, 252, 4, 0.2) 10%, rgba(230, 255, 234, 1) 100%);
+		border-collapse: collapse;
+		overflow: hidden;
+		z-index: 1;
+		box-shadow: 0 3px 20px 0 #0000003b;
+	}
+
+	th,td{
+		border: 1px solid rgba(0, 0, 0, 0.47);
 	}
 
 	.light {
 		color: white;
 		background-color: #41a433;
+		font-size: 18px;
 	}
 
 	.dark {
 		color: white;
 		background-color: #0f5132;
+		font-size: 18px;
 	}
 
-	.courseToClick {
-		color: #0d6efd;
+	.courseToClick:hover{
 		text-decoration: underline;
 	}
 
@@ -355,29 +386,41 @@
 		background-image: linear-gradient( 135deg, rgb(27, 86, 19) 10%, rgba(27, 215, 52, 0.84) 100%);
 	}
 
-	.btn-success:hover{
-		color: #41a433;
+	.btn-primary:hover{
+		color: #0a53be;
 		background: #ffffff;
-		border: 1px solid #41a433;
+		border: 1px solid #0a53be;
 	}
 
 	.modal-header{
-		background-color: rgba(65, 164, 51, 0.2);
+		background-color: rgba(65, 164, 51, 0.25);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+		box-shadow: 0 3px 20px 0 #0000003b;
+		font-weight: bold;
 	}
 
-	/*.modal-body{*/
-	/*	text-align: left;*/
-	/*}*/
+	.modal-footer{
+		border-top: 1px solid rgba(0, 0, 0, 0.3);
+		margin-top: 15px;
+	}
 
 	h1 {
-		font-family: 'Open Sans', cursive;
+		font-family: 'Arial', cursive;
 		font-size: 80px;
 		margin-top: 30px;
 		margin-bottom: 30px;
+		text-shadow: 2px 2px #000000;
 	}
 
-	h3, .par {
-		font-family: 'Open Sans', sans-serif;
+	h3 {
+		font-family: 'Arial', sans-serif;
+		margin-bottom: 30px;
+		text-shadow: 1px 1px #000000;
+	}
+
+	.par{
+		font-weight: bold;
+		font-size: 20px;
 		margin-bottom: 30px;
 	}
 
@@ -386,11 +429,49 @@
 	}
 
 	.p2{
-		margin-top: 15px;
+		margin-top: 18px;
 		margin-bottom: 15px;
 	}
+
+	.p3{
+		margin-top: 5px;
+		font-size: 17px;
+		font-weight: normal;
+	}
+
 	.table-hover.table-hover-cells > tbody > tr:hover > td:hover {
-		background-color: #e8e8e8;
+		background-color: #ffffff;
+	}
+
+	td, th, .row, .col, .ff-fix {
+		cursor: pointer;
+		padding: 10px;
+		position: relative;
+	}
+
+	td:hover::before,
+	.row:hover::before,
+	.ff-fix:hover::before {
+		background-color: rgba(204, 255, 170, 1);
+		content: '\00a0';
+		height: 100%;
+		left: -5000px;
+		position: absolute;
+		top: 0;
+		width: 10000px;
+		z-index: -1;
+	}
+	td:hover::after,
+	.col:hover::after,
+	.ff-fix:hover::after {
+		background-color: rgba(204, 255, 170, 1);
+		content: '\00a0';
+		height: 10000px;
+		left: 0;
+		position: absolute;
+		top: -5000px;
+		width: 100%;
+		z-index: -1;
 	}
 
 </style>

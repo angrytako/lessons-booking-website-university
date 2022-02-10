@@ -5,7 +5,7 @@
 				<div class="container">
 					<div class="row">
 						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-							<h4> Happy Learn </h4>
+							<h4> HappyLearn </h4>
 						</div>
 						<div class="col-lg-3 col-sm-2 col-xs-3" style="margin-top: 5em">
 							<h3> Autori </h3>
@@ -49,19 +49,19 @@
 	}
 	.footer h3 {
 		color: white;
-		font-size: 18px;
+		font-size: 20px;
 		font-weight: 600;
 		line-height: 27px;
 		padding: 40px 0 0;
 		text-transform: uppercase;
-		margin-bottom: 15px;
+		margin-bottom: 10px;
 	}
 	.footer h4 {
 		color: white;
-		font-size: 2em;
+		font-size: 2.2em;
 		line-height: 38px;
 		padding: 40px 0 10px;
-		font-family: cursive;
+		font-family: 'Arial', cursive;
 		font-weight: lighter
 	}
 	.footer ul {
