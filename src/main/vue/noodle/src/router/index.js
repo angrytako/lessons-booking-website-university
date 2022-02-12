@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import Home from '../views/Home.vue'
-import {store} from "../main.js"
+import app from "../main.js"
 
 const routes = [
 	{
@@ -23,18 +23,21 @@ const routes = [
 		name: 'Prenotazioni',
 		component: () => import('../views/Prenotazioni.vue'),
 		beforeEnter(to, from, next) {
+			app.$store.dispatch('initApp').then(response => {
 
-			if (to.query.username) {
+				if (to.query.username) {
 				next({name: 'MiePrenotazioni', query: to.query});
 				return;
 			} else {
 				//check authentication
-				if (!store.state.role || store.state.role !== "amministratore") {
+				if (!app.$store.state.role || app.$store.state.role !== "amministratore") {
 					next({name: 'Login'});
 					return;
 				}
 				next();
-			}
+			}}, error => {
+				console.log(error);
+			})
 		}
 	},
 	{
@@ -42,21 +45,44 @@ const routes = [
 		name: 'MiePrenotazioni',
 		component: () => import('../views/MiePrenotazioni.vue'),
 		beforeEnter(to, from, next) {
+			app.$store.dispatch('initApp').then(response => {
 			//check authentication
-			if (!store.state.role || (store.state.role != "cliente" && store.state.role != "amministratore"))
+			if (!app.$store.state.role || (app.$store.state.role != "cliente" && app.$store.state.role != "amministratore"))
 				next({name: 'Login'});
-			else next();
+			else next();}, error => {
+				console.log(error);
+			})
 		}
 	},
 	{
 		path: '/docenti',
 		name: 'Docenti',
-		component: () => import('../views/Docenti.vue')
+		component: () => import('../views/Docenti.vue'),
+		beforeEnter(to, from, next) {
+			app.$store.dispatch('initApp').then(response => {
+					if (!app.$store.state.role || app.$store.state.role !== "amministratore") {
+						next({name: 'Login'});
+						return;
+					}
+					next();
+				}, error => {
+				console.log(error);
+			})}
 	},
 	{
 		path: '/corsi',
 		name: 'Corsi',
-		component: () => import('../views/Corsi.vue')
+		component: () => import('../views/Corsi.vue'),
+		beforeEnter(to, from, next) {
+			app.$store.dispatch('initApp').then(response => {
+				if (!app.$store.state.role || app.$store.state.role !== "amministratore") {
+					next({name: 'Login'});
+					return;
+				}
+				next();
+			}, error => {
+				console.log(error);
+			})}
 	},
 ]
 

@@ -38,7 +38,9 @@
 
 					<li class="navbar-item" v-bind:class="{dropdown:$store.state.role == 'amministratore'}"
 						v-if="$store.state.role != 'guest'"></li>
-					<li class="nav-item dropdown d-sm-none d-md-block" v-if="$store.state.role == 'amministratore'">
+
+
+					<li class="nav-item dropdown d-none d-md-block" v-if="$store.state.role == 'amministratore'">
 						<div class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button"
 							 data-bs-toggle="dropdown" aria-expanded="false">
 							Prenotazioni
