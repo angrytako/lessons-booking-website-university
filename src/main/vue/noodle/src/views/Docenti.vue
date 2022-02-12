@@ -7,51 +7,32 @@
 
 	<form>
 		<div class = "par">Aggiungi un nuovo docente:</div>
-		<div class="form-group row">
-			<label class="col-sm-2 col-form-label">Nome</label>
-			<div class="col-sm-10">
-				<input type="email" class="form-control" id="inputNome" v-model="docenteNome">
+		<div class = "container">
+			<div class="row">
+				<div class="col-sm-3">
+					<label>Nome</label>
+				</div>
+				<div class="col-sm-6">
+					<input type="text" class="form-control" id="inputNome" v-model="docenteNome">
+				</div>
 			</div>
-		</div>
-		<div class="form-group row">
-			<label class="col-sm-2 col-form-label">Cognome</label>
-			<div class="col-sm-10">
-				<input type="email" class="form-control" id="inputCognome" v-model="docenteCognome">
-			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-sm-10">
-				<button class="btn btn-primary" v-on:click.prevent="submitDocente">Aggiungi docente</button>
+			<div class="row">
+				<div class="col-sm-3">
+					<label>Cognome</label>
+				</div>
+				<div class="col-sm-6">
+					<input type="text" class="form-control" id="inputCognome" v-model="docenteCognome">
+				</div>
+				<div class="col-sm">
+					<button id="addTeacher" class="btn btn-primary" v-on:click.prevent="submitDocente">Aggiungi docente</button>
+				</div>
 			</div>
 		</div>
 	</form>
-
-	<div class="modal fade" id="confirmation" ref="confirmation" tabindex="-1" aria-labelledby="confirmationLabel"
-		 aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="teachersBookingLabel">Sei sicuro di voler eliminare il
-						{{ this.message }}?</h5>
-				</div>
-				<div class="modal-body">
-					<h5>Potresti non poter più tornare indietro!</h5>
-				</div>
-				<div class="modal-footer">
-					<button v-on:click="confirmChoise" type="button" class="btn btn-primary" data-bs-dismiss="modal">
-						Si
-					</button>
-					<button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-						No
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	<br><br>
 
 	<div class = "par">Elenco docenti disponibili:</div>
-
-	<div class="row">
+	<div id="allGrid" class="row">
 		<div class="col-4">
 			<div class="list-group" id="list-tab" role="tablist">
 				<a v-for="docente in $store.state.professori" :key="docente.id + docente.nome + docente.cognome"
@@ -62,52 +43,78 @@
 				</a>
 			</div>
 		</div>
+
 		<div class="col-8">
-			<div class="tab-content" id="nav-tabContent">
+			<div class="tab-content">
 				<div v-for="insegnamentoDocenti in $store.state.insegnamentoDocenti"
 					 :key="insegnamentoDocenti.id + insegnamentoDocenti.corsi"
 					 v-bind:class="{ 'tab-pane fade active show':docenteSelected===insegnamentoDocenti.id,
-                             'tab-pane fade': docenteSelected!==insegnamentoDocenti.id}"
+							 'tab-pane fade': docenteSelected!==insegnamentoDocenti.id}"
 					 v-bind:id="'docente'+insegnamentoDocenti.id" role="tabpanel"
 					 v-bind:aria-labelledby="'docente-list-'+insegnamentoDocenti.id">
 
-					Professore: {{ insegnamentoDocenti.id }}.
-					<img src="../assets/delate.png" alt="Delate" width="20" height="20"
-						 v-on:click="showWarning(insegnamentoDocenti.id, null)">
-					<div class="pe-auto" v-on:click="showWarning(insegnamentoDocenti.id,null)">Elimina Docente</div>
-
-					Questi sono i corsi in cui insegna:
-					<div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
-						~ {{ corsi.materia }}
-						<img src="../assets/delate.png" alt="Delate" width="20" height="20"
-							 v-on:click="showWarning(insegnamentoDocenti.id,corsi.materia)">
+					<div class="card">
+						<div class="card-header">
+							Professore: {{ insegnamentoDocenti.id }}
+							<img src="../assets/delate.png" alt="Delate" width="20" height="20"
+								 v-on:click="showWarning(insegnamentoDocenti.id, null)">
+<!--							<div class="pe-auto" v-on:click="showWarning(insegnamentoDocenti.id,null)">Elimina Docente</div>-->
+						</div>
+						<div class="card-body">
+							<p>Questi sono i corsi in cui insegna:</p>
+							<ul>
+								<div v-for="corsi in insegnamentoDocenti.corsi" :key="corsi.materia">
+									<li>
+										{{ corsi.materia }}
+										<img src="../assets/delate.png" alt="Delate" width="20" height="20"
+											 v-on:click="showWarning(insegnamentoDocenti.id,corsi.materia)">
+									</li>
+								</div>
+							</ul>
+							<hr>
+							<form>
+								<p> Inserisci un nuovo insegnamento: </p>
+								<div class="container">
+									<div class="row">
+										<div class="col">
+											<label>Corso:</label>
+										</div>
+										<div class="col-6">
+											<select class="form-select" aria-label="Default select example"
+													v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
+												<option v-for="corso in $store.state.corsi"
+														v-bind:class="{nonDisplay:insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)}"
+														v-bind:value=corso.materia>
+													{{ corso.materia }}
+												</option>
+											</select>
+										</div>
+										<div class="col">
+											<button class="btn btn-primary" v-on:click.prevent="submitInsegnamentoDocenti(insegnamentoDocenti.id)">Aggiungi</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-					<form>
-						<br>
-						Inserisci un nuovo insegnamento:
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label">Corso:</label>
-							<div class="col-sm-10">
-								<select class="form-select" aria-label="Default select example"
-										v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
-									<option v-for="corso in $store.state.corsi"
-											v-bind:class="{nonDisplay:insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)}"
-											v-bind:value=corso.materia>
-										{{ corso.materia }}
-									</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group row">
-							<div class="col-sm-10">
-								<button class="btn btn-primary"
-										v-on:click.prevent="submitInsegnamentoDocenti(insegnamentoDocenti.id)">Aggiungi
-									insegnamento
-								</button>
-							</div>
-						</div>
-					</form>
+	<div class="modal fade" id="confirmation" ref="confirmation" tabindex="-1" aria-labelledby="confirmationLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header text-center">
+					<h5 class="modal-title w-100" id="teachersBookingLabel">Sei sicuro di voler eliminare il {{ this.message }}</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Potresti non poter più tornare indietro!</p>
+				</div>
+				<div class="modal-footer">
+					<button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+					<button v-on:click="confirmChoise" type="button" class="btn btn-primary" data-bs-dismiss="modal">Conferma</button>
 				</div>
 			</div>
 		</div>
@@ -406,5 +413,41 @@
 		font-size: 20px;
 		margin-bottom: 30px;
 		/*margin-left: 30px;*/
+	}
+
+	.card-body{
+		border: 1px solid rgba(0, 0, 0, 0.22);
+	}
+
+	.card-header{
+		font-weight: bold;
+		font-size: 18px;
+		background: rgba(65, 164, 51, 0.2);
+		border: 1px solid #41a433;
+	}
+
+	.btn-primary:hover{
+		color: #0a53be;
+		background: rgba(161, 196, 195, 0.6);
+		border: 1px solid #0a53be;
+	}
+
+	ul {
+		margin-left: 30%;
+		text-align: left;
+	}
+
+	li{
+		margin: 10px;
+	}
+
+	hr{
+		margin-top: 30px;
+		margin-bottom: 20px;
+	}
+
+	#allGrid{
+		margin-left: 15%;
+		margin-right: 15%;
 	}
 </style>

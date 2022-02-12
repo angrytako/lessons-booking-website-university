@@ -56,12 +56,13 @@ export const toneTuga = {
 		{ corso:"Architetture", docente:"Pippo", utente:"Lorenzo",stato:"cancellata",giorno:2,orario:1 },
 	],
 	corsi:[
-		{ materia:"Architetture", rimosso:true },
+		{ materia:"Architetture", rimosso: false },
 		{ materia:"LPP", rimosso: false },
 		{ materia:"SAS", rimosso: false},
 		{ materia:"RetiI", rimosso: false},
-		{ materia:"ProgrammazioneI", rimosso: true },
-		{ materia:"Sistemi intelligenti", rimosso: false}
+		{ materia:"ProgrammazioneIII", rimosso: false },
+		{ materia:"Sistemi intelligenti", rimosso: false },
+		{ materia:"TWEB", rimosso: false }
 	],
 	professori: [
 		{ id:1, nome:"Liliana", cognome:"Ardissono", rimosso:false },
@@ -74,6 +75,16 @@ export const toneTuga = {
 		{ id:8, nome:"Felice", cognome:"Cardone", rimosso:false },
 		{ id:9, nome:"Rossano", cognome:"Schifanella", rimosso:false },
 		{ id:10, nome:"Marco", cognome:"Segnan", rimosso:false },
+	],
+	insegnamentoCorsi : [
+		{ corso: "TWEB", docenti:[{ id:1, nome:"Liliana", cognome:"Ardissono", rimosso:false }]},
+		{ corso: "LPP", docenti:[{ id:2,nome:"Viviana", cognome:"Bono", rimosso:false }]},
+		{ corso: "ProgrammazioneIII", docenti:[{ id:1, nome:"Liliana", cognome:"Ardissono", rimosso:false },
+				{ id:2, nome:"Viviana", cognome:"Bono", rimosso:false }]}
+	],
+	insegnamentoDocenti: [
+		{ id: 1, corsi: [{ materia:"TWEB", rimosso: false }, { materia:"ProgrammazioneIII", rimosso: false }] },
+		{ id: 2, corsi: [{ materia:"ProgrammazioneIII", rimosso: false }, { materia:"LPP", rimosso: false }] }
 	],
 	slots: [
 		{ course:"Algoritmi", teacherList:[{id:0, nome: "Pippo", cognome: "Apo", rimosso: false},

@@ -139,7 +139,7 @@
 
 	button:hover {
 		color: #0a53be;
-		background: #ffffff;
+		background: rgba(161, 196, 195, 0.6);
 		border: 1px solid #0a53be;
 	}
 </style>

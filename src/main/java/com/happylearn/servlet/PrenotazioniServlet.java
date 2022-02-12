@@ -182,39 +182,39 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 			return;
 		}
 		if(isAuthorized(request, username)) {
-				//if the user whose data is being changed is admin, you cannot change it, unless you are that admin
-				if(prenotazione.getRuolo().equals("amministratore") && !prenotazione.getUtente().equals( request.getSession().getAttribute("username"))){
-					out.print("{\"error\":\"not authorized\"}");
-					response.setStatus(401);
-					out.flush();
-					return;
-				}
-				if(!stato.equals("cancellata") && !stato.equals("effettuata")){
-					out.print("{\"error\":\"Requested status is not a valid status\"}");
-					response.setStatus(400);
-					out.flush();
-					return;
-				}
-				if(doRightUpdate(prenotazione,stato)){
-					out.print("{\"message\":\"Success\"}");
-					response.setStatus(200);
-					out.flush();
-					return;
-				}
-				else{
-					out.print("{\"error\":\"Unexpected error\"}");
-					response.setStatus(500);
-					out.flush();
-					return;
-				}
-
-			}
-			else{
+			//if the user whose data is being changed is admin, you cannot change it, unless you are that admin
+			if(prenotazione.getRuolo().equals("amministratore") && !prenotazione.getUtente().equals( request.getSession().getAttribute("username"))){
 				out.print("{\"error\":\"not authorized\"}");
 				response.setStatus(401);
 				out.flush();
 				return;
 			}
+			if(!stato.equals("cancellata") && !stato.equals("effettuata")){
+				out.print("{\"error\":\"Requested status is not a valid status\"}");
+				response.setStatus(400);
+				out.flush();
+				return;
+			}
+			if(doRightUpdate(prenotazione,stato)){
+				out.print("{\"message\":\"Success\"}");
+				response.setStatus(200);
+				out.flush();
+				return;
+			}
+			else{
+				out.print("{\"error\":\"Unexpected error\"}");
+				response.setStatus(500);
+				out.flush();
+				return;
+			}
+
+		}
+		else{
+			out.print("{\"error\":\"not authorized\"}");
+			response.setStatus(401);
+			out.flush();
+			return;
+		}
 	}
 	private String prenotazioniToJson(ArrayList<PrenotazioneDocenteRuolo> prenotazioni){
 		Gson gson = new Gson();
