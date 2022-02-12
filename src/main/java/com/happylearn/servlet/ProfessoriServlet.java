@@ -1,11 +1,9 @@
 package com.happylearn.servlet;
 
-
 import com.happylearn.DAO.Docente;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.happylearn.DAO.DAO;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
 
 @WebServlet(name = "ProfessoriServlet", value = "/ProfessoriServlet")
 public class ProfessoriServlet extends SecuredHttpServlet {
@@ -37,7 +34,6 @@ public class ProfessoriServlet extends SecuredHttpServlet {
         }
         out.flush();
         return;
-
     }
 
     @Override
@@ -62,32 +58,27 @@ public class ProfessoriServlet extends SecuredHttpServlet {
             String nome =  jobj.get("nome").getAsString();
             String cognome =  jobj.get("cognome").getAsString();
 
-            if (nome!=null&&cognome!=null)
-            {
+            if (nome!=null&&cognome!=null) {
                 if(DAO.queryAddDocenteDB(nome,cognome)){
                     int id = DAO.queryShowOneDocenteDB(nome, cognome);
                     if (id!=-1){
                         jobj.addProperty("id",id);
                         out.print(jobj.toString());
                         resp.setStatus(200);
-                    }else{
-                        out.print("{\"error\":\"error search id\"}");resp.setStatus(500);
                     }
-                }else{
-                    out.print("{\"error\":\"error query\"}");resp.setStatus(500);
+                    else
+                        out.print("{\"error\":\"error search id\"}");resp.setStatus(500);
                 }
+                else
+                    out.print("{\"error\":\"error query\"}");resp.setStatus(500);
             }
-            else {
+            else
                 out.print("{\"error\":\"error in nome,cognome\"}");resp.setStatus(400);
-            }
-
-        }else{
-            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
         }
-
+        else
+            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
         out.flush();
     }
-
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -109,19 +100,16 @@ public class ProfessoriServlet extends SecuredHttpServlet {
 
             // 1. JSON file to Java object
             String id =  jobj.get("docente").getAsString();
-            System.out.println(id);
-            if (id!=null)
-            {
+            //System.out.println(id);
+            if (id!=null){
                 DAO.queryDeleteDocenteDB(Integer.parseInt(id));
                 resp.setStatus(200);
             }
-            else {
+            else
                 out.print("{\"error\":\"missing corso\"}");resp.setStatus(400);
-            }
-
-        }else{
-            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
         }
+        else
+            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
 
         out.flush();
     }
@@ -130,8 +118,4 @@ public class ProfessoriServlet extends SecuredHttpServlet {
         Gson gson = new Gson();
         return gson.toJson(docenti);
     }
-
-
-
 }
-

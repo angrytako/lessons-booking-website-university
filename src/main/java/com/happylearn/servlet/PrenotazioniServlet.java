@@ -31,6 +31,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 		//if username is present, the list of prenotazioni will be given for that user, if the user is the same as the one requesting, or it is an admin
 		//otherwise it returns all prenotazioni, if the user is an admin
 		Map<String, String[]> params = request.getParameterMap();
+
 		if(params.containsKey("username")){
 			String requestedUsername = params.get("username")[0];
 			System.out.println(requestedUsername);
@@ -52,7 +53,8 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 			}
 			out.flush();
 			return;
-		}else{
+		}
+		else{
 			if(isAuthorized(request)) {
 				ArrayList<PrenotazioneDocenteRuolo> prenotazioni = DAO.queryShowAllPrenotazioniDB();
 				ArrayList<PrenotazioneDocenteRuolo> prenotazioniFiltered = filterAdmin(prenotazioni);
@@ -171,7 +173,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 		}
 		//check if booking exists, and if not show error
 		PrenotazioneDocenteRuolo prenotazione = DAO.queryGetPrenotazioneDB(corso,username,giorno,orario);
-		System.out.println(prenotazione);
+		//System.out.println(prenotazione);
 		if(prenotazione == null)
 		{
 			out.print("{\"error\":\"Requested field does not exist\"}");

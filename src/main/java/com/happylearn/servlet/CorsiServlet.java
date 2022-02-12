@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.happylearn.DAO.Corso;
 import com.happylearn.DAO.DAO;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
 
 @WebServlet(name = "CorsiServlet", value = "/CorsiServlet")
 public class CorsiServlet extends SecuredHttpServlet {
@@ -37,7 +35,6 @@ public class CorsiServlet extends SecuredHttpServlet {
         }
         out.flush();
         return;
-
     }
 
     @Override
@@ -47,8 +44,7 @@ public class CorsiServlet extends SecuredHttpServlet {
             json401ErrorResponse(resp,out);
             return;
         }
-        if (isAuthorized(req))
-        {
+        if (isAuthorized(req)) {
             StringBuilder buffer = new StringBuilder();
             BufferedReader reader = req.getReader();
             String line;
@@ -60,27 +56,20 @@ public class CorsiServlet extends SecuredHttpServlet {
             JsonObject jobj = new Gson().fromJson(data, JsonObject.class);
             // 1. JSON file to Java object
             String addCorso =  jobj.get("corso").getAsString();
-            if (addCorso!=null)
-            {
+            if (addCorso!=null){
                 if(DAO.queryAddCorsoDB(addCorso)) resp.setStatus(200);
                 else {
                     out.print("{\"error\":\"not had corso\"}");
                     resp.setStatus(401);
                 }
-
             }
-            else {
+            else
                 out.print("{\"error\":\"not had corso\"}");resp.setStatus(401);
-            }
-
-        }else{
-            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
         }
-
+        else
+            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
         out.flush();
-
     }
-
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -102,29 +91,22 @@ public class CorsiServlet extends SecuredHttpServlet {
 
             // 1. JSON file to Java object
             String id =  jobj.get("corso").getAsString();
-            System.out.println(id);
-            if (id!=null)
-            {
+            //System.out.println(id);
+            if (id!=null){
                 DAO.queryDeleteCorsoDB(id);
                 resp.setStatus(200);
             }
-            else {
+            else
                 out.print("{\"error\":\"not had corso\"}");resp.setStatus(401);
-            }
-
-        }else{
-            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
         }
+        else
+            out.print("{\"error\":\"not authorized\"}");resp.setStatus(401);
 
         out.flush();
     }
 
-
     private String CorsoToJson(ArrayList<Corso> corsi){
         Gson gson = new Gson();
         return gson.toJson(corsi);
-
     }
-
 }
-

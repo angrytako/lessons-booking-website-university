@@ -353,85 +353,6 @@ public class DAO {
 	}
 
 	/*
-	 *  This method shows all available slots.
-	 */
-//	private ArrayList <Slot> showAllAvailableSlots() {
-//		ArrayList<Corso> allAvailableSlots = new ArrayList<>();
-//		ResultSet rs = null;
-//		try{
-//			connectionToDB();
-//			st = conn1.createStatement();
-//			rs = st.executeQuery("SELECT * " +
-//					"FROM (PRENOTAZIONE AS P RIGHT JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
-//					"RIGHT JOIN INSEGNAMENTO AS I ON (I.CORSO = P.CORSO AND I.DOCENTE = P.DOCENTE) " +
-//					"WHERE stato = 'effettuata' OR stato = 'attiva'");
-//			while(rs.next()){
-//				rs.getString("I.corso");
-//				rs.getBoolean("I.rimosso");
-//
-//				rs.getInt("D.id");
-//				rs.getString("D.nome");
-//				rs.getString("D.cognome");
-//				rs.getBoolean("D.rimosso");
-//
-//				rs.getString("P.corso");
-//				rs.getInt("P.docente");
-//				rs.getInt("P.giorno");
-//				rs.getInt("P.orario");
-//			}
-//
-//			for (int day = 0; day < 5; day++) {
-//				for (int time = 0; time < 4; time++) {
-//					List<Docente> listTeachers = new ArrayList<>();
-//
-//
-//
-//					for (Insegnamento ins : allTeachings) {
-//						List<Docente> listTeachers = new ArrayList<>();
-//						toAdd = true;
-//						for (Prenotazione pre : allBookings) {
-//							if (day == pre.getGiorno() && time == pre.getOrario() && ins.getCorso().equals(pre.getCorso()) && ins.getIdDocente() == pre.getIdDocente()) {
-//								toAdd = false;
-//								break;
-//							}
-//						}
-//						if (toAdd) {
-//							for (Docente d: allTeachers) {
-//								if (ins.getIdDocente() == d.getId())
-//									listTeachers.add(d);
-//							}
-//						}
-//						allAvailableSlots.add(new Slot(ins.getCorso(), listTeachers, day, time));
-//					}
-//
-//				}
-//			}
-//
-//		}catch (SQLException e) {
-//			System.out.println("errore di connessione al db: " + e.getMessage());
-//		} finally {
-//			closeResultSet(rs);
-//			closeStatement();
-//			closeDBConnection();
-//		}
-//		return allAvailableSlots;
-//
-
-//		try {
-//			connectionToDB();
-//			st = conn1.createStatement();
-//			rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
-//					"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
-//			if (rs.next()) {
-//				return new PrenotazioneDocenteRuolo(
-//						rs.getString("corso"), rs.getInt("docente"), rs.getString("nome"),
-//						rs.getString("cognome"), rs.getString("utente"), rs.getString("stato"),
-//						rs.getInt("giorno"), rs.getInt("orario"), rs.getString("ruolo"));
-//			}
-//		}
-//	}
-
-		/*
 	 *  This method returns all courses in 'corso' table.
 	 *  If 'showOnlyDeleted' is false it only shows actived courses.
 	 *  Otherwise if 'showOnlyDeleted' is true it only shows deleted courses (it is used in 'queryAddCorsoDB' method).
@@ -676,7 +597,6 @@ public class DAO {
 				if (!teacherIsRemoved) {
 					boolean existedTeaching = false;
 					for (Insegnamento i : insegnamenti) {
-						System.out.println(i.getCorso()+i.getIdDocente()+course+idDoc);
 						if (i.getCorso().equals(course) && i.getIdDocente() == idDoc) {
 							st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' AND docente = " + idDoc);
 							existedTeaching = true;
@@ -711,7 +631,7 @@ public class DAO {
 			st.executeUpdate("UPDATE INSEGNAMENTO SET rimosso = true WHERE corso = '" + course + "' AND docente = " + idDoc);
 			st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'cancellata' WHERE corso = '"+course+"' AND docente = "+idDoc+" AND stato = 'attiva'");
 		} catch (SQLException e) {
-			System.out.println("errore db:  " + e.getMessage());
+			System.out.println("errore di connessione al db: " + e.getMessage());
 			queryResult = false;
 		} finally {
 			closeStatement();
