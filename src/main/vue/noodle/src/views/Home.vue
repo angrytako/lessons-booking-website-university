@@ -7,9 +7,15 @@
 	</header>
 
 	<br><br>
-	<div class ="par" v-if="$store.state.role === 'guest'">Clicca su un corso per poter visualizzare i docenti disponibili</div>
+	<div class ="par" v-if="$store.state.role === 'guest'">
+		Clicca su un corso per poter visualizzare i docenti disponibili
+		<br>
+		<div class = "p3">
+			Per prenotarti devi prima effettuare il login.
+		</div>
+	</div>
 	<div class = "par" v-else-if="$store.state.role === 'cliente'">
-		Clicca su un corso per poterlo prenotare
+		Clicca su un corso per prenotare una ripetizione
 		<br>
 		<div class = "p3">
 			Se una casella è vuota significa che non ci sono ripetizioni disponibili oppure che hai già prenotazioni attive o effettuate.<br>
@@ -17,7 +23,7 @@
 		</div>
 	</div>
 	<div class = "par" v-else-if="$store.state.role === 'amministratore'">
-		Clicca su un corso per poterlo prenotare
+		Clicca su un corso per prenotare una ripetizione
 		<br>
 		<div class = "p3">Se una casella è vuota significa che non ci sono ripetizioni disponibili</div>
 	</div>
@@ -164,11 +170,15 @@
 				// filter funziona come in Haskell: gli passi una lambda --> per ogni elemento dell'array SE ritorna vero viene tenuto l'elemento, altrimenti viene buttato via
 				// filter ritorna un altro array dove tutti gli elementi del nuovo array rispettano la proprietà true (...)
 
-				this.selectedSlot.teacherList = this.selectedSlot.teacherList.filter(teacher => teacher.id !== booking.idDocente);
+				// NO!!!
+				// this.selectedSlot.teacherList = this.selectedSlot.teacherList.filter(teacher => teacher.id !== booking.idDocente);
 				//TODO: if role==='amministratore' and teacherList.length === 0 remove slot from interface
+				// data giorno e ora e la matrice e il docente prenotato. Per ogni slot nell'array controllo se c'è il prof nell'arraylist lo rimuovo (solito filter di sopra).
+				// E POI: ogni volta controllo: se l'arraylist è vuoto tolgo lo slot
+
 				if (this.selectedSlot.teacherList.length === 0) {
 					this.$store.state.slots = this.$store.state.slots.filter(slot => (slot.course !== booking.corso) && (slot.day !== booking.giorno) && (slot.time !== booking.orario));
-					// this.matrCorsi[slot.time][slot.day] = this.matrCorsi[slot.time][slot.day].filter(slot => (slot.course !== booking.corso) && (slot.day !== booking.giorno) && (slot.time !== booking.orario));
+					this.matrCorsi[slot.time][slot.day] = this.matrCorsi[slot.time][slot.day].filter(slot => (slot.course !== booking.corso) || (slot.day !== booking.giorno) || (slot.time !== booking.orario));
 				}
 				if(!this.myModal)
 					this.myModal = new Modal(this.$refs.confirmed)

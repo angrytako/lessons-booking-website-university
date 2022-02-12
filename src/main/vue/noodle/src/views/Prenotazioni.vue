@@ -1,7 +1,7 @@
 <template>
 	<header>
 		<div class="overlay">
-			<h2>Prenotazioni degli utenti</h2>
+			<h1>Prenotazioni degli utenti</h1>
 		</div>
 	</header>
 
@@ -158,7 +158,7 @@
 		background-image: linear-gradient( 135deg, rgb(27, 86, 19) 10%, rgba(27, 215, 52, 0.84) 100%);
 	}
 
-	h2 {
+	h1 {
 		font-family: 'Arial', cursive;
 		font-size: 50px;
 		margin-top: 30px;
