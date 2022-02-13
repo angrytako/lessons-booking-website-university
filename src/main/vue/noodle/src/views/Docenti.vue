@@ -134,7 +134,7 @@
 				},
 				body: JSON.stringify({docente: id})
 			});
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			} else {
@@ -160,10 +160,10 @@
 				},
 				body: JSON.stringify({docente: id, corso: mat})
 			});
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
-			} else if (response.status == 200) {
+			} else if (response.status === 200) {
 
 				this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi =
 					this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corsi => corsi.materia != mat);
@@ -184,7 +184,7 @@
 	async function getProfessori() {
 		try {
 			const response = await fetch("/Noodle_war/ProfessoriServlet");
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -198,7 +198,7 @@
 	async function getCorsi() {
 		try {
 			const response = await fetch("/Noodle_war/CorsiServlet");
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -212,7 +212,7 @@
 		try {
 			const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet");
 
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -226,7 +226,7 @@
 		try {
 			const response = await fetch("/Noodle_war/InsegnamentoCorsiSevlet");
 
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -262,10 +262,10 @@
 	}
 
 	async function confirmChoise() {
-		if (this.chois == "eliminaDocente") {
+		if (this.chois === "eliminaDocente") {
 			eliminaDocente.bind(this)(this.docenteDaEliminare);
 			this.docenteDaEliminare = undefined;
-		} else if (this.chois == "eliminaInsegnamento") {
+		} else if (this.chois === "eliminaInsegnamento") {
 			eliminaInsegnamento.bind(this)(this.eliminaInsegnamentoDocente, this.eliminaInsegnamentoCorso);
 			this.eliminaInsegnamentoDocente = undefined;
 			this.eliminaInsegnamentoCorso = undefined;
@@ -277,17 +277,17 @@
 	export default {
 		name: "Docenti",
 		async created() {
-			if (this.$store.state.professori == undefined) {
+			if (this.$store.state.professori === undefined) {
 				this.$store.state.professori = await getProfessori();
 			}
-			if (this.$store.state.corsi == undefined) {
+			if (this.$store.state.corsi === undefined) {
 				this.$store.state.corsi = await getCorsi();
 			}
 
-			if (this.$store.state.insegnamentoCorsi == undefined) {
+			if (this.$store.state.insegnamentoCorsi === undefined) {
 				this.$store.state.insegnamentoCorsi = await getInsegnamentoCorsi();
 			}
-			if (this.$store.state.insegnamentoDocenti == undefined) {
+			if (this.$store.state.insegnamentoDocenti === undefined) {
 				this.$store.state.insegnamentoDocenti = await getInsegnamentoDocenti();
 			}
 
@@ -319,7 +319,7 @@
 						},
 						body: JSON.stringify({nome: this.docenteNome, cognome: this.docenteCognome})
 					});
-					if (response.status == 401) {
+					if (response.status === 401) {
 						console.log("Errore nella servlet post docente");
 					} else {
 						const docenteResponse = await response.json();
@@ -347,9 +347,9 @@
 						},
 						body: JSON.stringify({docente: id, corso: mat})
 					});
-					if (response.status == 401) {
+					if (response.status === 401) {
 						console.log("Errore nella servlet post docente");
-					} else if (response.status == 200) {
+					} else if (response.status === 200) {
 						this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({
 							materia: mat,
 							rimosso: false

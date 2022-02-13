@@ -164,22 +164,21 @@
 				// se sono un cliente svuota la casella
 				if (this.$store.state.role === "cliente")
 					this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day] = [];
-				else if(this.$store.state.role === "amministratore")		// vero se fa parte del nuovo array
+				else if(this.$store.state.role === "amministratore") {
 					this.allNotDeletedBookings.push(booking);
 
-				// filter funziona come in Haskell: gli passi una lambda --> per ogni elemento dell'array SE ritorna vero viene tenuto l'elemento, altrimenti viene buttato via
-				// filter ritorna un altro array dove tutti gli elementi del nuovo array rispettano la proprietà true (...)
+					// filter funziona come in Haskell: gli passi una lambda --> per ogni elemento dell'array SE ritorna vero viene tenuto l'elemento, altrimenti viene buttato via
+					// filter ritorna un altro array dove tutti gli elementi del nuovo array rispettano la proprietà true (...)
 
-				// NO!!!
-				// this.selectedSlot.teacherList = this.selectedSlot.teacherList.filter(teacher => teacher.id !== booking.idDocente);
-				//TODO: if role==='amministratore' and teacherList.length === 0 remove slot from interface
-				// data giorno e ora e la matrice e il docente prenotato. Per ogni slot nell'array controllo se c'è il prof nell'arraylist lo rimuovo (solito filter di sopra).
-				// E POI: ogni volta controllo: se l'arraylist è vuoto tolgo lo slot
-
-				if (this.selectedSlot.teacherList.length === 0) {
-					this.$store.state.slots = this.$store.state.slots.filter(slot => (slot.course !== booking.corso) && (slot.day !== booking.giorno) && (slot.time !== booking.orario));
-					this.matrCorsi[slot.time][slot.day] = this.matrCorsi[slot.time][slot.day].filter(slot => (slot.course !== booking.corso) || (slot.day !== booking.giorno) || (slot.time !== booking.orario));
+					// rimuove il docente da tutte le liste di docenti negli slot con lo stesso giorno e lo stesso orario
+					for (let slot of this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day]){
+						slot.teacherList = slot.teacherList.filter(teacher => teacher.id !== booking.idDocente);
+						// se la lista è vuota rimuovo lo slot
+						if (slot.teacherList.length === 0)
+							this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day] = this.matrCorsi[this.selectedSlot.time][this.selectedSlot.day].filter(s => s !== slot);
+					}
 				}
+
 				if(!this.myModal)
 					this.myModal = new Modal(this.$refs.confirmed)
 				this.myModal.show();

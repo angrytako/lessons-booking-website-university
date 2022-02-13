@@ -9,8 +9,8 @@ INSERT INTO `corso`(`materia`) VALUES ('Basi di dati');
 INSERT INTO `corso`(`materia`) VALUES ('ProgrammazioneI');
 INSERT INTO `corso`(`materia`) VALUES ('ProgrammazioneII');
 INSERT INTO `corso`(`materia`) VALUES ('ProgrammazioneIII');
-INSERT INTO `corso`(`materia`) VALUES ('Architettura degli elaboratori');
-INSERT INTO `corso`(`materia`) VALUES ('Interazione uomo macchina e tecnologie web');
+INSERT INTO `corso`(`materia`) VALUES ('Architettura');
+INSERT INTO `corso`(`materia`) VALUES ('IUM-TWEB');
 
 INSERT INTO `docente`(nome,cognome) VALUES ('Viviana','Bono');
 INSERT INTO `docente`(nome,cognome) VALUES ('Ciro','Cattuto');
@@ -31,8 +31,8 @@ INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneII',2);
 INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneII',9);
 INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneIII',7);
 INSERT INTO `insegnamento`(corso,docente) VALUES ('ProgrammazioneIII',9);
-INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura degli elaboratori',2);
-INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura degli elaboratori',4);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura',2);
+INSERT INTO `insegnamento`(corso,docente) VALUES ('Architettura',4);
 
 INSERT INTO `utente`(username,password,ruolo) VALUES ('ToneTuga','superpwd','amministratore');
 INSERT INTO `utente`(username,password,ruolo) VALUES ('Lorenzo','loripwd','cliente');
@@ -47,7 +47,7 @@ VALUES ('Sicurezza',5,'ToneTuga','attiva',1,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
 VALUES ('Basi di dati',2,'Lorenzo','effettuata',0,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
-VALUES ('Architettura degli elaboratori',2,'Lorenzo','cancellata',0,0);
+VALUES ('Architettura',2,'Lorenzo','cancellata',0,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
 VALUES ('Sicurezza',5,'Anna','cancellata',1,0);
 INSERT INTO `prenotazione`(corso,docente,utente,stato,giorno,orario)
