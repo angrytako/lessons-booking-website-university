@@ -139,7 +139,16 @@
 			// console.log(this.$store.state.corsi);
 			this.$store.state.corsi = this.$store.state.corsi.filter(corso => corso.materia != materia);
 
-			// window.location.reload();
+      this.$store.state.insegnamentoCorsi =
+          this.$store.state.insegnamentoCorsi.filter(insegnamentoCorso => insegnamentoCorso.corso != materia);
+      
+      this.$store.state.professori.forEach(docente =>
+          this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == docente.id).corsi =
+              this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == docente.id).corsi.filter(corso => corso.materia != materia));
+
+
+
+      // window.location.reload();
 		} catch (e) {
 			console.log(e);
 		}
