@@ -18,7 +18,7 @@ public class LogoutServlet extends HttpServlet {
 		if(session != null) {
 			session.invalidate();
 		}
-		out.println("{'message':'ok'}");
+		out.println("{'message':'OK'}");
 		out.flush();
 
 	}

@@ -6,10 +6,38 @@ import "bootstrap/dist/css/bootstrap.min.css"
 
 import { realState, lorenzo, toneTuga } from "@/mockUserData";
 
-export const store = createStore({
+
+async function getUserInfo() {
+    try {
+        const response = await fetch("/Noodle_war/MyInfoServlet");
+        return await response.json();
+    } catch (e) {
+        console.log(e);
+    }
+
+}
+
+
+
+const store = createStore({
 
         state: function(){
 
-            return realState }
+            return realState },
+    actions: {
+        initApp(context, data) {
+            return new Promise((resolve, reject) => {
+                // Do something here... lets say, a http call using vue-resource
+                    if(!this.state.username) {
+                        getUserInfo().then((userInfo => {
+                            this.state.role = userInfo.role ? userInfo.role : "guest";
+                            this.state.username = userInfo.username ? userInfo.username : undefined;
+                            resolve();
+                        })).catch((e) => reject(e));
+                    }
+                    else{resolve()}
+            })
+        }
+    }
 })
-createApp(App).use(store).use(router).mount('#app')
+export default createApp(App).use(store).use(router).mount('#app')

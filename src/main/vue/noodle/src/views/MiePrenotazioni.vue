@@ -47,7 +47,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" id="teachersBookingLabel">Vuoi segnare la prenotazione di
-						{{ this.waitingConfirmation.corso }} <br> come {{ this.waitingConfirmation.stato }}?
+						{{ waitingConfirmation.corso }} <br> come {{ waitingConfirmationDesiredState}}?
 					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
@@ -61,31 +61,50 @@
 			</div>
 		</div>
 	</div>
+  <ErrorShower ref="errShower" message="Prenotazione non eseguita a causa di un errore inatteso"/>
 </template>
 
 <script>
+
+  import ErrorShower from "@/components/ErrorShower";
 	import {Modal} from "bootstrap";
 
 	async function confirmChoice() {
-		const response = await fetch("/Noodle_war/PrenotazioniServlet", {
-			method: 'PUT',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(this.waitingConfirmation)
-		});
-		this.waitingConfirmation = {};
-		const decodedResponse = await response.json();
-		if (decodedResponse.error) {
-			this.waitingConfirmation.stato = "attiva";
-			//TODO show error
-		}
+    const desiredPrenotazione = {...this.waitingConfirmation};
+    desiredPrenotazione.stato = this.waitingConfirmationDesiredState;
+    try {
+      const response = await fetch("/Noodle_war/PrenotazioniServlet", {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(desiredPrenotazione)
+      });
+      const decodedResponse = await response.json();
+      if (decodedResponse.error) {
+        this.waitingConfirmation.stato = "attiva";
+        this.waitingConfirmationDesiredState = null;
+        this.waitingConfirmation = {};
+        this.$refs.errShower.toggle();
+        return;
+      }
+      this.waitingConfirmation.stato = this.waitingConfirmationDesiredState;
+      this.waitingConfirmationDesiredState = null;
+      this.waitingConfirmation = {};
+    }catch (e){
+      this.waitingConfirmation.stato = "attiva";
+      this.waitingConfirmationDesiredState = null;
+      this.waitingConfirmation = {};
+      this.$refs.errShower.toggle();
+    }
+
 
 	}
 
 	function dismissChoice(e) {
 		this.waitingConfirmation.stato = "attiva";
+    this.waitingConfirmationDesiredState = null;
 		this.waitingConfirmation = {};
 		return;
 	}
@@ -113,12 +132,17 @@
 		this.myModal.show();
 		//store the
 		this.waitingConfirmation = prenotazione;
+    this.waitingConfirmationDesiredState = prenotazione.stato;
+    prenotazione.stato = "attiva";
 	}
 
 	export default {
 		name: "MiePrenotazioni",
 		//when the component is created this function is called
 		//fetching data from server
+    components:{
+      ErrorShower
+    },
 		methods: {
 			showWarning,
 			confirmChoice,
@@ -136,6 +160,7 @@
 				Days: {0: "Lunedì", 1: "Martedì", 2: "Mercoledì", 3: "Giovedì", 4: "Venerdì", 5: "Sabato", 6: "Domenica"},
 				Hours: {0: "15-16", 1: "16-17", 2: "17-18", 3: "18-19"},
 				waitingConfirmation: {},
+        waitingConfirmationDesiredState: null,
 				myModal: undefined
 			};
 		}
