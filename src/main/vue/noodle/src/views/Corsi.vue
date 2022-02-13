@@ -81,7 +81,7 @@
 											<select class="form-select" aria-label="Default select example"
 													v-bind:id="'insegnamentoCorsiDocente' +insegnamentoCorsi.corso">
 												<option v-for="docente in $store.state.professori" :key="docente.id"
-														v-bind:class="{nonDisplay:insegnamentoCorsi.docenti.find(docenti => docenti.id==docente.id)}"
+														v-bind:class="{nonDisplay:insegnamentoCorsi.docenti.find(docenti => docenti.id===docente.id)}"
 														v-bind:value=docente.id>
 													{{ docente.nome }} {{ docente.cognome }}
 												</option>
@@ -132,12 +132,12 @@
 				},
 				body: JSON.stringify({corso: materia})
 			});
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
 			// console.log(this.$store.state.corsi);
-			this.$store.state.corsi = this.$store.state.corsi.filter(corso => corso.materia != materia);
+			this.$store.state.corsi = this.$store.state.corsi.filter(corso => corso.materia !== materia);
 
       this.$store.state.insegnamentoCorsi =
           this.$store.state.insegnamentoCorsi.filter(insegnamentoCorso => insegnamentoCorso.corso != materia);
@@ -164,15 +164,15 @@
 				},
 				body: JSON.stringify({docente: id, corso: mat})
 			});
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
-			} else if (response.status == 200) {
-				this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi =
-					this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.filter(corsi => corsi.materia != mat);
+			} else if (response.status === 200) {
+				this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id === id).corsi =
+					this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id === id).corsi.filter(corsi => corsi.materia !== mat);
 
-				this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti =
-					this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.filter(docenti => docenti.id != id);
+				this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso === mat).docenti =
+					this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso === mat).docenti.filter(docenti => docenti.id !== id);
 
 				this.corsoSelected = mat;
 			}
@@ -186,7 +186,7 @@
 	async function getCorsi() {
 		try {
 			const response = await fetch("/Noodle_war/CorsiServlet");
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -199,7 +199,7 @@
 	async function getProfessori() {
 		try {
 			const response = await fetch("/Noodle_war/ProfessoriServlet");
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -214,7 +214,7 @@
 		try {
 			const response = await fetch("/Noodle_war/InsegnamentoCorsiSevlet");
 
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -228,7 +228,7 @@
 		try {
 			const response = await fetch("/Noodle_war/InsegnamentoDocentiSevlet");
 
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -264,10 +264,10 @@
 	}
 
 	async function confirmChoise() {
-		if (this.chois == "eliminaCorso") {
+		if (this.chois === "eliminaCorso") {
 			eliminaCorso.bind(this)(this.corsoDaEliminare);
 			this.corsoDaEliminare = undefined;
-		} else if (this.chois == "eliminaInsegnamento") {
+		} else if (this.chois === "eliminaInsegnamento") {
 			eliminaInsegnamento.bind(this)(this.eliminaInsegnamentoCorso, this.eliminaInsegnamentoDocente);
 			this.eliminaInsegnamentoDocente = undefined;
 			this.eliminaInsegnamentoCorso = undefined;
@@ -278,17 +278,17 @@
 	export default {
 		name: "Corsi",
 		async created() {
-			if (this.$store.state.corsi == undefined) {
+			if (this.$store.state.corsi === undefined) {
 				this.$store.state.corsi = await getCorsi();
 			}
-			if (this.$store.state.professori == undefined) {
+			if (this.$store.state.professori === undefined) {
 				this.$store.state.professori = await getProfessori();
 			}
 
-			if (this.$store.state.insegnamentoDocenti == undefined) {
+			if (this.$store.state.insegnamentoDocenti === undefined) {
 				this.$store.state.insegnamentoDocenti = await getInsegnamentoDocenti();
 			}
-			if (this.$store.state.insegnamentoCorsi == undefined) {
+			if (this.$store.state.insegnamentoCorsi === undefined) {
 				this.$store.state.insegnamentoCorsi = await getInsegnamentoCorsi();
 			}
 
@@ -318,7 +318,7 @@
 						},
 						body: JSON.stringify({corso: this.corso})
 					});
-					if (response.status == 401) {
+					if (response.status === 401) {
 						console.log("Errore nella servlet post corso");
 					} else {
 						this.$store.state.corsi.push({materia: this.corso});
@@ -341,19 +341,19 @@
 						},
 						body: JSON.stringify({docente: id, corso: mat})
 					});
-					if (response.status == 401) {
+					if (response.status === 401) {
 						console.log("Errore nella servlet post docente");
-					} else if (response.status == 200) {
+					} else if (response.status === 200) {
 
 
-						this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso == mat).docenti.push({
+						this.$store.state.insegnamentoCorsi.find(insegnamentoCorso => insegnamentoCorso.corso === mat).docenti.push({
 							id: id,
-							nome: this.$store.state.professori.find(docente => docente.id == id).nome,
-							cognome: this.$store.state.professori.find(docente => docente.id == id).cognome,
+							nome: this.$store.state.professori.find(docente => docente.id === id).nome,
+							cognome: this.$store.state.professori.find(docente => docente.id === id).cognome,
 							rimosso: false
 						});
 
-						this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id == id).corsi.push({
+						this.$store.state.insegnamentoDocenti.find(insegnamentoDocente => insegnamentoDocente.id === id).corsi.push({
 							materia: mat,
 							rimosso: false
 						});

@@ -40,7 +40,7 @@ public class SecuredHttpServlet extends HttpServlet {
     }
     protected boolean isAuthorized(HttpServletRequest request, String requestedUsername){
         HttpSession session = request.getSession();
-        System.out.println(((String)session.getAttribute("username")).equals(requestedUsername));
+//        System.out.println(((String)session.getAttribute("username")).equals(requestedUsername));
         if(((String)session.getAttribute("role")).equals("amministratore") || session.getAttribute("username").equals(requestedUsername))
             return true;
         else return false;

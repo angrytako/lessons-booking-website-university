@@ -97,7 +97,7 @@
 				response = await fetch("/Noodle_war/PrenotazioniServlet?username=" + username);
 			else
 				window.location.href = "/Noodle_war/login";
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}
@@ -127,6 +127,7 @@
 		},
 		async created() {
 			const prenotazioni = await getMiePrenotazioni(this.$route.query.username);
+
 			if (prenotazioni)
 				this.$store.state.miePrenotazioni = prenotazioni;
 		},

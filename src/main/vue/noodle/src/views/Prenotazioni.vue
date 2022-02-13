@@ -88,7 +88,7 @@
 	function dismissChoice(e) {
 		this.waitingConfirmation.stato = "attiva";
 		this.waitingConfirmation = {};
-		return
+		return;
 	}
 
 	function showWarning(e, prenotazione) {
@@ -102,7 +102,7 @@
 	async function getPrenotazioni() {
 		try {
 			const response = await fetch("/Noodle_war/PrenotazioniServlet");
-			if (response.status == 401) {
+			if (response.status === 401) {
 				window.location.href = "/Noodle_war/login";
 				return [];
 			}

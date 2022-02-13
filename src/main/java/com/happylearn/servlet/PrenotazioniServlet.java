@@ -11,15 +11,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "PrenotazioniServlet", value = "/PrenotazioniServlet")
 public class PrenotazioniServlet extends SecuredHttpServlet {
-	// ritorna le prenotazioni nel database.
-	// Se c'è lo username ritorna TUTTE le SUE prenotazioni
-	// Se NON c'è lo username le ritorna TUTTE tranne quelle degli admin
+	// shows all bookings on database.
+	// If there is a username it returns ALL HIS bookings
+	// If there ISN'T username it returns ALL except admins' bookings
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = jsonResponseSetup(response);
@@ -58,6 +59,9 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 			if(isAuthorized(request)) {
 				ArrayList<PrenotazioneDocenteRuolo> prenotazioni = DAO.queryShowAllPrenotazioniDB();
 				ArrayList<PrenotazioneDocenteRuolo> prenotazioniFiltered = filterAdmin(prenotazioni);
+
+				System.out.println(prenotazioniFiltered);
+
 				out.print(prenotazioniToJson(prenotazioniFiltered));
 				response.setStatus(200);
 
@@ -72,7 +76,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 
 	}
 
-	// aggiunge una prenotazione al database
+	// add a booking to database
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = jsonResponseSetup(response);
@@ -140,6 +144,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 		return;
 	}
 
+	// modify a booking on database
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = jsonResponseSetup(response);
@@ -164,8 +169,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 		String stato = jobj.get("stato").getAsString();
 		Integer giorno = jobj.get("giorno").getAsInt();
 		Integer orario = jobj.get("orario").getAsInt();
-		if(username == null || corso == null || idDocente == null || stato == null || giorno == null || orario == null)
-		{
+		if(username == null || corso == null || idDocente == null || stato == null || giorno == null || orario == null) {
 			out.print("{\"error\":\"Missing params\"}");
 			response.setStatus(400);
 			out.flush();
@@ -174,8 +178,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 		//check if booking exists, and if not show error
 		PrenotazioneDocenteRuolo prenotazione = DAO.queryGetPrenotazioneDB(corso,username,giorno,orario);
 		//System.out.println(prenotazione);
-		if(prenotazione == null)
-		{
+		if(prenotazione == null) {
 			out.print("{\"error\":\"Requested field does not exist\"}");
 			response.setStatus(400);
 			out.flush();
@@ -209,17 +212,21 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 			}
 
 		}
-		else{
+		else {
 			out.print("{\"error\":\"not authorized\"}");
 			response.setStatus(401);
 			out.flush();
 			return;
 		}
 	}
+
 	private String prenotazioniToJson(ArrayList<PrenotazioneDocenteRuolo> prenotazioni){
+		// this function is useful to view booking in the desired order
+		Collections.sort(prenotazioni);
 		Gson gson = new Gson();
 		return gson.toJson(prenotazioni);
 	}
+
 	private ArrayList<PrenotazioneDocenteRuolo> filterAdmin(ArrayList<PrenotazioneDocenteRuolo> prenotazioni){
 		List<PrenotazioneDocenteRuolo> prenotazioniFiltered =   prenotazioni.stream()
 				.filter((prenotazione) -> !prenotazione.getRuolo().equals("amministratore"))
@@ -230,6 +237,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 		return result;
 
 	}
+
 	private boolean doRightUpdate(PrenotazioneDocenteRuolo p, String newState){
 		if(newState.equals("cancellata"))
 			return DAO.queryMarkPrenotazioneAsDeletedDB(p.getCorso(),p.getIdDocente(),p.getUtente(),p.getGiorno(),p.getOrario());
