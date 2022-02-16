@@ -130,10 +130,12 @@
 			</div>
 		</div>
 	</div>
+	<ErrorShower ref="errShower" message="Prenotazione non effettuata a causa di un errore inatteso"/>
 </template>
 
 <script>
 	import { Modal } from "bootstrap";
+	import ErrorShower from "@/components/ErrorShower";
 	async function addBookings() {
 		const booking = {};
 		booking.corso = this.selectedSlot.course;
@@ -158,7 +160,7 @@
 				window.location.href = "/Noodle_war/login";
 				return [];
 			} else if(response.status === 500) {
-				console.log(response);
+				this.$refs.errShower.toggle();
 				return [];
 			} else if (response.status === 200) {
 				// se sono un cliente svuota la casella
@@ -186,6 +188,7 @@
 				setTimeout(()=> supModal.hide(),3000);
 			}
 		} catch (e) {
+			this.$refs.errShower.toggle();
 			console.log(e);
 		}
 	}
@@ -246,6 +249,9 @@
 
 	export default {
 		name: 'Home',
+		components: {
+			ErrorShower
+		},
 		async created() {
 			const servletSlots = await getSlots();
 

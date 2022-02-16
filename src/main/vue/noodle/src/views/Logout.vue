@@ -1,5 +1,4 @@
 <template>
-	<div></div>
 </template>
 
 <script>
@@ -10,8 +9,6 @@
 		this.$store.state.prenotazioni = undefined;
 		this.$store.state.professori = undefined;
 		this.$store.state.corsi = undefined;
-		//TODO
-		//this.$store.state.slots=???
 	}
 
 	export default {

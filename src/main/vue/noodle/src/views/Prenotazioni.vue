@@ -5,45 +5,48 @@
 		</div>
 	</header>
 
-	<div class = "par" v-if="$store.state.role !== 'guest'">Clicca sullo stato delle prenotazioni attive per poterle modificare</div>
+	<div class="par" v-if="$store.state.role !== 'guest'">Clicca sullo stato delle prenotazioni attive per poterle
+		modificare
+	</div>
 	<div class="container">
 		<table class="table table-bordered">
 			<thead>
-				<tr id="labels">
-					<th scope="col">Giorno</th>
-					<th scope="col">Orario</th>
-					<th scope="col">Corso</th>
-					<th scope="col">Utente</th>
-					<th scope="col">Docente</th>
-					<th scope="col">Stato</th>
-				</tr>
+			<tr id="labels">
+				<th scope="col">Giorno</th>
+				<th scope="col">Orario</th>
+				<th scope="col">Corso</th>
+				<th scope="col">Utente</th>
+				<th scope="col">Docente</th>
+				<th scope="col">Stato</th>
+			</tr>
 			</thead>
 			<tbody>
-				<tr class="itemPrenotazione"
-					v-bind:class="{completed: prenotazione.stato==='effettuata',
+			<tr class="itemPrenotazione"
+				v-bind:class="{completed: prenotazione.stato==='effettuata',
 							   cancelled: prenotazione.stato==='cancellata',
 							   active: prenotazione.stato==='attiva'}"
-					v-for="prenotazione in $store.state.prenotazioni"
-					:key="prenotazione.utente + prenotazione.docente + prenotazione.giorno + prenotazione.ora">
-					<td>{{ Days[prenotazione.giorno] }}</td>
-					<td>{{ Hours[prenotazione.orario] }}</td>
-					<td>{{ prenotazione.corso }}</td>
-					<td>{{ prenotazione.utente }}</td>
-					<td>{{ prenotazione.nomeDocente + " " + prenotazione.cognomeDocente }}</td>
-					<td v-if="prenotazione.stato !== 'attiva'">{{ prenotazione.stato }}</td>
-					<td v-else>
-						<select name="state" v-model="prenotazione.stato" v-on:change="showWarning($event,prenotazione)">
-							<option value="attiva">attiva</option>
-							<option value="cancellata">cancellata</option>
-							<option value="effettuata">effettuata</option>
-						</select>
-					</td>
-				</tr>
+				v-for="prenotazione in $store.state.prenotazioni"
+				:key="prenotazione.utente + prenotazione.docente + prenotazione.giorno + prenotazione.ora">
+				<td>{{ Days[prenotazione.giorno] }}</td>
+				<td>{{ Hours[prenotazione.orario] }}</td>
+				<td>{{ prenotazione.corso }}</td>
+				<td>{{ prenotazione.utente }}</td>
+				<td>{{ prenotazione.nomeDocente + " " + prenotazione.cognomeDocente }}</td>
+				<td v-if="prenotazione.stato !== 'attiva'">{{ prenotazione.stato }}</td>
+				<td v-else>
+					<select name="state" v-model="prenotazione.stato" v-on:change="showWarning($event,prenotazione)">
+						<option value="attiva">attiva</option>
+						<option value="cancellata">cancellata</option>
+						<option value="effettuata">effettuata</option>
+					</select>
+				</td>
+			</tr>
 			</tbody>
 		</table>
 	</div>
 
-	<div class="modal fade" id="confirmation" ref="confirmation" tabindex="-1" aria-labelledby="confirmationLabel" aria-hidden="true">
+	<div class="modal fade" id="confirmation" ref="confirmation" tabindex="-1" aria-labelledby="confirmationLabel"
+		 aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header text-center">
@@ -56,66 +59,70 @@
 					<p>Potresti non poter più tornare indietro!</p>
 				</div>
 				<div class="modal-footer">
-					<button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-					<button v-on:click="confirmChoice" type="button" class="btn btn-primary" data-bs-dismiss="modal">Conferma</button>
+					<button v-on:click="dismissChoice" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						Annulla
+					</button>
+					<button v-on:click="confirmChoice" type="button" class="btn btn-primary" data-bs-dismiss="modal">
+						Conferma
+					</button>
 				</div>
 			</div>
 		</div>
 	</div>
-  <ErrorShower ref="errShower" message="Prenotazione non eseguita a causa di un errore inatteso"/>
+	<ErrorShower ref="errShower" message="Prenotazione non eseguita a causa di un errore inatteso"/>
 </template>
 
 <script>
-	import { Modal } from "bootstrap";
-  import ErrorShower from "@/components/ErrorShower";
+	import {Modal} from "bootstrap";
+	import ErrorShower from "@/components/ErrorShower";
+
 	async function confirmChoice() {
-    const desiredPrenotazione = {...this.waitingConfirmation};
-    desiredPrenotazione.stato = this.waitingConfirmationDesiredState;
-    try {
-      const response = await fetch("/Noodle_war/PrenotazioniServlet", {
-        method: 'PUT',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(desiredPrenotazione)
-      });
-      const decodedResponse = await response.json();
-      if (decodedResponse.error) {
-        this.waitingConfirmation.stato = "attiva";
-        this.waitingConfirmationDesiredState = null;
-        this.waitingConfirmation = {};
-        this.$refs.errShower.toggle();
-        return;
-      }
-      this.waitingConfirmation.stato = this.waitingConfirmationDesiredState;
-      this.waitingConfirmationDesiredState = null;
-      this.waitingConfirmation = {};
-    }catch (e){
-      this.waitingConfirmation.stato = "attiva";
-      this.waitingConfirmationDesiredState = null;
-      this.waitingConfirmation = {};
-      this.$refs.errShower.toggle();
-    }
-
-
+		const desiredPrenotazione = {...this.waitingConfirmation};
+		desiredPrenotazione.stato = this.waitingConfirmationDesiredState;
+		try {
+			const response = await fetch("/Noodle_war/PrenotazioniServlet", {
+				method: 'PUT',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(desiredPrenotazione)
+			});
+			const decodedResponse = await response.json();
+			if (decodedResponse.error) {
+				this.waitingConfirmation.stato = "attiva";
+				this.waitingConfirmationDesiredState = null;
+				this.waitingConfirmation = {};
+				this.$refs.errShower.toggle();
+				return;
+			}
+			this.waitingConfirmation.stato = this.waitingConfirmationDesiredState;
+			this.waitingConfirmationDesiredState = null;
+			this.waitingConfirmation = {};
+		} catch (e) {
+			this.waitingConfirmation.stato = "attiva";
+			this.waitingConfirmationDesiredState = null;
+			this.waitingConfirmation = {};
+			this.$refs.errShower.toggle();
+			console.log(e);
+		}
 	}
 
 	function dismissChoice(e) {
-    this.waitingConfirmation.stato = "attiva";
-    this.waitingConfirmationDesiredState = null;
-    this.waitingConfirmation = {};
-    return;
+		this.waitingConfirmation.stato = "attiva";
+		this.waitingConfirmationDesiredState = null;
+		this.waitingConfirmation = {};
+		return;
 	}
 
 	function showWarning(e, prenotazione) {
 		if (!this.myModal)
 			this.myModal = new Modal(this.$refs.confirmation)
 		this.myModal.show();
-		//store the
-    this.waitingConfirmation = prenotazione;
-    this.waitingConfirmationDesiredState = prenotazione.stato;
-    prenotazione.stato = "attiva";
+		// store the values
+		this.waitingConfirmation = prenotazione;
+		this.waitingConfirmationDesiredState = prenotazione.stato;
+		prenotazione.stato = "attiva";
 	}
 
 	async function getPrenotazioni() {
@@ -133,8 +140,8 @@
 
 	export default {
 		name: "Prenotazioni",
-    components: {ErrorShower},
-    async created() {
+		components: {ErrorShower},
+		async created() {
 			const prenotazoni = await getPrenotazioni();
 			if (prenotazoni)
 				this.$store.state.prenotazioni = prenotazoni;
@@ -143,15 +150,13 @@
 			showWarning,
 			confirmChoice,
 			dismissChoice
-
-
 		},
 		data() {
 			return {
 				Days: {0: "Lunedì", 1: "Martedì", 2: "Mercoledì", 3: "Giovedì", 4: "Venerdì", 5: "Sabato", 6: "Domenica"},
 				Hours: {0: "15-16", 1: "16-17", 2: "17-18", 3: "18-19"},
 				waitingConfirmation: {},
-        waitingConfirmationDesiredState: null,
+				waitingConfirmationDesiredState: null,
 				myModal: undefined
 			};
 		}
@@ -170,13 +175,13 @@
 		border-radius: 0 0 85% 85% / 30%;
 	}
 
-	header .overlay{
+	header .overlay {
 		width: 100%;
 		height: 100%;
 		padding: 50px;
 		color: #FFF;
 		text-shadow: 1px 1px 1px #333;
-		background-image: linear-gradient( 135deg, rgb(27, 86, 19) 10%, rgba(27, 215, 52, 0.84) 100%);
+		background-image: linear-gradient(135deg, rgb(27, 86, 19) 10%, rgba(27, 215, 52, 0.84) 100%);
 	}
 
 	h1 {
@@ -195,21 +200,21 @@
 		box-shadow: 0 3px 20px 0 #0000003b;
 	}
 
-	.modal-header{
+	.modal-header {
 		/*background-color: rgba(65, 164, 51, 0.25);*/
 		border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 		font-weight: bold;
 	}
 
-	.modal-title{
+	.modal-title {
 		margin: 0 auto 0 5px;
 	}
 
-	.modal-footer{
+	.modal-footer {
 		border-top: 1px solid rgba(0, 0, 0, 0.3);
 	}
 
-	.btn-primary:hover{
+	.btn-primary:hover {
 		color: #0a53be;
 		background: rgba(161, 196, 195, 0.6);
 		border: 1px solid #0a53be;
@@ -257,7 +262,7 @@
 		text-decoration: none;
 	}
 
-	.par{
+	.par {
 		margin: 10vh auto auto;
 		font-weight: bold;
 		font-size: 20px;

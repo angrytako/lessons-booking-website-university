@@ -31,7 +31,7 @@ const routes = [
 			} else {
 				//check authentication
 				if (!app.$store.state.role || app.$store.state.role !== "amministratore") {
-					next({name: 'Login'});
+					next({name: 'Login'});			//manda in login
 					return;
 				}
 				next();

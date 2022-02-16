@@ -22,9 +22,12 @@
 			<button class="btn btn-primary" ref="submitBtn" v-on:click.prevent="submit">Login</button>
 		</form>
 	</div>
+	<ErrorShower ref="errShower" message="Login non effettuato a causa di un errore inatteso"/>
 </template>
 
 <script>
+	import ErrorShower from "@/components/ErrorShower";
+
 	function showError(alertDivElem, inputElem, message, submitBtn) {
 		alertDivElem.style.opacity = "1";
 		if (message)
@@ -48,6 +51,9 @@
 
 	export default {
 		name: "Login",
+		components: {
+			ErrorShower
+		},
 		data() {
 			return {
 				username: undefined,
@@ -86,7 +92,8 @@
 						showError(this.$refs.loginErrorBlock, undefined, res.error, this.$refs.submitBtn)
 					}
 				} catch (e) {
-					showError(this.$refs.loginErrorBlock, undefined, "Unexpected error")
+					this.$refs.errShower.toggle();
+					// showError(this.$refs.loginErrorBlock, undefined, "Unexpected error")
 					console.log(e);
 				}
 			}
