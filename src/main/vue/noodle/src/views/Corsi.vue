@@ -79,7 +79,8 @@
 										<div class="col-6">
 											<select class="form-select" aria-label="Default select example"
 													v-bind:id="'insegnamentoCorsiDocente' +insegnamentoCorsi.corso">
-												<option v-for="docente in $store.state.professori" :key="docente.id"
+                        <option class="nonDisplay">Seleziona Un Docente</option>
+                        <option v-for="docente in $store.state.professori" :key="docente.id"
 														v-bind:class="{nonDisplay:insegnamentoCorsi.docenti.find(docenti => docenti.id==docente.id)}"
 														v-bind:value=docente.id>
 													{{ docente.nome }} {{ docente.cognome }}

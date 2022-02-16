@@ -55,8 +55,8 @@
 
 					<div class="card">
 						<div class="card-header">
-							Professore: {{ insegnamentoDocenti.id }}
-							<img src="../assets/delate.png" alt="Delate" width="20" height="20"
+							Professore: {{ $store.state.professori.find(docente => docente.id == insegnamentoDocenti.id).nome }} {{$store.state.professori.find(docente => docente.id == insegnamentoDocenti.id).cognome}}
+              <img src="../assets/delate.png" alt="Delate" width="20" height="20"
 								 v-on:click="showWarning(insegnamentoDocenti.id, null)">
 						</div>
 						<div class="card-body">
@@ -81,6 +81,7 @@
 										<div class="col-6">
 											<select class="form-select" aria-label="Default select example"
 													v-bind:id="'insegnamentoDocentiCorso' +insegnamentoDocenti.id">
+                        <option class="nonDisplay">Seleziona Un Corso</option>
 												<option v-for="corso in $store.state.corsi" :key="corso.materia"
 														v-bind:class="{nonDisplay:insegnamentoDocenti.corsi.find(corsi => corsi.materia==corso.materia)}"
 														v-bind:value=corso.materia>
