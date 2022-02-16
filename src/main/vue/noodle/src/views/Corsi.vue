@@ -328,6 +328,7 @@
 					} else {
 						this.$store.state.corsi.push({materia: this.corso});
 						this.$store.state.insegnamentoCorsi.push({corso: this.corso, docenti: []})
+            this.corso="";
 					}
 				} catch (e) {
 					this.$refs.errShower.toggle();

@@ -334,6 +334,8 @@
 							cognome: this.docenteCognome
 						});
 						this.$store.state.insegnamentoDocenti.push({id: docenteResponse.id, corsi: []})
+            this.docenteNome="";
+            this.docenteCognome="";
 					}
 
 				} catch (e) {
