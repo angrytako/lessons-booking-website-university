@@ -330,7 +330,7 @@ public class DAO {
 				if (toInsert) {
 					boolean existedBooking = false;
 					for (Prenotazione p : bookings) {
-						if (p.getCorso().equals(course) && p.getIdDocente() == idDoc && p.getUtente().equals(username) && p.getGiorno() == day && p.getOrario() == time) {
+						if (p.getCorso().equals(course) && p.getUtente().equals(username) && p.getGiorno() == day && p.getOrario() == time) {
 							st.executeUpdate("UPDATE PRENOTAZIONE SET stato = 'attiva' WHERE corso = '" + course + "' AND docente = " + idDoc + " AND utente = '" + username + "' AND stato = '" + p.getStato() + "' AND giorno = " + day + " AND orario = " + time);
 							existedBooking = true;
 							queryResult = true;
