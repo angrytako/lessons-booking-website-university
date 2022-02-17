@@ -1,4 +1,6 @@
-package com.happylearn.DAO;
+package com.happylearn.support;
+
+import com.happylearn.DAO.Docente;
 
 import java.util.ArrayList;
 

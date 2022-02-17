@@ -3,6 +3,7 @@ package com.happylearn.servlet;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.happylearn.DAO.*;
+import com.happylearn.support.InsegnamentoDocente;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Map;
 
 
 @WebServlet(name = "InsegnamentoDocentiSevlet", value = "/InsegnamentoDocentiSevlet")
