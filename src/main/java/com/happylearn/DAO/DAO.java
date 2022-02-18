@@ -5,11 +5,6 @@ import com.happylearn.support.PrenotazioneDocenteRuolo;
 import java.sql.*;
 import java.util.*;
 
-/** TODO
- * Sistemare con i join!!!!!!!!!!!!!!!! :(
- * rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
- * 									"WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
- */
 public class DAO {
 	private static String url;
 	private static String user;

@@ -102,15 +102,6 @@ public class AvailableSlotsServlet extends SecuredHttpServlet {
 	}
 
 	/**
-	 * TODO
-	 * DA METTERE NEL DAO!!!!!!
-	 * <p>
-	 * Sistemare con i join!!!!!!!!!!!!!!!! :(
-	 * rs = st.executeQuery("SELECT * FROM (PRENOTAZIONE AS P JOIN UTENTE AS U ON P.UTENTE = U.USERNAME) JOIN DOCENTE AS D ON P.DOCENTE = D.ID " +
-	 * "WHERE U.USERNAME = '" + utente + "' AND P.CORSO = '" + corso + "' AND P.GIORNO = " + giorno + " AND P.ORARIO = " + orario);
-	 */
-
-	/**
 	 *  This method shows all available slots.
 	 */
 	private ArrayList<Slot> showAllAvailableSlots() {

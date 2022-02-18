@@ -119,7 +119,7 @@ public class PrenotazioniServlet extends SecuredHttpServlet {
 
 		if(isAuthorized(request, username)) {
 			//if the user whose data is being changed is admin, you cannot change it, unless you are that admin
-			//TODO: un admin non può prenotare per un altro admin
+//			if(isAdmin(request) && !prenotazione.getUtente().equals( request.getSession().getAttribute("username"))){
 //			if(isAdmin(request) && !prenotazione.getUtente().equals( request.getSession().getAttribute("username"))){
 //				out.print("{\"error\":\"not authorized\"}");
 //				response.setStatus(401);
